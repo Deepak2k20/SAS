@@ -11,9 +11,13 @@ Knowing SAS is an asset in many job markets. It is tagged 'leader' in Advanced A
 When you install SAS software, it has several in-built modules which are designed for various analytics and reporting purposes. See some of the common SAS modules or components.
 
 Base SAS - It is the most common SAS module. It is used for data manipulation such as filtering data, selecting, renaming or removing columns, reshaping data etc.  
+
 SAS/STAT - It runs popular statistical techniques such as Hypothesis Testing, Linear and Logistic Regression, Principal Component Analysis etc.  
+
 SAS/ACCESS - It lets you to read data from databases such as Teradata, SQL Server, Oracle DB2 etc.  
+
 SAS/GRAPH - You can create simple and complex graphs using this component.  
+
 SAS/ETS - You can perform time series forecasting such as ARIMA, Exponential Smoothing, Moving Average etc. using this module.
 
 # INTRODUCTION TO SAS PROGRAMMING
@@ -29,12 +33,19 @@ SAS stands for Statistical Analysis System.
 SAS can perform the following tasks:
 
 It allows you to enter, retrieve and manage your data easily  
+
 It can read data from various external sources (Excel, CSV, Text files, Databases, Webpage etc)  
+
 You can explore and manipulate data in SAS.  
-It can analyze your data statistically and mathematically. Includes various statistical techniques.  
+
+It can analyze your data statistically and mathematically. Includes various statistical techniques. 
+
 It can generate beautiful graphs and tables.  
+
 You can run SQL queries on SAS datasets.  
+
 You can automate repetitive tasks with SAS Macros.  
+
 It can develop entirely new software applications.  
 
 # Basics of SAS Programming
