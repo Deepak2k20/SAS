@@ -454,7 +454,32 @@ The following is a list of productivity boosting SAS keyboard shortcuts. It woul
 
 # How to Import Data
 
-### HOW TO USE PROC IMPORT TO IMPORT DATA INTO SAS
+## HOW TO USE PROC IMPORT TO IMPORT DATA INTO SAS
+
+PROC IMPORT is a powerful SAS procedure that allows you to import data from various external file formats into SAS datasets. It simplifies the process of importing data in SAS. Since PROC IMPORT is commonly used in real-world work scenarios, it is important for every SAS programmer to be familiar with this SAS procedure.  
+
+__Syntax : PROC IMPORT__
+
+Syntax of PROC IMPORT is defined below -
+
+```sas
+PROC IMPORT DATAFILE=FileName OUT=SASDatasetName
+DBMS=identifier REPLACE;
+GETNAMES=Yes;
+RUN;
+```
+
+Arguments of PROC IMPORT : Explanation
+
+1) __DATAFILE:__ Specify the location of the file to be imported.  
+
+2) __OUT:__ Specify the name to assign to the dataset after it is imported into SAS.  
+
+3) __DBMS:__ Define the format of the file being imported. Some of the common values are CSV, EXCEL, TAB, DLM, ACCESS.  
+
+4) __REPLACE:__ Determine whether to replace the existing SAS Dataset. Yes/No.  
+
+5) __GETNAMES:__ Specify whether to use the first row as variable names. By default it it YES. If you set the option as NO, it will tell SAS not to use the first row of data as variable names. In this case SAS assigns variable names as VAR1, VAR2, VAR3 if there are 3 variables.
 
 
 
