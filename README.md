@@ -406,7 +406,7 @@ Following are some common projects in which SAS is used in the insurance compani
 
 4) Underwriting and Pricing : SAS is used by the underwriting team to measure risk and calculate insurance premium rates accordingly.
  
-5)Policyholder Behavior Analysis : SAS is used to analyze policyholder behavior such as renewal rates and lapse rates to understand customer preferences.  
+5) Policyholder Behavior Analysis : SAS is used to analyze policyholder behavior such as renewal rates and lapse rates to understand customer preferences.  
 
 
 SAS Projects in Telecommunication
