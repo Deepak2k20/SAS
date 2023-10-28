@@ -91,6 +91,264 @@ proc print;: This line initiates the proc print procedure, which is used to disp
 
 run;: This line signifies the end of the data step and the end of the proc print procedure.
 
+When you run this SAS code, it will create the dataset "example1" with the given data and then print its contents to the results window. The output will show the "name" and "ID" values for each observation in the dataset.  
+
+# How to Submit SAS Program
+
+To submit the SAS program, press F3 shortcut key. Alternatively, you can click on click on the icon of "the little guy running" at the top of the SAS tool bar.  
+
+# SAS Log Window
+
+It is where error messages and executed SAS commands are printed.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c5f18dad-802e-4101-a14a-dc7cd002781b)  
+
+# SAS Results Window
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/537773bf-cc3c-467a-bdc8-a895034a6df7)  
+
+# SAS Libraries
+
+SAS files are stored in a SAS library. A SAS library is simply a collection of SAS files (data sets) that are stored in a folder. SAS files are stored either temporarily or permanently. By default, it is stored in a temporary library called Work.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9bdc0d47-6f0c-4f62-a6a7-86e57e5e0091)  
+
+# How to create a SAS library
+
+1) Temporary : When you don't specify a library name at all, then the file is stored in a temporary SAS library called Work. When you close out the SAS session in which you created the SAS file, the temporary library and all of its files are removed from your computer's memory.
+
+  ```sas
+data example;
+
+```
+
+In this case, example is a data set that is stored in Work library. Note : You can specify the library name Work followed by dot (.) and then data set name.  
+
+```sas
+data work.example;
+```
+
+2) Permanent : If you use a library name other than the default library name 'Work' when creating a SAS file, then the file is stored permanently until you delete it. That is, you can use permanent SAS libraries and their contents in subsequent SAS sessions.  
+
+You can specify the library name followed by dot (.) sign and then data set name.  
+
+```sas
+data mydata.example;
+```
+
+In this case, example1 is a data set that is stored in mydata library.  
+
+# SAS Programming Rules
+
+When it comes to programming in SAS, there are several best practices and rules that can help improve code readability, efficiency, and maintainability. Here are some important SAS programming rules to keep in mind:  
+
+I. Rules for SAS statements
+
+1) All SAS statements (except those containing data) must end with a semicolon (;).
+```sas
+Example : "DATA example1;" is an example of a SAS statement.
+```
+2) Any number of SAS statements can appear on a single line provided they are separated by a semicolon.
+```sas
+Example : "DATA example1; Input Name $ ID;" is an example of a SAS statement.
+```
+3) SAS statements typically begin with a SAS keyword. (DATA, PROC).
+
+4) SAS statements are not case sensitive, that is, they can be entered in lowercase, uppercase, or a mixture of the two.
+```sas
+Example : SAS keywords (DATA, PROC) are not case sensitive
+```
+5) A delimited comment begins with a forward slash-asterisk (/*) and ends with an asterisk-forward slash (*/). All text within the delimiters is ignored by SAS.
+
+II. Rules for SAS names
+
+1) All names must contain between 1 and 32 characters.
+
+2) The first character appearing in a name must be a letter (A, B, ...Z, a, b, ... z) or an underscore (_). Subsequent characters must be letters, numbers, or underscores. That is, no other characters, such as $, %, or & are permitted. Blanks also cannot appear in SAS names.
+
+3) SAS names are not case sensitive, that is, they can be entered in lowercase, uppercase, or a mixture of the two. (SAS is only case sensitive within quotation marks.)
+
+III. Rules for SAS variables  
+
+If the variable in the INPUT statement is followed by a dollar sign ($), SAS assumes this is a character variable. Otherwise, the variable is considered as a numeric variable.  
+
+# Difference between PROC and DATA Step
+
+DATA STEP
+
+Any portion of a SAS program that begins with a DATA statement and ends with a RUN statement is called a DATA Step.  
+
+DATA steps are used to manage data. In detail, DATA steps are used to read raw or external data into a SAS data set, to modify data values, and to subset or merge data sets.  
+
+PROC (Procedure)
+
+Any portion of a SAS program that begins with a PROC statement and ends with a RUN statement is called a PROC Step or Procedures.  
+
+PROC steps are in-built programs that allow us to analyze the data contained in a SAS data set. PROC steps are used to calculate descriptive statistics, to generate summary reports, and to create summary graphs and charts.  
+
+Example SAS Code for Practice
+
+```sas
+data temp;
+input ID Company $20.;
+cards;
+12 Reliance
+13 Google
+11 Microsoft
+10 SAS
+9 Tom
+10 SAP
+;
+  
+proc print;
+run;
+
+```
+The above program creates a dataset named temp which is stored in WORK library. In the dataset, there are 2 variables/columns - Company and ID which contains 6 observations/rows. The command PROC PRINT tells SAS to print the dataset in Results Window.  
+
+# How to Filter Data in SAS
+
+The IF statement is used to apply a condition to filter the data.  
+
+```sas
+data out;
+set temp;
+if ID > 10;
+run;
+```
+
+The SET statement allows you to read values from a SAS data set (temp). The SAS Statement 'IF ID > 10' tells SAS to read only those ID values that are greater than 10. Later SAS paste these values into a new data set (OUT) without overwriting existing data set (temp).  
+
+Multiple Conditions - The following SAS code is using the multiple conditions in the IF statement.  
+
+```sas
+data out;
+set temp;
+if ID = 10 and Company = 'SAS';
+run;
+```
+
+if ID = 10 and Company = 'SAS';: In this case, IF statement selects records where both the "ID" variable is equal to 10 and the "Company" variable is equal to 'SAS'.  
+
+# IF-THEN-ELSE Statements
+
+The following code creates a new "flag" variable where the value 'No' is assigned when the "ID" is less than or equal to 10, 'Yes' when the "ID" is greater than 10 and less than or equal to 12, and 'Invalid' for any other value of "ID" greater than 12, based on the values in the existing dataset "temp". The "flag" variable is a character variable with a length of 8 characters.  
+
+```sas
+
+data out;
+	set temp;
+	length flag $8;
+	if ID <=10 then
+		flag='No';
+	else if ID > 10 and ID <=12 then
+		flag='Yes';
+	else
+		flag='Invalid';
+run;
+
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/02d8b1c1-6945-4cbe-bb91-f2f63753f4f3)  
+
+# How to Sort Data in SAS
+
+In SAS, the PROC SORT procedure sorts a dataset.  
+
+```sas
+proc sort data=temp;
+by ID;
+run;
+```
+
+by ID;: This line specifies the variable "ID" that will be used for sorting the dataset. When you sort the data, the values of the "ID" variable will be arranged in ascending order by default.  
+
+To sort the dataset in descending order, you can use the keyword descending after BY statement.  
+
+```sas
+proc sort data=temp;
+by descending ID;
+run;
+```
+
+# How to Calculate Summary in SAS
+
+In SAS, PROC MEANS is used to calculate summary statistics, such as count, mean, minimum, maximum, standard deviation and more for one or more variables in a SAS dataset. The following code calculates descriptive statistics for the variable "ID" in the dataset "temp."  
+
+```sas
+proc means data=temp;
+var ID;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b6319805-3661-464d-b7a3-75d11b564576)  
+
+# How to Generate Frequency Distribution in SAS
+
+PROC FREQ is a SAS procedure used to generate frequency tables, which display the distribution of values within categorical variables.  
+
+The following code shows how to use PROC FREQ with the built-in SAS dataset "sashelp.cars". We have created a new dataset named "cars" by copying the content of the built-in dataset "sashelp.cars".  
+
+```sas
+/* Step 1: Access the sashelp.cars dataset */
+data cars;
+set sashelp.cars;
+run;
+
+/* Step 2: Use PROC FREQ to analyze the "make" variable */
+proc freq data=cars;
+tables make;
+run;
+```
+
+Within the PROC FREQ step, the "tables" statement is used to specify the variable "make" for which we want to calculate the frequency table. In this case, we are interested in analyzing the distribution of the "make" variable, which represents the car manufacturer.  
+
+# How to Combine Datasets in SAS
+
+PROC APPEND is a SAS procedure used to combine or append datasets. It is commonly used when you have multiple datasets with the same structure (same variables and data types) and you want to merge them vertically, concatenating one dataset below the other.  
+
+```sas
+/* Create dataset1 */
+data dataset1;
+input ID Name $ Age Grade $;
+cards;
+1 John 18 A
+2 Jane 17 B
+3 Alex 19 A
+;
+run;
+
+/* Create dataset2 */
+data dataset2;
+input ID Name $ Age Grade $;
+cards;
+4 Sarah 16 B
+5 Mike 18 C
+6 Emily 17 A
+;
+run;
+
+/* Use PROC APPEND to combine datasets */
+proc append base=dataset1 data=dataset2;
+run;
+
+```
+
+After combining the datasets, Dataset1 now has 6 observations. It originally had 3 observations. Please refer to the log below.  
+
+```
+ NOTE: Appending WORK.DATASET2 to WORK.DATASET1.
+ NOTE: There were 3 observations read from the data set WORK.DATASET2.
+ NOTE: 3 observations added.
+ NOTE: The data set WORK.DATASET1 has 6 observations and 4 variables.
+```
+
+
+ 
+
+
+
+
 
 
 
