@@ -422,6 +422,39 @@ Here is a list of common projects in which SAS is used in the telecom companies.
 4) __Network Traffic Analysis__ : SAS can be used to analyze network traffic patterns to understand user behavior, identify peak usage times.  
 
 
+# SAS KEYBOARD SHORTCUTS THAT EVERY ANALYST MUST KNOW
+
+If you fancy yourself a rockstar analyst, you know how valuable it is to keep your hands on the keyboard. Apart from making you work more efficiently and faster, you can also impress your friends or colleagues by being able to work without a mouse. Here is a list of SAS keyboard shortcuts that can make your life easy while working with SAS.  
+
+# Important SAS Shortcuts for Productivity
+
+The following is a list of productivity boosting SAS keyboard shortcuts. It would bring efficiency in writing SAS programming code.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/332f2765-5d19-41a3-a5a2-70ad1e09adb0)  
+
+# Important Shortcuts for SAS Enterprise Guide
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/df108fed-7e20-4a6f-bf21-e991cf93bb76)  
+
+# Other Useful SAS Keyboard Shortcuts
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a9da838a-e777-4198-91b3-a8edebe302a9)  
+
+# How to create keyboard shortcuts in SAS
+
+1) Open the Enhanced Editor window within SAS.  
+
+2) From the toolbar, select Tools --> Options --> Keys.  
+
+3) Scroll down to the keystroke you would like to assign to the series of commands, looking for a keystroke that has no assignment.  
+
+4) Add the command code under the definition heading. For example: log; clear; output;clear;  
+
+5) Close the Keys window.  
+
+
+
+
 
 
 
