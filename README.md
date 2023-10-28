@@ -56,5 +56,42 @@ SAS has three main windows :
 2) Log Window: where error messages and executed SAS commands are printed  
 3) Result Window: where the result of SAS programs are printed.  
 
-![image](https://github.com/Deepak2k20/SAS/assets/65231118/da498758-49de-48f9-a09d-354cd6154eeb)
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/da498758-49de-48f9-a09d-354cd6154eeb)  
+
+# Basic SAS Program
+
+Let's look at a simple SAS program :
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/4bb7b212-7886-4c19-abe9-54ce2c3bd517)  
+
+```sas
+data example1;
+input name $ ID;
+cards;
+Sam 12
+Sandy 13
+Reno 11
+Farhan 10
+;
+
+proc print;
+run;
+ 
+```sas
+
+
+data example1;: This line initiates a data step and creates a new dataset named "example1" to store the data.
+
+input name $ ID;: This line defines the variables for the dataset. It specifies that there are two variables: "name" and "ID." The dollar sign ($) after "name" indicates that it is a character variable, and the lack of a dollar sign after "ID" indicates that it is a numeric variable.
+
+cards;: This keyword signals the start of inline data. The data enclosed between cards; and the next semicolon (;) will be read as input data for the dataset.
+
+The lines following cards; contain the actual data values. Each line represents one observation (row) in the dataset. In this example, there are four observations with two variables each: "name" and "ID."
+
+proc print;: This line initiates the proc print procedure, which is used to display the contents of a dataset.
+
+run;: This line signifies the end of the data step and the end of the proc print procedure.
+
+
+
 
