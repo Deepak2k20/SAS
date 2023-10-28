@@ -471,15 +471,383 @@ RUN;
 
 Arguments of PROC IMPORT : Explanation
 
-1) __DATAFILE:__ Specify the location of the file to be imported.  
+1) __DATAFILE__: Specify the location of the file to be imported.  
 
-2) __OUT:__ Specify the name to assign to the dataset after it is imported into SAS.  
+2) __OUT__: Specify the name to assign to the dataset after it is imported into SAS.  
 
-3) __DBMS:__ Define the format of the file being imported. Some of the common values are CSV, EXCEL, TAB, DLM, ACCESS.  
+3) __DBMS__: Define the format of the file being imported. Some of the common values are CSV, EXCEL, TAB, DLM, ACCESS.  
 
-4) __REPLACE:__ Determine whether to replace the existing SAS Dataset. Yes/No.  
+4) __REPLACE__: Determine whether to replace the existing SAS Dataset. Yes/No.  
 
-5) __GETNAMES:__ Specify whether to use the first row as variable names. By default it it YES. If you set the option as NO, it will tell SAS not to use the first row of data as variable names. In this case SAS assigns variable names as VAR1, VAR2, VAR3 if there are 3 variables.
+5) __GETNAMES__: Specify whether to use the first row as variable names. By default it it YES. If you set the option as NO, it will tell SAS not to use the first row of data as variable names. In this case SAS assigns variable names as VAR1, VAR2, VAR3 if there are 3 variables.
+
+## File Formats supported in PROC IMPORT
+
+Following is a list of file extensions supported in PROC IMPORT. Specify the value in DBMS=identifier option  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b91ecfb2-3b51-48f2-ac53-9c85294ab333)  
+
+## Use PROC IMPORT to Import CSV File
+
+Let's take a simple example to import CSV (comma-separated values) file into SAS. Here we have data named data.csv which has 3 variables and 5 observations. Column names are ID, Name, Score. Data looks like the image below. You can open CSV file in Notepad.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/fd29ea16-358e-4876-8397-bbad5d2cd2b8)  
+
+DBMS=CSV tells SAS that the file being imported is a CSV file.  
+
+```sas
+PROC IMPORT DATAFILE='/home/deepanshu88us0/data.csv'
+	DBMS=CSV
+	OUT=WORK.READIN;
+	GETNAMES=YES;
+RUN;
+
+```
+
+The above SAS Program creates a SAS dataset named READIN in the temporary library (WORK).  
+
+```sas
+NOTE: WORK.READIN data set was successfully created.
+NOTE: The data set WORK.READIN has 5 observations and 3 variables.
+```
+
+__Output__  
+
+To see the imported file in RESULTS window, you can use PROC PRINT procedure. See the SAS program below.  
+
+```sas
+PROC PRINT DATA=WORK.READIN;
+RUN;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/38221a4a-6a26-4a58-b244-302a6c4e27c1)  
+
+
+### Use PROC IMPORT to Import Delimited File
+
+Suppose you have a delimeted file and you want to read it in SAS. Delimeter is | symbol. Delimited file looks like the image below. Datafile name is data.txt.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ab34bf61-8758-4cad-a645-18abc8140bbe)  
+
+DBMS=DLM tells SAS that the file being imported is a delimited file. To specify delimiter, use the DELIMITER='|' option.  
+
+```sas
+PROC IMPORT DATAFILE='/home/deepanshu88us0/data.txt'
+	DBMS=DLM
+	OUT=WORK.READIN REPLACE;
+	DELIMITER='|';
+	GETNAMES=YES;
+RUN;
+```
+
+We have used REPLACE option to inform SAS to replace the existing SAS dataset READIN.  
+
+OUT=WORK.READIN means READIN dataset to be created in the temporary SAS library (WORK).  
+
+```sas
+If you have blank as delimiter in the file, you don't need to use DELIMITER option as default delimeter is blank when you use DBMS=DLM.
+```
+
+### Use PROC IMPORT to Import TAB Delimited File
+
+Suppose you have a TAB delimeted file. TAB delimited file is shown in the image below. Datafile name is data.txt.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9099d961-c75a-477b-aa3f-61e9f4c8948c)  
+
+DBMS=TAB tells SAS that the file being imported is a TAB delimited file  
+
+```sas
+PROC IMPORT DATAFILE='/home/deepanshu88us0/data.txt'
+	DBMS=TAB
+	OUT=WORK.READIN REPLACE;
+	GETNAMES=YES;
+RUN;
+```
+
+Another way to do this is by specifying DELIMITER='09'x and DBMS=DLM. '09'x represents the hexadecimal value for the tab character. The tab character (ASCII code 9) is commonly used as a delimiter in data files to separate columns (variables).  
+
+```sas
+PROC IMPORT DATAFILE='/home/deepanshu88us0/data.txt'
+	DBMS=DLM
+	OUT=WORK.READIN REPLACE;
+	GETNAMES=YES;
+	DELIMITER='09'x;
+RUN;
+```
+
+### Use PROC IMPORT to import a file with multiple delimiters
+
+While it is uncommon to see files with multiple delimiters, there are instances where certain vendors maintain files in complex formats that may include multiple delimiters. Suppose you have a raw file having both comma and tab as delimiters. In this case we need to specify both the delimiters in DELIMITER=','09'x '
+
+```sas
+PROC IMPORT DATAFILE='/home/deepanshu88us0/data.txt'
+	DBMS=DLM
+	OUT=WORK.READIN REPLACE;
+	GETNAMES=YES;
+	DELIMITER=','09'x ';
+RUN;
+```
+
+### Use PROC IMPORT to Import Excel File
+
+Many businesses and organizations commonly work with MS Excel files for various purposes such as data storage, analysis, reporting etc. Hence MS Excel file formats are widely used in the real world. In the example below we are importing Excel file in SAS.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8aa31585-e54a-4488-80f3-86f916726e0d)  
+
+DBMS=XLSX informs SAS that the file being imported is a MS Excel file (with .xlsx extension).  
+
+```sas
+PROC IMPORT DATAFILE='/home/deepanshu88us0/Data.xlsx'
+	DBMS=XLSX
+	OUT=WORK.READIN REPLACE;
+	GETNAMES=YES;
+RUN;
+```
+
+### Additional Options in PROC IMPORT to Import Excel File
+
+```sas
+PROC IMPORT DATAFILE="filename" 
+DBMS=identifier
+OUT=SASDataset REPLACE;
+SHEET="sheetName";
+GETNAMES=YES; 
+DATAROW=N;
+RANGE="rangeName";
+RUN;
+```
+
+1) __SHEET__: Specify the name of the sheet in the Excel file from which you want to import data. When you use PROC IMPORT without explicitly mentioning the SHEET option, SAS will automatically import the first sheet of the Excel file by default. If you want to import a specific sheet, you need to explicitly specify the sheet name.  
+
+2) __DATAROW__: Specify the row number from which you want SAS to import data. If GETNAMES=YES, the DATAROW value must be greater than or equal to 2. If GETNAMES=NO, the DATAROW value must be greater than or equal to 1.  
+
+3) __RANGE__: Specify the range of Excel file. For e.g. RANGE="Sheet1$A1:D50"
+
+
+### Use PROC IMPORT to Import SPSS File
+
+A few years ago, SPSS used to be the preferred statistical software for survey analysis. If you have a data file in SPSS format (.SAV) and you want to import it into SAS, you can refer to the SAS program below. 
+
+DBMS=SAV tells SAS that you are importing a file in the SPSS data file format.  
+
+```sas
+PROC IMPORT DATAFILE='/home/deepanshu88us0/surveyData.sav'
+	DBMS=SAV
+	OUT=WORK.READIN REPLACE;
+	fmtlib=WORK.FORMATS;
+RUN;
+```
+```sas
+The FMTLIB option tells SAS to create custom SAS formats if the data contains SPSS labels.
+```
+
+## IMPORTING EXCEL DATA INTO SAS
+
+PROC IMPORT is the SAS procedure used to read data from excel into SAS. This tutorial covers how to import excel data to SAS with PROC IMPORT. Loading excel data to SAS is one of the most common task of a SAS programmer / analyst. Most of the raw data files are saved in MS Excel so we need to take it to SAS for further analysis.  
+
+### PROC IMPORT Syntax:
+
+```sas
+PROC IMPORT 
+DATAFILE="filename"
+OUT=SAS-data-set 
+DBMS=identifier 
+  REPLACE;
+  SHEET="Sheet-name";
+  GETNAMES=YES; 
+  DATAROW=N;
+  RANGE="range-name";
+RUN;
+```
+
+1) __DATAFILE__ =option tells SAS where to find the Excel file that you want to import (Complete filename path).
+```sas
+For example : DATAFILE = "C:\Desktop\age.xlsx"
+```
+2) __OUT__ = option tells SAS to create a dataset with any name of your choice. By default, the imported dataset is saved on WORK library (temporary library)
+```sas
+Examples :
+i. OUT = Age . In this statement, PROC IMPORT uses the WORK library and dataset name is Age. Please note that OUT = Age is equivalent to OUT = Work.Age .
+ii. OUT = Input.Age In this statement, PROC IMPORT uses the Input library (Permanent library).
+```
+3) __DBMS__ =option tells SAS the type of file to read.
+```sas
+Examples :
+i. DBMS = XLS for Excel 97-2003 workbooks
+ii.DBMS = XLSX for Excel 2007 and above workbooks
+```
+4) __REPLACE__ is used to overwrite the existing SAS dataset (If any) mentioned in the OUT= option.
+
+5) __SHEET__ = option is used to specify which sheet SAS would import.
+```sas
+Examples :
+i. SHEET = "Sheet1" - To import data from worksheet named sheet1.
+ii. SHEET = "Goal" - To import data from worksheet named Goal.
+```
+
+6) __GETNAMES__ = YES tells SAS to use the first row of data as variable names.
+```sas
+By default, PROC IMPORT uses GETNAMES= YES. If you type GETNAMES= NO, SAS would not read variable names from first row of the sheet.
+```
+
+7) __DATAROW__ = option is used to specify starting row from where SAS would import the data.
+```sas
+For example : DATAROW =5 tells SAS to start reading data from row number 5.
+Note :
+i. When GETNAMES=YES, DATAROW must be greater than or equal to 2.
+ii. When GETNAMES=NO, DATAROW must be greater than or equal to 1
+```
+
+8) __RANGE__ = option is used to specify which range SAS would import.
+```sas
+Examples :
+i. RANGE="Sheet1$B2:D10"
+This would tell SAS to import data from range B2:D10 from sheet1
+ii. RANGE="Information"
+This would tell SAS to import data from excel defined name range. In the example shown above, it is Information.
+```
+
+### Importing an Excel file into SAS
+
+```sas
+PROC IMPORT DATAFILE= "C:\age.xlsx" 
+OUT= WORK.age
+DBMS=XLSX
+REPLACE;
+SHEET="Sheet1"; 
+GETNAMES=YES;
+RUN;
+```
+
+1) __DATAFILE__ = "C:\age.xlsx" tells SAS where to find the Excel file that you want to import.
+
+2) __OUT__ = WORK.age tells SAS to create a dataset named age stored in WORK library  
+
+3) __DBMS__ = XLSX tells SAS the XLSX (Excel 2007 and above) format file to read.  
+
+4) __REPLACE__ is used to overwrite the age dataset if it exists already.  
+
+5) __SHEET__ = "Sheet1" tells SAS to import data from Sheet1.  
+
+6) __GETNAMES__ ="YES" tells SAS to use the first row of data as variable names.
+
+### Important Note -
+```sas
+Earlier SAS Versions before SAS9.2 does not support XLSX formatted file (Excel 2007 or later files). If your XLSX file contains records fewer than 65000 rows and 255 columns, you can save the file in XLS format by clicking on SAVE AS >> Excel 97-2003 Workbook. Later you can import the converted XLS file into SAS.
+```
+
+### Importing an XLS (MS Excel 97-2003) format file into SAS
+
+```sas
+PROC IMPORT DATAFILE= "C:\age.xls" 
+OUT= WORK.age
+DBMS=XLS
+REPLACE;
+SHEET="Sheet1"; 
+GETNAMES=YES;
+RUN;
+```
+
+DBMS=XLS tells SAS to read the XLS (Excel 97-2003) format file.  
+
+### Importing an excel file from specified row
+
+```sas
+PROC IMPORT  DATAFILE= "C:\Desktop\Excel\File1.xlsx" OUT= INPUT
+DBMS=XLSX REPLACE;
+SHEET="Sheet1";
+GETNAMES=YES;
+DATAROW=5;
+RUN;
+```
+
+DATAROW=5 tells SAS to start reading data from row number 5. In this case, variable (column) names would be pulled from first row but column values would be extracted from row 5.  
+
+### Importing variable name from other than first row
+
+Suppose variable names are placed at second row in excel sheet.  
+
+```sas
+PROC IMPORT DATAFILE= "E:\SAS Code Repository\Book1.xls"
+ DBMS=XLS
+ OUT= TEMP  REPLACE;
+ NAMEROW=2;
+ STARTROW=3;
+ GETNAMES=YES;
+RUN;
+```
+
+NAMEROW=2 tells SAS to extract variable names from second row and STARTROW=3 is used to pull values from third row. NAMEROW only works with XLS but not with XLSX.  
+
+### Importing only specified columns from excel file
+
+```sas
+PROC IMPORT OUT= WORK.want (keep=id x y z)
+ DATAFILE= "C:\Desktop\File1.xlsx"
+ DBMS=XLSX REPLACE;
+ GETNAMES=YES;
+RUN;
+```
+
+The OUT = filename followed by KEEP= statement is used to retain the desired variables. In the example shown above, we retained four variables ID,X,Y and Z.  
+
+In the same way, you can use DROP= statement to remove the variables that you don't want to retain.  
+
+For example : You don't want to import three variables say A, B and C.  
+
+```sas
+PROC IMPORT OUT= WORK.want(DROP=A B C) DATAFILE= "C:\Desktop\File1.xlsx" DBMS=XLSX REPLACE;
+GETNAMES=YES;
+RUN;
+```
+
+### Importing only rows that have non-missing data for all the variables
+
+```sas
+PROC IMPORT OUT= WORK.want ( WHERE=(x NE . AND y NE . z NE .))
+ DATAFILE= "C:\Desktop\File1.xlsx"
+ DBMS=XLSX REPLACE;
+ GETNAMES=YES;
+RUN;
+```
+
+In the example shown above, WHERE= statement is used to delete all the rows that have only missing data on variables x,y and z.  
+
+### Importing Data from Excel based on Specified Range
+
+```sas
+PROC IMPORT OUT= WORK.want
+ DATAFILE= "C:\Desktop\File1.xlsx"
+ DBMS=XLSX REPLACE;
+RANGE="Sheet1$B4:E100";
+GETNAMES=YES;
+RUN;
+```
+
+RANGE="Sheet1$B4:E100" tells SAS to import data from range B4:E100 from sheet1.  
+
+### Importing Data from Excel based on Named Range
+
+Range Name: In MS Excel, it is a name that represents a cell, range of cells. You can create your own defined name.
+
+Creating a range name is very simple. Select a cell or range of cells and Click on the Name box above Column A and Tye any name you want and Press Enter.
+
+In the example below, Range A1:C10 is selected and then type Info in the name box and Press Enter.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
