@@ -75,10 +75,9 @@ Farhan 10
 ;
 
 proc print;
-run;
- 
-```sas
+run;  
 
+```
 
 data example1;: This line initiates a data step and creates a new dataset named "example1" to store the data.
 
