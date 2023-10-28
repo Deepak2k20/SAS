@@ -10,15 +10,15 @@ Knowing SAS is an asset in many job markets. It is tagged 'leader' in Advanced A
 
 When you install SAS software, it has several in-built modules which are designed for various analytics and reporting purposes. See some of the common SAS modules or components.
 
-Base SAS - It is the most common SAS module. It is used for data manipulation such as filtering data, selecting, renaming or removing columns, reshaping data etc.  
+__Base SAS__ - It is the most common SAS module. It is used for data manipulation such as filtering data, selecting, renaming or removing columns, reshaping data etc.  
 
-SAS/STAT - It runs popular statistical techniques such as Hypothesis Testing, Linear and Logistic Regression, Principal Component Analysis etc.  
+__SAS/STAT__ - It runs popular statistical techniques such as Hypothesis Testing, Linear and Logistic Regression, Principal Component Analysis etc.  
 
-SAS/ACCESS - It lets you to read data from databases such as Teradata, SQL Server, Oracle DB2 etc.  
+__SAS/ACCESS__ - It lets you to read data from databases such as Teradata, SQL Server, Oracle DB2 etc.  
 
-SAS/GRAPH - You can create simple and complex graphs using this component.  
+__SAS/GRAPH__ - You can create simple and complex graphs using this component.  
 
-SAS/ETS - You can perform time series forecasting such as ARIMA, Exponential Smoothing, Moving Average etc. using this module.
+__SAS/ETS__ - You can perform time series forecasting such as ARIMA, Exponential Smoothing, Moving Average etc. using this module.
 
 # INTRODUCTION TO SAS PROGRAMMING
 
@@ -26,11 +26,11 @@ The purpose of this post is to help you understand the fundamentals of SAS progr
 
 If you really want to make your career in analytics, you should focus on learning SAS programming as SAS is a world leader in softwares for advanced analytics. To see the real potential of SAS programming, login to any job portal and search for jobs required skill set of SAS. You would find a large number of jobs waiting for you if you know SAS.  
 
-SAS stands for Statistical Analysis System.
+SAS stands for __Statistical Analysis System__.
 
 # What SAS can do?
 
-SAS can perform the following tasks:
+__SAS can perform the following tasks:__
 
 It allows you to enter, retrieve and manage your data easily  
 
@@ -50,7 +50,7 @@ It can develop entirely new software applications.
 
 # Basics of SAS Programming
 
-SAS has three main windows :
+__SAS has three main windows :__
 
 1) Editor Window: where you type programs for analyzing data  
 2) Log Window: where error messages and executed SAS commands are printed  
@@ -115,7 +115,7 @@ SAS files are stored in a SAS library. A SAS library is simply a collection of S
 
 # How to create a SAS library
 
-1) Temporary : When you don't specify a library name at all, then the file is stored in a temporary SAS library called Work. When you close out the SAS session in which you created the SAS file, the temporary library and all of its files are removed from your computer's memory.
+1) __Temporary :__ When you don't specify a library name at all, then the file is stored in a temporary SAS library called Work. When you close out the SAS session in which you created the SAS file, the temporary library and all of its files are removed from your computer's memory.
 
   ```sas
 data example;
@@ -128,7 +128,7 @@ In this case, example is a data set that is stored in Work library. Note : You c
 data work.example;
 ```
 
-2) Permanent : If you use a library name other than the default library name 'Work' when creating a SAS file, then the file is stored permanently until you delete it. That is, you can use permanent SAS libraries and their contents in subsequent SAS sessions.  
+2) __Permanent :__ If you use a library name other than the default library name 'Work' when creating a SAS file, then the file is stored permanently until you delete it. That is, you can use permanent SAS libraries and their contents in subsequent SAS sessions.  
 
 You can specify the library name followed by dot (.) sign and then data set name.  
 
@@ -174,13 +174,13 @@ If the variable in the INPUT statement is followed by a dollar sign ($), SAS ass
 
 # Difference between PROC and DATA Step
 
-DATA STEP
+__DATA STEP__
 
 Any portion of a SAS program that begins with a DATA statement and ends with a RUN statement is called a DATA Step.  
 
 DATA steps are used to manage data. In detail, DATA steps are used to read raw or external data into a SAS data set, to modify data values, and to subset or merge data sets.  
 
-PROC (Procedure)
+__PROC (Procedure)__
 
 Any portion of a SAS program that begins with a PROC statement and ends with a RUN statement is called a PROC Step or Procedures.  
 
@@ -219,7 +219,7 @@ run;
 
 The SET statement allows you to read values from a SAS data set (temp). The SAS Statement 'IF ID > 10' tells SAS to read only those ID values that are greater than 10. Later SAS paste these values into a new data set (OUT) without overwriting existing data set (temp).  
 
-Multiple Conditions - The following SAS code is using the multiple conditions in the IF statement.  
+__Multiple Conditions__ - The following SAS code is using the multiple conditions in the IF statement.  
 
 ```sas
 data out;
@@ -347,38 +347,38 @@ After combining the datasets, Dataset1 now has 6 observations. It originally had
 
 This tutorial explains how SAS application is used in various industries. It includes several real-world use cases of different domains.  
 
-SAS Projects in Marketing
+__SAS Projects in Marketing__
 
 Marketing analytics is used across industries so the following projects are not specific to a particular industry.  
 
-1) Customer Segmentation : SAS can be used for dividing customers into groups for targeted marketing.  
+1) __Customer Segmentation__ : SAS can be used for dividing customers into groups for targeted marketing.  
 
-2) Customer Attrition Analysis : SAS predicts customers likely to leave to retain it.  
+2) __Customer Attrition Analysis__ : SAS predicts customers likely to leave to retain it.  
 
-3) Market Basket Analysis : SAS can be used in finding related products for cross-selling.  
+3) __Market Basket Analysis__ : SAS can be used in finding related products for cross-selling.  
 
-4) Marketing Mix Modeling : SAS helps in analyzing the impact of advertising and promotions on sales.  
+4) __Marketing Mix Modeling__ : SAS helps in analyzing the impact of advertising and promotions on sales.  
 
-5) Campaign Optimization : SAS can be used to improve marketing strategies by analyzing campaign data.  
+5) __Campaign Optimization__ : SAS can be used to improve marketing strategies by analyzing campaign data.  
 
-6) Pricing Analytics : SAS is used to analyze pricing data and optimize pricing strategies.  
+6) __Pricing Analytics__ : SAS is used to analyze pricing data and optimize pricing strategies.  
 
-7) Customer Lifetime Value (CLV) Analysis : SAS helps calculate the CLV for individual customers. It is used to identify high value customers.
+7) __Customer Lifetime Value (CLV) Analysis__ : SAS helps calculate the CLV for individual customers. It is used to identify high value customers.
 
 
- SAS Projects in Banking and Finance
+ __SAS Projects in Banking and Finance__
 
  Here is a list of common projects in which SAS is used in the banks and other finance companies.  
 
- 1) Risk Management : SAS is used in banks to manage different types of risks like credit risk, market risk etc.
+ 1) __Risk Management_ : SAS is used in banks to manage different types of risks like credit risk, market risk etc.
     
- 2) Fraud Detection : SAS helps banks detect and stop fraud in transactions by looking for suspicious patterns.
+ 2) __Fraud Detection_ : SAS helps banks detect and stop fraud in transactions by looking for suspicious patterns.
 
- 3) Credit Scoring and Underwriting : SAS helps banks decide who to lend money to by checking how reliable borrowers are.
+ 3) __Credit Scoring and Underwriting_ : SAS helps banks decide who to lend money to by checking how reliable borrowers are.
 
- 4) Customer Analytics : SAS helps banks understand what customers like and need so that they can offer better services.
+ 4) __Customer Analytics_ : SAS helps banks understand what customers like and need so that they can offer better services.
 
- 5) Anti-Money Laundering (AML) : SAS helps banks find transactions that might be connected to illegal money activities.
+ 5) _Anti-Money Laundering (AML)_ : SAS helps banks find transactions that might be connected to illegal money activities.
 
 
 SAS Projects in Healthcare and Life Sciences
