@@ -142,7 +142,7 @@ In this case, example1 is a data set that is stored in mydata library.
 
 When it comes to programming in SAS, there are several best practices and rules that can help improve code readability, efficiency, and maintainability. Here are some important SAS programming rules to keep in mind:  
 
-I. Rules for SAS statements
+__I. Rules for SAS statements__
 
 1) All SAS statements (except those containing data) must end with a semicolon (;).
 ```sas
@@ -160,7 +160,7 @@ Example : SAS keywords (DATA, PROC) are not case sensitive
 ```
 5) A delimited comment begins with a forward slash-asterisk (/*) and ends with an asterisk-forward slash (*/). All text within the delimiters is ignored by SAS.
 
-II. Rules for SAS names
+__II. Rules for SAS names__
 
 1) All names must contain between 1 and 32 characters.
 
@@ -168,7 +168,7 @@ II. Rules for SAS names
 
 3) SAS names are not case sensitive, that is, they can be entered in lowercase, uppercase, or a mixture of the two. (SAS is only case sensitive within quotation marks.)
 
-III. Rules for SAS variables  
+__III. Rules for SAS variables__
 
 If the variable in the INPUT statement is followed by a dollar sign ($), SAS assumes this is a character variable. Otherwise, the variable is considered as a numeric variable.  
 
@@ -370,56 +370,56 @@ Marketing analytics is used across industries so the following projects are not 
 
  Here is a list of common projects in which SAS is used in the banks and other finance companies.  
 
- 1) __Risk Management_ : SAS is used in banks to manage different types of risks like credit risk, market risk etc.
+ 1) __Risk Management__ : SAS is used in banks to manage different types of risks like credit risk, market risk etc.
     
- 2) __Fraud Detection_ : SAS helps banks detect and stop fraud in transactions by looking for suspicious patterns.
+ 2) __Fraud Detection__ : SAS helps banks detect and stop fraud in transactions by looking for suspicious patterns.
 
- 3) __Credit Scoring and Underwriting_ : SAS helps banks decide who to lend money to by checking how reliable borrowers are.
+ 3) __Credit Scoring and Underwriting__ : SAS helps banks decide who to lend money to by checking how reliable borrowers are.
 
- 4) __Customer Analytics_ : SAS helps banks understand what customers like and need so that they can offer better services.
+ 4) __Customer Analytics__ : SAS helps banks understand what customers like and need so that they can offer better services.
 
- 5) _Anti-Money Laundering (AML)_ : SAS helps banks find transactions that might be connected to illegal money activities.
+ 5) __Anti-Money Laundering (AML)__ : SAS helps banks find transactions that might be connected to illegal money activities.
 
 
-SAS Projects in Healthcare and Life Sciences
+__SAS Projects in Healthcare and Life Sciences__
 
 Here are some common projects in which SAS is used in the healthcare and life sciences companies.  
 
-1) Clinical Trials and Drug Development : SAS is used in analyzing clinical trials data. It helps the pharmaceutical companies in regulatory compliance.
+1) __Clinical Trials and Drug Development__ : SAS is used in analyzing clinical trials data. It helps the pharmaceutical companies in regulatory compliance.
 
-2) Pharmacovigilance and Drug Safety : SAS monitors adverse events and drug safety, identifying potential medication risks.
+2) __Pharmacovigilance and Drug Safety__ : SAS monitors adverse events and drug safety, identifying potential medication risks.
  
-3) Survival Analysis : SAS can be used for survival analysis. It analyzes the time it takes for an event of interest to occur such as time to death.
+3) __Survival Analysis__ : SAS can be used for survival analysis. It analyzes the time it takes for an event of interest to occur such as time to death.
  
-4) Healthcare Analytics : SAS analyzes health records and is used for identifying disease trends and patient management.
+4) __Healthcare Analytics__ : SAS analyzes health records and is used for identifying disease trends and patient management.
 
 
-SAS Projects in Insurance
+__SAS Projects in Insurance__
 
 Following are some common projects in which SAS is used in the insurance companies.  
 
-1) Actuarial Analysis : SAS is used in actuarial departments to model and analyze insurance risks, calculate reserves and premium rates.
+1) __Actuarial Analysis__ : SAS is used in actuarial departments to model and analyze insurance risks, calculate reserves and premium rates.
 
-2) Risk Management : SAS helps insurance companies in managing and assessing various types of risks such as underwriting risk, investment risk and operational risk.
+2) __Risk Management__ : SAS helps insurance companies in managing and assessing various types of risks such as underwriting risk, investment risk and operational risk.
 
-3) Claims Analytics : SAS can be used to analyze claims data to identify patterns and trends in claims. It can also be used to measure claims severity and detect fraudulent claims.
+3) __Claims Analytics__ : SAS can be used to analyze claims data to identify patterns and trends in claims. It can also be used to measure claims severity and detect fraudulent claims.
 
-4) Underwriting and Pricing : SAS is used by the underwriting team to measure risk and calculate insurance premium rates accordingly.
+4) __Underwriting and Pricing__ : SAS is used by the underwriting team to measure risk and calculate insurance premium rates accordingly.
  
-5) Policyholder Behavior Analysis : SAS is used to analyze policyholder behavior such as renewal rates and lapse rates to understand customer preferences.  
+5) __Policyholder Behavior Analysis__ : SAS is used to analyze policyholder behavior such as renewal rates and lapse rates to understand customer preferences.  
 
 
-SAS Projects in Telecommunication
+__SAS Projects in Telecommunication__
 
 Here is a list of common projects in which SAS is used in the telecom companies.  
 
-1) Network Performance Analysis : SAS is used to analyze network data, such as call records, network logs and performance metrics. It helps to improve overall network performance.  
+1) __Network Performance Analysis__ : SAS is used to analyze network data, such as call records, network logs and performance metrics. It helps to improve overall network performance.  
 
-2) Usage Analytics : SAS can be used to analyze customer usage data to understand data consumption patterns, identify high usage customers and offer personalized data plans.  
+2) __Usage Analytics__ : SAS can be used to analyze customer usage data to understand data consumption patterns, identify high usage customers and offer personalized data plans.  
 
-3) Internet of Things (IoT) Analytics : SAS can be used to analyze data from IoT devices and sensors.  
+3) __Internet of Things (IoT) Analytics__ : SAS can be used to analyze data from IoT devices and sensors.  
 
-4) Network Traffic Analysis : SAS can be used to analyze network traffic patterns to understand user behavior, identify peak usage times.  
+4) __Network Traffic Analysis__ : SAS can be used to analyze network traffic patterns to understand user behavior, identify peak usage times.  
 
 
 
