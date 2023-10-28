@@ -452,6 +452,10 @@ The following is a list of productivity boosting SAS keyboard shortcuts. It woul
 
 5) Close the Keys window.  
 
+# How to Import Data
+
+### HOW TO USE PROC IMPORT TO IMPORT DATA INTO SAS
+
 
 
 
