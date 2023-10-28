@@ -343,8 +343,84 @@ After combining the datasets, Dataset1 now has 6 observations. It originally had
  NOTE: The data set WORK.DATASET1 has 6 observations and 4 variables.
 ```
 
+# APPLICATIONS OF SAS
 
+This tutorial explains how SAS application is used in various industries. It includes several real-world use cases of different domains.  
+
+SAS Projects in Marketing
+
+Marketing analytics is used across industries so the following projects are not specific to a particular industry.  
+
+1) Customer Segmentation : SAS can be used for dividing customers into groups for targeted marketing.  
+
+2) Customer Attrition Analysis : SAS predicts customers likely to leave to retain it.  
+
+3) Market Basket Analysis : SAS can be used in finding related products for cross-selling.  
+
+4) Marketing Mix Modeling : SAS helps in analyzing the impact of advertising and promotions on sales.  
+
+5) Campaign Optimization : SAS can be used to improve marketing strategies by analyzing campaign data.  
+
+6) Pricing Analytics : SAS is used to analyze pricing data and optimize pricing strategies.  
+
+7) Customer Lifetime Value (CLV) Analysis : SAS helps calculate the CLV for individual customers. It is used to identify high value customers.
+
+
+ SAS Projects in Banking and Finance
+
+ Here is a list of common projects in which SAS is used in the banks and other finance companies.  
+
+ 1) Risk Management : SAS is used in banks to manage different types of risks like credit risk, market risk etc.
+    
+ 2) Fraud Detection : SAS helps banks detect and stop fraud in transactions by looking for suspicious patterns.
+
+ 3) Credit Scoring and Underwriting : SAS helps banks decide who to lend money to by checking how reliable borrowers are.
+
+ 4) Customer Analytics : SAS helps banks understand what customers like and need so that they can offer better services.
+
+ 5) Anti-Money Laundering (AML) : SAS helps banks find transactions that might be connected to illegal money activities.
+
+
+SAS Projects in Healthcare and Life Sciences
+
+Here are some common projects in which SAS is used in the healthcare and life sciences companies.  
+
+1) Clinical Trials and Drug Development : SAS is used in analyzing clinical trials data. It helps the pharmaceutical companies in regulatory compliance.
+
+2) Pharmacovigilance and Drug Safety : SAS monitors adverse events and drug safety, identifying potential medication risks.
  
+3) Survival Analysis : SAS can be used for survival analysis. It analyzes the time it takes for an event of interest to occur such as time to death.
+ 
+4) Healthcare Analytics : SAS analyzes health records and is used for identifying disease trends and patient management.
+
+
+SAS Projects in Insurance
+
+Following are some common projects in which SAS is used in the insurance companies.  
+
+1) Actuarial Analysis : SAS is used in actuarial departments to model and analyze insurance risks, calculate reserves and premium rates.
+
+2) Risk Management : SAS helps insurance companies in managing and assessing various types of risks such as underwriting risk, investment risk and operational risk.
+
+3) Claims Analytics : SAS can be used to analyze claims data to identify patterns and trends in claims. It can also be used to measure claims severity and detect fraudulent claims.
+
+4) Underwriting and Pricing : SAS is used by the underwriting team to measure risk and calculate insurance premium rates accordingly.
+ 
+5)Policyholder Behavior Analysis : SAS is used to analyze policyholder behavior such as renewal rates and lapse rates to understand customer preferences.  
+
+
+SAS Projects in Telecommunication
+
+Here is a list of common projects in which SAS is used in the telecom companies.  
+
+1) Network Performance Analysis : SAS is used to analyze network data, such as call records, network logs and performance metrics. It helps to improve overall network performance.  
+
+2) Usage Analytics : SAS can be used to analyze customer usage data to understand data consumption patterns, identify high usage customers and offer personalized data plans.  
+
+3) Internet of Things (IoT) Analytics : SAS can be used to analyze data from IoT devices and sensors.  
+
+4) Network Traffic Analysis : SAS can be used to analyze network traffic patterns to understand user behavior, identify peak usage times.  
+
 
 
 
