@@ -1337,7 +1337,378 @@ infile sample dsd;
 INPUT age gender $ dept obs1 obs2 obs3;
 run;
 ```
-  
+
+### SAS : READ CHARACTER VARIABLE OF VARYING LENGTH
+
+This tutorial demonstrates how we can read or import data with a character variable of varying length. We generally encounter this situation when we have company names or first and last names of a person in our dataset.  
+
+#### Example I
+
+In the following example, the variable "Name" has varying length i.e. not all observations of this variable has similar length.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9894e668-608e-4333-80db-b4cf4b7e98c4)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1a06cf68-96c1-4dcf-97d7-8376e6232e4a)  
+
+#### Method I : Use COLON Modifier
+
+We can use colon modifier : to tell SAS to read variable "Name" until there is a space or other delimiter. The  $30. defines the variable as a character variable having max length 30.  
+
+```sas
+data example1;
+input ID Name :$30. Score;
+cards;
+1 DeepanshuBhalla 22
+2 AttaPat 21
+3 XonxiangnamSamnuelnarayan 33
+;
+proc print noobs;
+run;
+```
+
+The colon modifier is also used to read numeric data that contains special characters such as comma For example 1,000.
+Suppose you want to read a variable which holds numeric values with comma in thousands place (or thousand separator).  
+
+```sas
+data ex2;
+input ID Name:$30. Score fee:$10.;
+cards;
+1 DeepanshuBhalla 22 1,000
+2 AttaPat 21 2,000
+3 XonxiangnamSamnuelnarayan 33 3,000
+;
+run;
+```
+
+In the above program, we have used colon modifier to load "fee" variable and used $ sign to read this variable. It is stored as a character variable.If you would not use $ sign for the same, it will return missing values. See the program below how to store it as a numeric variable.  
+
+```sas
+data ex2;
+input ID Name:$30. Score fee comma5. ;
+cards;
+1 DeepanshuBhalla 22 1,000
+2 AttaPat 21 2,000
+3 XonxiangnamSamnuelnarayan 33 3,000
+;
+run;
+```
+
+comma5. informat removes comma and store it as a numeric variable. 5 refers to width of the input field. To read bigger number like 3,000,000, you can use comma10.  
+
+#### Method II : Use LENGTH statement prior to INPUT Statement
+
+In the following program, we use a length statement prior to input statement to adjust varying length of a variable. In this case, the variable Name would be read first. Use only $ instead of $30. after "Name" in INPUT statement.  
+
+```sas
+data example2;
+length Name $30.;
+input ID Name $ Score;
+cards;
+1 DeepanshuBhalla 22
+2 AttaPat 21
+3 XonxiangnamSamnuelnarayan 33
+;
+proc print noobs;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2c192540-1ca4-4a36-a953-1f2c3c14d612)  
+
+It changes the order of variables as the variable Name would be read first.   
+
+#### Method III : Use Ampersand (&) and Put Extra Space
+
+We can use ampersand (&) to tell SAS to read the variable until there are two or more spaces as a delimeter. This technique is very useful when the variable contains two or more words. For example, if we have observation like "Deepanshu Bhalla" rather than "DeepanshuBhalla".  
+
+__Note : 2 spaces before 22, 21 and 33__
+
+```sas
+data example1;
+input ID Name & $30. Score;
+cards;
+1 DeepanshuBhalla  22
+2 AttaPat  21
+3 XonxiangnamSamnuelnarayan  33
+;
+proc print noobs;
+run;
+```
+
+#### Example II : When a variable contains more than 1 word
+
+In this case, we have a space between First Name and Last Name and we want to store both the first and last names in a single variable.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8c550218-0599-43c7-90dc-cb9ff7ab1113)  
+
+In this case, the following methods do not work.
+
+Colon modifier (:) does not work for a variable having multiple words  
+
+LENGTH Statement prior to INPUT Statement does not work here.  
+
+__Use Ampersand (&) and add ADDITIONAL space works.__
+
+```sas
+data example1;
+input ID Name & $30. Score;
+cards;
+1 Deepanshu Bhalla  22
+2 Atta Pat  21
+3 Xonxiangnam Samnuelnarayan  33
+;
+proc print noobs;
+run;
+```
+
+#### This trick works in reading data from external file.
+
+```sas
+data temp;
+infile "C:\Users\Deepanshu\Desktop\file1.txt";
+input ID Name & $30. Score;
+proc print noobs;
+run;
+```
+
+# How to Export Data
+
+## SAS PROC EXPORT: LEARN WITH EXAMPLES
+
+PROC EXPORT is used to export SAS datasets to external files in various different formats.  
+
+### PROC EXPORT Syntax
+
+Below is the syntax for PROC EXPORT:  
+
+```sas
+proc export data=sas-dataset-name
+  outfile='/path/to/output/filename.csv'
+  dbms=csv
+  replace;
+run;
+```
+
+__Explanation of PROC EXPORT Syntax__ 
+
+data=sas-dataset-name: Name of SAS dataset you want to export.  
+
+outfile: File location where you want to save file.  
+
+dbms: File format to use for exported file.  
+
+replace: Replaces the exported file if it already exists. It is optional argument.  
+
+
+You can use the following DBMS options to export data to different file formats:
+
+Specify dbms=XLSX to export data as an Excel file.  
+
+Specify dbms=CSV to export data as a CSV file.  
+
+Specify dbms=TAB to export data as a Text file.  
+
+Specify dbms=SAV to export data as a SPSS file.  
+
+Specify dbms=DTA to export data as a Stata file.  
+
+Specify dbms=ACCESSCS to export data as a MS Access file.  
+
+## How to export SAS Data to Excel File
+
+The following code shows how to use PROC EXPORT to export the SAS dataset sashelp.class to an Excel file named class.xlsx located at '/home/deepanshu88us0/Files/'. It specifies the file format as XLSX.  
+
+```sas
+proc export data=sashelp.class
+  outfile='/home/deepanshu88us0/Files/class.xlsx'
+  dbms=xlsx
+  replace;
+  sheet="Students";
+run;
+```
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/59750ecc-e5d1-495a-83ac-5855d92e4c17)  
+
+In the sheet argument, we specified the name of the sheet within the Excel file as "Students". It is visible in the image above.  
+
+## How to export SAS Data to CSV File
+
+Here we are exporting the SAS dataset sashelp.class to a CSV file named class.csv.  
+
+```sas
+proc export data=sashelp.class
+  outfile='/home/deepanshu88us0/Files/class.csv'
+  dbms=csv
+  replace;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/15339fdf-d842-472d-8f9b-c6f1d8f5a66f)  
+
+## How to export SAS Data to Text File
+
+In the code below, we are exporting the SAS dataset sashelp.class to a Tab Delimited file named class.txt.  
+
+```sas
+proc export data=sashelp.class
+  outfile='/home/deepanshu88us0/Files/class.txt'
+  dbms=tab
+  replace;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c2f55149-91fc-49d2-8fac-0875922695c9)  
+
+To exclude headers in the exported file, we can use the argument PUTNAMES=NO in PROC EXPORT.  
+
+```sas
+proc export data=sashelp.class
+  outfile='/home/deepanshu88us0/Files/class.txt'
+  dbms=tab
+  replace;
+  putnames=no;  
+run;
+```
+
+## How to export SAS Data to SPSS File
+
+To export a SAS dataset to a SPSS file, we need to specify the SAV file format, which is the file format used by SPSS software.  
+
+```sas
+proc export data=sashelp.class
+  outfile='/home/deepanshu88us0/Files/class.sav'
+  dbms=sav
+  replace;
+run;
+```
+
+## HOW TO EXPORT SAS DATA TO CSV WITH EXAMPLES
+
+In this article, we will demonstrate how to export data from SAS to CSV file, along with examples.  
+
+PROC EXPORT is used to export data from SAS to a CSV (Comma-Separated Values) file. PROC EXPORT makes exporting data simple and provides various options that give you flexibility and control over how your SAS data is exported.  
+
+### Syntax of PROC EXPORT for CSV Files
+
+When exporting data to CSV files using PROC EXPORT, the following syntax can be used:  
+
+```sas
+proc export data=sas-dataset-name
+  outfile='/path/to/output/filename.csv'
+  dbms=csv
+  replace;
+run;
+```
+
+__Explanation of PROC EXPORT Syntax__
+
+data=sas-dataset-name: SAS dataset you want to export.  
+
+outfile: Specifies the desired location and name of the output CSV file.  
+
+dbms=csv: Indicates that the destination file format should be CSV.  
+
+replace: Replaces the CSV file if it already exists. It is optional argument.  
+
+### Sample SAS Dataset
+
+Let's create a sample SAS dataset that will be used to export it to CSV File.  
+
+```sas
+data cars;
+  input Make$ Model$ MPG;
+  datalines;
+Toyota Innova 23
+Honda Civic 36
+Ford Mustang 25
+;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/591214c2-4ade-4eee-8d9e-9dbf5458a502)  
+
+```sas
+proc export data=cars
+  outfile='/home/deepanshu88us0/Files/cars.csv'
+  dbms=csv
+  replace;
+run;
+```
+
+Make sure to change the location of the output CSV file in outfile= option in the above code.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7e73dcbe-5d5a-434f-bb13-0296c6cc61f9)  
+
+## How to change Delimiter of CSV File
+
+To change the default separator when using PROC EXPORT, you can use the DELIMITER= statement. Alternatively, you can use the DLM= statement, which is an acronym of DELIMITER=. The delimiter should be enclosed within quotation marks. In the code below, we are using semicolon (;) as a delimiter.  
+
+```sas
+proc export data=cars
+  outfile='/home/deepanshu88us0/Files/cars.csv'
+  dbms=csv
+  replace;
+  delimiter=";";
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/df11c113-1a59-486d-812f-2fd30be5c0ea)  
+
+## How to Exclude Header from CSV File
+
+When exporting data to a CSV file using PROC EXPORT, you can use the PUTNAMES= option to control the inclusion of column headers (variable names). By default, PUTNAMES=YES includes the header in the CSV file. However, if you want to exclude the column names, you can use PUTNAMES=NO.  
+
+```sas
+proc export data=cars
+  outfile='/home/deepanshu88us0/Files/cars.csv'
+  dbms=csv
+  replace;
+  putnames=NO;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/0e1c64c8-fbd1-48eb-81c8-7d3101587e19)  
+
+## How to Export a Subset of Data to a CSV File
+
+We are using cars dataset from SASHELP library. The WHERE= option is used to filter data. Here we are selecting only Audi cars.  
+
+```sas
+proc export data=sashelp.cars (where=(Make='Audi'))
+     outfile='/home/deepanshu88us0/Files/cars.csv'
+     dbms=csv 
+     replace;
+run;
+```
+
+## How to Include Variable Labels in a CSV File
+
+By default, when using PROC EXPORT, the exported CSV file includes the variable names rather than their labels. If you prefer to export the variable labels instead, you can use the LABEL option. This option enables you to create a CSV file where the variable labels are used instead of the variable names.  
+
+```sas
+proc export data=sashelp.cars
+  outfile='/home/deepanshu88us0/Files/cars.csv'
+  dbms=csv
+  label
+  replace;
+run;
+```
+
+If you observe the CSV file, the variable label "Engine Size (L)" was included instead of "EngineSize" in the output CSV file.  
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
 
 
 
