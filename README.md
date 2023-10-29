@@ -1694,6 +1694,1588 @@ run;
 
 If you observe the CSV file, the variable label "Engine Size (L)" was included instead of "EngineSize" in the output CSV file.  
 
+## HOW TO EXPORT SAS DATA TO EXCEL (WITH EXAMPLES)
+
+In this article, we will show how to export data from SAS to Excel file, along with examples.  
+
+PROC EXPORT is used to export data from SAS to an Excel file.  
+
+### Syntax of PROC EXPORT for Excel Files
+
+The following code exports data from SAS to Excel using PROC EXPORT.  
+
+```sas
+proc export data=sas-dataset-name
+  outfile='/path/to/output/filename.xlsx'
+  dbms=xlsx
+  replace;
+  sheet="My Sheet";  
+run;
+```
+
+__Explanation of PROC EXPORT Syntax__
+
+data=sas-dataset-name: SAS dataset you want to export.  
+
+outfile: Specifies the desired location and name of the output Excel file.  
+
+dbms=xlsx: Indicates that the destination file format is XLSX.  
+
+replace: Replaces the Excel file if it already exists. It is optional argument.  
+
+sheet: Sheet name to be used in the exported Excel file. It is optional argument.  
+
+### Sample SAS Dataset
+
+Let's create a sample SAS dataset that will be used to export it to Excel File.  
+
+```sas
+data data1;
+  input Company$ Origin$ Sales;
+  datalines;
+Unilever UK 453
+Tesla USA 636
+Amazon USA 829
+;
+run;
+```
+
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b8c24860-c2ad-49eb-b4fa-3e65a9c1a610)  
+
+The following code exports the dataset data1 to an Excel file named "companies.xlsx" with the sheet name "data1".  
+
+```sas
+proc export data=data1
+  outfile='/home/deepanshu88us0/Files/companies.xlsx'
+  dbms=xlsx
+  replace;
+  sheet="data1";
+run;
+```
+
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1a411d25-5e19-49a5-aee0-328011574beb)  
+
+## How to Export Multiple SAS Datasets to Excel
+
+The following code exports two datasets to two different sheets in the same excel file. We are using PROC EXPORT twice and specifing both the datasets and sheet names in the data= and sheet= options.  
+
+```sas
+data data1;
+  input Company$ Origin$ Sales;
+  datalines;
+Unilever UK 453
+Tesla USA 636
+Amazon USA 829
+;
+run;
+
+data data2;
+  input Company$ Industry$;
+  datalines;
+Unilever FMCG
+Tesla Auto
+Amazon Tech
+;
+run;
+
+proc export data=data1
+  outfile='/home/deepanshu88us0/Files/companies.xlsx'
+  dbms=xlsx
+  replace;
+  sheet="data1";
+run;
+
+proc export data=data2
+  outfile='/home/deepanshu88us0/Files/companies.xlsx'
+  dbms=xlsx
+  replace;
+  sheet="data2";
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/078ccff3-a860-4652-a6ee-c9ac5168213d)   
+
+## SAS Macro to Export Multiple SAS Datasets to an Excel File  
+
+The following macro exports multiple SAS datasets to an Excel file. Each dataset is exported to a separate sheet in the Excel file, with the sheet name being the same as the dataset name.  
+
+```sas
+%macro export_to_excel(filepath, data_names);
+    %let data_count = %sysfunc(countw(&data_names));
+    %do i = 1 %to &data_count;
+        %let data_name = %scan(&data_names, &i);
+        proc export data=&&data_name
+            outfile= &filepath.
+            dbms=xlsx
+            replace;
+            sheet="&&data_name";
+        run;
+    %end;
+%mend export_to_excel;
+
+%export_to_excel("/home/deepanshu88us0/Files/companyData.xlsx", data1 data2);
+```
+
+filepath The full path to the output Excel file.  
+
+data_names A space-separated list of dataset names to export.  
+
+# Data Analysis with SAS
+
+## SAS : CREATING OR MODIFYING A VARIABLE
+
+This tutorial demonstrates how to create or modify a variable. It is a common data requirement to create a new variable based on the existing variable. For example, you have existing prices and you need to adjust inflation rate and create new price structure. To achieve it, you need to create a new variable for new prices. Sometimes, you may be asked not to create new variables for changes but adjust the logic in the existing variables.  
+
+### Let's create a sample dataset
+
+In the code below, we are creating a dataset named Example1 which is stored on WORK (temporary) library. In this dataset, there would be a variable called OldPrice which contains a value 10. The RUN statement is used to close the dataset program. Press F3 or click on submit button to make the code run.  
+
+```sas
+DATA Example1;
+OldPrice=10;
+RUN;
+```
+
+### I. Creating a numeric variable
+
+You create variables using the form:  variable = expression;  
+
+Suppose you are asked to create a new variable NewPrice, in the existing SAS data set Example1. Both variables are numeric. The variable NewPrice is twice of OldPrice.  
+
+```sas
+DATA Example1;
+SET Example1;
+NewPrice=2*OldPrice;
+RUN;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8fbd34c3-e142-4f20-84a2-bb2b3c129b27)  
+
+If you are asked to store a new variable NewPrice on a new dataset, you can create it using DATA statement.  
+
+```sas
+DATA Readin;
+SET Example1;
+NewPrice=2*OldPrice;
+RUN;
+```
+
+In this case, the dataset READIN was created.  
+
+### II. Creating a character variable
+
+In the same dataset Example1, let's create a character variable say Type. The character value for set is set 'Good'.  
+
+The quote marks needs to be entered around the character variable.  
+
+```sas
+DATA Example1;
+SET Example1;
+Type = 'Good';
+RUN;
+```
+
+Since Type is a character variable, it should in quotes. It can be either single or double quotes.  
+
+### III. Creating or Modifying a variable
+
+Suppose the value of OldPrice is increased by 5 units and you need to calculate the relative change in price. In this case, we are modifying the existing variable OldPrice so we will add 5 to OldPrice. later we calculate the percentage change between old and new price.  
+
+```sas
+DATA Readin;
+SET Example1;
+OldPrice=5 + OldPrice;
+NewPrice=OldPrice*2;
+Change= ((NewPrice-OldPrice)/ OldPrice);
+Format Change Percent10.0;
+RUN;
+```
+
+The FORMAT statement is used to display the change value in percentage format. In this case, we are creating a new dataset as well.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/948d3826-3c93-4db4-b3dd-358d6bb52104)  
+
+__Important Note__
+
+It's a good practice to create a new dataset when you modify the existing variable. It is because input data should not be altered or changed to have a backup of the dataset. In many times, a small mistake of programmer lead to data loss which can have a high-risk consequence.  
+
+## DROPPING VARIABLES FROM A DATA SET IN SAS
+
+This post explains how to drop variables from a dataset in SAS. It includes various tricks to delete variables from data.In SAS, there are two ways to handle dropping variables :  
+
+DROP = data set option  
+
+DROP statement
+
+Let's start with creating a data set :  
+
+```sas
+DATA outdata; 
+   INPUT age gender $ dept obs1 obs2 obs3; 
+   DATALINES; 
+1 F 3 17 6 24
+1 M 1 19 25 7
+3 M 4 24 10 20
+3 F 2 19 23 8
+2 F 1 14 23 12
+2 M 5 1 23 9
+3 M 1 8 21 7
+1 F 1 7 7 14
+3 F 2 2 1 22
+1 M 5 20 5 2
+3 M 4 21 8 18
+1 M 4 7 9 25
+2 F 5 10 17 20
+3 F 4 21 25 7
+3 F 3 9 9 5
+3 M 3 7 21 25
+2 F 1 1 22 13
+2 F 5 20 22 5
+;
+proc print;
+run;
+```
+
+The main differences between the two are as follows :  
+
+### I.  Scenario : Create a new variable based on existing data and then drops the irrelevant variables
+
+By using the DROP statement, we can command SAS to drop variables only at completion of the DATA step.  
+
+```sas
+data readin;
+set outdata;
+totalsum = sum(obs1,obs2,obs3);
+drop obs1 obs2 obs3;
+run;
+```
+
+In the above example, we simply ask SAS sum up all the values in variables obs1,obs2 and obs3 to produce a new variable totalsum and then drop the old variables obs1,obs2 and obs3.  
+
+__Consequence of using DROP = Option__
+
+```sas
+data readin;
+set outdata (drop = obs1 obs2 obs3);
+totalsum = sum(obs1,obs2,obs3);
+run;
+```
+
+The variables obs1,obs2 and obs3 are not available for use after data set outdata has been copied into the new data set readin . Hence totalsum would contain missing values only.  
+
+### II. DROP statement can be used anywhere in DATA steps whereas DROP = option must follow the SET statement.
+
+DROP statement
+
+```sas
+data readin;
+set outdata;
+if gender = 'F';
+drop age;
+run;
+```
+
+OR
+
+```sas
+data readin;
+set outdata;
+drop age;
+if gender = 'F';
+run;
+```
+
+DROP = option  
+
+```sas
+data readin;
+set outdata (drop = age);
+if  gender = 'F';
+run;
+```
+
+### III. Scenario : Dropping variables while printing
+
+DROP statement can be used in DATA steps only whereas DROP = option can be used in DATA steps and PROC steps (for printing)  
+
+```sas
+proc print data = outdata (drop = age);
+where gender = 'F';
+run;
+```
+
+## SAS: HOW TO RENAME VARIABLES
+
+This tutorial explains how to rename variables in SAS using the RENAME option, along with examples.  
+
+The syntax of RENAME option is as follows :  
+
+```sas
+RENAME=(variable1=new_variable1 variable2=new_variable2 ...)
+```
+
+### Rename One Variable in SAS
+
+The following code renames the variable "petallength" to "petal_length" in the dataset "sashelp.iris" and create a new dataset called "mydata" with the renamed variable.  
+
+```sas
+data mydata (rename=(petallength = petal_length));
+set sashelp.iris;
+run;
+```
+
+To check if a variable has been renamed correctly, we can use PROC CONTENTS to see the variable names of a dataset.  
+
+```sas
+proc contents data=sashelp.iris SHORT;
+proc contents data=mydata SHORT;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/41d6541a-6a3a-4c3e-a601-500a12672f0f)  
+
+### When should the RENAME option be used - DATA or SET Statement?
+
+The RENAME option can be used with either the DATA statement or the SET statement, depending on your specific needs.  
+
+RENAME option in the DATA statement: When you use the RENAME option in the DATA statement, you are renaming variables in the output dataset.  
+
+RENAME option in the SET statement: When you use the RENAME option in the SET statement, you are renaming variables while reading data from an input dataset.  
+
+
+### Incorrect Code
+
+The following code returns missing values for a new variable "newvar" because "petal_length" was not renamed before creating the new variable "newvar". Hence rename= option should be used in the SET statement instead of DATA statement here.  
+
+```sas
+data mydata (rename=(petallength = petal_length));
+set sashelp.iris;
+newvar = petal_length * 10;
+run;
+```
+
+### Correct Code
+
+```sas
+data mydata;
+set sashelp.iris (rename=(petallength = petal_length));
+newvar = petal_length * 10;
+run;
+```
+
+### Rename Multiple Variables in SAS
+
+The following code renames the variables "petallength" to "petal_length" and "sepallength" to "sepal_length" while reading the data from the "sashelp.iris" dataset.  
+
+```sas
+data mydata;
+set sashelp.iris (rename=(petallength = petal_length sepallength=sepal_length));
+run;
+
+proc contents data=sashelp.iris SHORT;
+proc contents data=mydata SHORT;
+```
+
+### Rename All Variables in SAS
+
+The following code renames all variables in the "sashelp.iris" dataset by adding the suffix "_1" to their original names.  
+
+```sas
+proc sql noprint;
+select cats(name,"=",name,"_1") 
+into :rename_vars separated by " "
+from dictionary.columns
+where libname="SASHELP" 
+and memname="IRIS";
+quit; 
+
+%PUT &rename_vars.;
+
+data mydata;
+set sashelp.iris (rename=(&rename_vars.));
+run;
+```
+
+The above code uses the table dictionary.columns which contains information about the column names of all datasets in the current SAS session.  
+
+By using the WHERE statement, we filtered this table and selected only column names in the "sashelp.iris" dataset and stored them in the macro variable "rename_vars"  
+
+The %PUT statement is used to display the contents of the macro variable "rename_vars" in the log. It helps you to check what the macro variable contains.  
+
+In the subsequent DATA step, the SET statement reads data from the "sashelp.iris" dataset and applies the variable rename assignments specified in the macro variable "rename_vars"  
+
+The resulting dataset "mydata" will contain the renamed variables with suffix "_1".  
+
+### Rename Variables based on a Pattern
+
+The following code renames only those variables which contain "Length" in their names using CONTAINS operator.
+
+```sas
+proc sql noprint;
+select cats(name,"=",name,"_1") 
+into :rename_vars separated by " "
+from dictionary.columns
+where libname="SASHELP" 
+and memname="IRIS"
+and name contains 'Length';
+quit; 
+
+%PUT &rename_vars.;
+
+data mydata;
+set sashelp.iris (rename=(&rename_vars.));
+run;
+```
+
+## SAS : IF-THEN-ELSE STATEMENTS
+
+This tutorial explains how to use IF THEN ELSE statements in SAS, with examples.  
+
+Task 1 : Suppose you are asked to exclude some of the observations in a SAS data set from an analysis that you are generating. For example, you want to exclude all IDs whose values are greater than 100.  
+
+To accomplish this task, we can use IF, IF-THEN DELETE.  
+
+### Comparison Operators
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/27a532bd-863c-42cd-b8e9-801b3c964aa8)  
+
+### 1. IF statement
+
+IF (condition is true) => It means subsetting a dataset.  
+
+```sas
+Data readin;
+Input ID Q1-Q3;
+cards;
+85 1 2 3
+90 3 4 6
+95 5 5 6
+100 6 6 4
+105 5 5 6
+110 6 6 5
+;
+Data readin1;
+Set readin;
+IF ID LE 100;
+run;
+```
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/cf509bd0-de89-4b26-8f6b-ebf495576dfa)  
+
+IF ID LE 100 => This would tell SAS to retain only those IDs whose values are less than or equal to 100. In other words, you are removing IDs whose values are greater than or equal to 100.  
+
+This can also be done using the IF-THEN DELETE statement.  
+
+### 2. IF-THEN DELETE
+
+IF (condition is true) THEN (delete the selected observations);  
+
+```sas
+Data readin;
+Input ID Q1-Q3;
+cards;
+85 1 2 3
+90 3 4 6
+95 5 5 6
+100 6 6 4
+105 5 5 6
+110 6 6 5
+;
+Data readin1;
+Set readin;
+IF ID GT 100 THEN DELETE;
+run;
+```
+
+IF ID GT 100 THEN DELETE => This would tell SAS to remove all the IDs whose values are greater than 100.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/96c0e87f-cb35-47e3-a86f-575479f720a1)  
+
+Task 2: Suppose you want to set a tag on all the IDs. The condition is :  
+
+If value of ID is less than or equal to 100 set "Old" tag otherwise set "New" tag.
+
+IF (condition is true) THEN (perform this action);  
+
+ELSE (perform the action that is set when condition is false);  
+
+```sas
+Data readin;
+Input ID Q1-Q3;
+cards;
+85 1 2 3
+90 3 4 6
+95 5 5 6
+100 6 6 4
+105 5 5 6
+110 6 6 5
+;
+Data readin1;
+Set readin;
+IF ID LE 100 THEN TAG ="Old";
+ELSE TAG ="New";
+run;
+```
+
+___Syntax of IF-THEN-ELSE :___
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/34272ffd-8a55-4e99-8990-5b3ec139f110)  
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/89e54ee7-014a-427f-9d38-694128f6dfb2)  
+
+Task 3: Suppose you are asked to update the TAG column.  
+
+The conditions for tagging are as follows :  
+
+If value of ID is less than 75 then TAG = "Old"  
+
+If value of ID is greater than or equal to 75 and less than 100 then TAG = "New"  
+
+If value of ID is greater than or equal to 100 then TAG = "Unchecked"
+
+IF (condition is true) THEN (perform this action);  
+
+ELSE IF (perform the action when second condition is true);  
+
+ELSE IF (perform the action when third condition is true);  
+
+```sas
+Data readin;
+Input ID Q1-Q3;
+cards;
+70 1 2 3
+45 1 2 3
+85 1 2 3
+25 1 2 3
+90 3 4 6
+95 5 5 6
+100 6 6 4
+105 5 5 6
+110 6 6 5
+;
+Data readin1;
+Set readin;
+length TAG $20;
+IF ID < 75 THEN TAG ="Old";
+ELSE IF 75 <= ID < 100 THEN TAG = "New"; 
+ELSE IF ID >= 100 THEN TAG ="Unchecked";
+run; 
+```
+
+__Syntax of IF-THEN-ELSE IF :__
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a0e7259b-368d-4b58-b042-5364fc731629)  
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/dce5788c-1ea6-4afa-bc75-75aefc1a8b54)  
+
+### LOGICAL OPERATORS
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/fede4fa8-5e28-4474-80e0-dfa1da9647e3)  
+
+Task 4: Suppose you want to generate an analysis for Q1 including only responses that are valid (non-missing) and less than 3.  
+
+```sas
+Data readin;
+Input ID Q1-Q3;
+cards;
+85 1 2 3
+90 . 4 6
+95 2 5 6
+100 6 6 4
+105 . 5 6
+110 6 6 5
+;
+Data readin1;
+Set readin;
+IF (Q1 LT 3) AND (Q1 NE .);
+run;
+```
+
+IF (Q1 LT 3) AND (Q1 NE .) => Since missing values are smaller than any other value, we need to give SAS an additional command to separate out missing values.   
+
+The output is shown below:  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/4a41cf21-aafb-4e11-b010-d301b3e5f7d6)  
+
+__Selecting Multiple Observations :__
+
+Suppose you want to set tag "Incorrect" to the specified IDs 1,5,45,76  
+
+For this case, the logical statement would look like any one of the following statements. It can be written in three ways shown below.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/63853d1a-db99-4037-93be-f0b46c378e66)  
+
+__IN Operator__
+
+IN operator is used to select multiple values of a variable. It is an awesome alternative to OR operator.  
+
+## SAS : WHERE STATEMENT AND DATASET OPTIONS
+
+The WHERE statement is an alternative to IF statement when it comes to subsetting a data set.  
+
+__Basic Data Subsetting__
+
+Syntax of WHERE statement :  
+```sas
+WHERE (condition is true) => It means subsetting a dataset.  
+```
+__Comparison Operators__
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/19faec4e-06d5-4767-8d42-fe0840fa2aa4)  
+
+Task1 : Suppose you want to select only section A students. You know the variable Section contains information for students' sections.  
+
+```sas
+data readin;
+input name $ Section $ Score;
+cards;
+Tom  A 84
+Raj  A 80
+Ram  B 71
+Atul A 77
+Priya B 45
+Sandy A 67
+Sam  A 57
+David B 39
+Wolf B 34
+Rahul A 95
+Sahul C 84
+Lahul C 44
+;
+run;
+
+data readin1;
+set readin;
+where Section EQ "A";
+run;
+```
+
+where section EQ "A" => This would tell SAS to select only section A values.  
+
+You can also write where section = "A". This statement serves the same purpose.  
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/22c0abab-5ce3-4c3b-b7e8-7819b78a3d67)  
+
+### LOGICAL OPERATORS
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b50cd306-0040-4c54-81d6-180e27d763f2)  
+
+Task2 : Suppose you want to select section A and B students. You know the variable Section contains information for students' sections.  
+
+```sas
+data readin;
+input name $ Section $ Score;
+cards;
+Tom  A 84
+Raj  A 80
+Ram  B 71
+Atul A 77
+Priya B 45
+Sandy A 67
+Sam  A 57
+David B 39
+Wolf B 34
+Rahul A 95
+Sahul C 84
+Lahul C 44
+;
+run;
+
+data readin1;
+set readin;
+where Section IN ("A" "B");
+run;
+```
+
+where section IN ("A" "B") => This would tell SAS to select section A and B values.  
+
+However, you can also write ...  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/21552f6d-ad08-4a26-a91e-1f7649edc00d)  
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ac7633eb-9c2f-4e36-95a0-e78c05c6dd4e)  
+
+### BETWEEN-AND Operator : Between Two Numbers
+
+Task 3 : Suppose you want to select scores whose values are greater than or equal to 50 and less than or equal to 75.  
+
+```sas
+data readin;
+input name $ Section $ Score;
+cards;
+Tom  A 84
+Raj  A 80
+Ram  B 71
+Atul A 77
+Priya B 45
+Sandy A 67
+Sam  A 57
+David B 39
+Wolf B 34
+Rahul A 95
+Sahul C 84
+Lahul C 44
+;
+run;
+
+data readin1;
+set readin;
+where Score between 50 and 75;
+run;
+```
+
+where Score between 50 and 75 => This would tell SAS to select values through 50 and 75 (not 51 to 74).  
+
+This can also be written like :  
+
+where Score GE 50 and Score LE 75;  
+
+### IS MISSING Operator : Selecting Missing Values
+
+Task 4 : Suppose you want to select only those observations in which students did not fill their section information.  
+
+The dataset is modified to include missing values in SECTION variable.  
+
+```sas
+data readin;
+input name $ Section $ Score;
+cards;
+Tom  A 84
+Raj  A 80
+Ram  B 71
+Atul . 77
+Priya . 45
+Sandy A 67
+Sam  A 57
+David B 39
+Wolf B 34
+Rahul . 95
+Sahul C 84
+Lahul C 44
+;
+run;
+
+data readin1;
+set readin;
+where Section is missing;
+run;
+```
+
+Where section is missing => This would tell SAS to select missing values for variable SECTION.  
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2ae3eaf4-0561-4593-be1a-8794ddcbced7)  
+
+### IS NOT MISSING Operator : Selecting Non-Missing Values
+
+Task 5 : Suppose you want to select only those observations in which students filled their section information.  
+
+```sas
+data readin;
+input name $ Section $ Score;
+cards;
+Tom  A 84
+Raj  A 80
+Ram  B 71
+Atul . 77
+Priya . 45
+Sandy A 67
+Sam  A 57
+David B 39
+Wolf B 34
+Rahul . 95
+Sahul C 84
+Lahul C 44
+;
+run;
+
+data readin1;
+set readin;
+where section is not missing;
+run;
+```
+
+Where section is not missing => This would tell SAS to select non-missing values.  
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/39aef8d9-3fd0-4064-818b-19ae860fd895)  
+
+The NOT operator can be used within WHERE statement in many ways :
+
+1. where section is missing and score is not missing;  
+
+2. where not (score in (34,44,84));  
+
+3. where not (Score between 50 and 75);  
+
+4. where NOT(Section EQ "A");
+
+### CONTAINS Operator : Searching specific character
+
+Task 6 : Suppose you want to select only those observations in which students' name contain 'hul'.  
+
+```sas
+data readin;
+input name $ Section $ Score;
+cards;
+Tom  A 84
+Raj  A 80
+Ram  B 71
+Atul . 77
+Priya . 45
+Sandy A 67
+Sam  A 57
+David B 39
+Wolf B 34
+Rahul . 95
+Sahul C 84
+Lahul C 44
+;
+run;
+
+data readin1;
+set readin;
+where name contains 'hul';
+run;
+```
+
+where name contains 'hul' => This would tell SAS to select observations having the values Rahul, Sahul and Lahul for the variable NAME.  
+
+Note : The CONTAINS operator is case sensitive.  
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d3473afb-bf70-4128-a8c3-962f1184542f)  
+
+Since the CONTAINS operator is case sensitive, where Name contains 'HUL' would not select any observation. The log for this statement is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/40e66d20-24b6-493d-b399-1e68054832db)  
+
+### LIKE Operator : Pattern Matching
+
+The LIKE operator selects observations by comparing the values of a character variable to a specified pattern. It is case sensitive.  
+
+Task7 : To select all students with a name that starts with the letter S.  
+
+There are two special characters available for specifying a pattern:  
+  
+1. percent sign (%) - Wildcard Character  
+ 
+2. underscore ( _ ) - Fill in the blanks
+
+```sas
+data readin;
+input name $ Section $ Score;
+cards;
+Tom  A 84
+Raj  A 80
+Ram  B 71
+Atul . 77
+Priya . 45
+Sandy A 67
+Sam  A 57
+David B 39
+Wolf B 34
+Rahul . 95
+Sahul C 84
+Lahul C 44
+Pahulk A 81
+;
+run;
+
+data readin1;
+set readin;
+where name like 'S%';
+run;
+```
+
+where name like 'S%';
+
+OR
+
+where name like 'Sa%';
+
+In this dataset, the above statements would produce the same result :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/0f3f03e8-fe51-47a0-b5ee-6f25eb13948d)  
+
+Examples :
+
+1. where name like '_am';  
+
+You can also write this statement like .....  
+
+where name like '%am';  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/564a6fc3-c49c-40e3-8bdd-705ee375bc42)  
+
+2.  where name like '_ahu_';  
+
+This would not select PAHULK from the variable NAME.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5e998ba9-9869-4dab-9a43-74763f8fe23a)  
+
+3. where name like '_ahu__';  
+
+This would select PAHULK as double underscore (__) is stated.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/93ededce-73bd-44ba-8e10-617ae8ab2c99)  
+
+### Sounds-like Operator : Selecting sound like characters
+
+Task8 : To select names that sound like 'Ram'.  
+
+```sas
+data readin;
+input name $ Section $ Score;
+cards;
+Tom  A 84
+Raj  A 80
+Ram  B 71
+Atul . 77
+Priya . 45
+Sandy A 67
+Sam  A 57
+David B 39
+Wolf B 34
+Rahul . 95
+Sahul C 84
+Lahul C 44
+Pahulk A 81
+Rama A 84
+;
+run;
+
+data readin1;
+set readin;
+where name = *'Ram';
+run;
+```
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/e5554b05-decd-4fcc-a14d-57ec63fa4bd6)  
+
+### WHERE = Data Set Option
+
+1. In the example shown below, the WHERE= data set option is used to select only section A data.
+
+```sas
+data readin1 (where = (section ='A'));
+set readin;
+run;
+```
+
+2. The following example shows how to use WHERE= data set option in procedures 
+
+```sas
+proc print data=readin (where=(section='A'));
+run;
+```
+
+In this case, you can also use WHERE statement....
+
+```sas
+proc print data=readin;
+where section='A';
+run;
+```
+
+## SAS : WHERE VS. IF STATEMENTS
+
+The WHERE statement is an alternative to IF statement when it comes to subsetting a dataset. It is important to know the difference between these two statements.  
+
+### Difference between WHERE and IF statements  
+
+WHERE statement wins against IF statement in the following cases :  
+
+The WHERE statement can be used in procedures to subset data while IF statement cannot be used in procedures.  
+
+Look at the log of WHERE and IF statements shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c9dc0551-8995-4fdb-89c0-a82b6e494c5c)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5243c40c-4b52-45c6-845f-1d519852ab76)  
+
+2. WHERE can be used as a data set option while IF cannot be used as a data set option.
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7255256b-fb71-4eff-beb4-b41516949aa8)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ec098d48-56ec-42d4-9fd3-0806b08e8415)  
+
+3. The WHERE statement is more efficient than IF statement. It tells SAS not to read all observations from the data set.  
+
+Look at the LOG (shown below) after using WHERE statement, you only see a count of the number of observations that meet the criteria in the WHERE statement.  
+
+Only 6 observations were read from the dataset READIN. In actual, the dataset READIN contains 14 observations  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1fdfac32-2a6e-4275-8229-99ccd9ecda9e)  
+
+All 14 observations are read, and the 6 that meet the IF criteria are placed in the new data set.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5e609f35-5901-4a50-926d-ccbb2119eda8)  
+
+NOTE: Both statements produced the same result.
+
+The where clause sends only those records that meet condition to PDV, the IF statement sends all the records to PDV and removes the records that do not meet condition before they get sent to the output buffer.  
+4. The WHERE statement can be used to search for all similar character values that sound alike while IF statement cannot be used.  
+
+For example, you want to filter out all the names that sound alike 'Sam'.  
+
+The IF statement outperforms the WHERE statement in the following scenarios:  
+
+1. When reading data using INPUT statement.  
+
+IF Statement  
+
+IF Statement can be used when specifying an INPUT statement.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/bc4c64e7-9b08-4a83-8252-4a37fa29c7c3)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/89c573f6-85fc-4557-88ab-c77cf017e244)  
+
+WHERE Statement  
+
+WHERE statement can not be used when specifying an input statement.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/caab363d-225c-4fb3-96d8-2f8bab51b97b)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/32440658-8f37-426b-8888-8fb0d0031694)  
+
+2. When it is required to execute multiple conditional statements
+
+Suppose, you have data for college students’ mathematics scores. You want to rate them on the basis of their scores.
+
+Conditions :  
+
+1. If a score is less than 40, create a new variable named “Rating” and give “Poor” rating to these students.  
+
+2. If a score is greater than or equal to 40 but less than 75, give “Average” rating to these students.  
+
+3. If a score is greater than or equal to 75 but less than or equal to 100, give “Excellent” rating to these students.  
+
+This can be easily done using IF-THEN-ELSE IF statements. However, WHERE statement requires variables to exist in the data set.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/89daa316-21ac-4823-a855-3c91007c4722)  
+
+3. When it is required to use newly created variables in data set.  
+
+IF statement can be applied on a newly created variable whereas WHERE statement cannot be applied on a newly created variable. In the below example, IF statement doesn't require variables to exist in the READIN data set while WHERE statement requires variable to exist in the data set.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/84ef386c-953a-4e81-a34c-dbf8bff856db)  
+
+4. When to Use _N_, FIRST., LAST. Variables  
+
+WHERE statement cannot be applied on automatic variables such as _N_, First., Last. Variables. While IF statement can be applied on automatic variables.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/90bfea7a-007c-4473-b454-fd2e377f356d)  
+
+Difference : WHERE and IF when merging data sets  
+
+WHERE statement applies the subset condition before merging the data sets, Whereas, IF statement applies the subset condition after merging the data sets.  
+
+Create 2 Sample Datasets for Merging  
+
+```sas
+data ex1;
+input ID Score;
+cards;
+1 25
+2 28
+3 35
+4 45
+;
+run;
+data ex2;
+input ID Score;
+cards;
+1 95
+2 97
+;
+run;
+```
+
+
+Merge with WHERE Condition  
+
+```sas
+data comb;
+merge ex1 ex2;
+by ID;
+where score <= 30;
+run;
+```
+It returns 2 observations. WHERE condition applied before merging. It applies separately on each of the 2 data sets before merging.
+
+Merge with IF Condition  
+
+```sas
+data comb;
+merge ex1 ex2;
+by ID;
+if score <= 30;
+run;
+```
+
+It returns 0 observation as IF condition applied after merging. Since there is no observation in which value of score is less than or equal to 30, it returns zero observation.  
+
+## HOW TO FILTER DATA IN SAS
+
+This tutorial explains multiple ways to filter data in SAS, along with examples.  
+
+Sample Dataset  
+
+Let's create a sample SAS dataset for demonstration purposes. The following code creates a sample SAS dataset which will contain 5 observations and 4 variables.  
+
+```sas
+/* Sample SAS dataset */
+data mydata;
+  input ID Age Gender $ Score;
+  datalines;
+1 24 Male 85
+2 30 Female 90
+3 22 Male 78
+4 28 Female 95
+5 31 Male 80
+;
+run;
+```
+
+### IF Statement: Filtering Data in SAS  
+
+In SAS, the IF statement is used to filter data. The IF statement is used within the data step to conditionally execute statements based on a specified condition. In the example below, we want dataset that will only contain observations with Age greater than or equal to 25.
+
+```sas
+data filtered_data;
+  set mydata;
+  if Age >= 25;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1c62f747-292e-4e69-a97e-421632a6881d)  
+
+Look at the SAS log after filtering.  
+
+```sas
+NOTE: There were 5 observations read from the data set WORK.MYDATA.
+NOTE: The data set WORK.FILTERED_DATA has 3 observations and 4 variables.
+```
+
+The OUTPUT statement is used when you need to filter data into multiple datasets based on certain criteria. The following SAS code is creating two new datasets, age1 and age2, by filtering the original dataset "mydata" based on the condition Age >= 25. Observations that satisfy the condition will be output to the age1 dataset, while those that do not meet the condition will be output to the age2 dataset.
+
+```sas
+data age1 age2;
+  set mydata;
+  if Age >= 25 then output age1;
+  else output age2;
+run;
+```
+
+Result : The data set WORK.AGE1 has 3 observations and 4 variables. The data set WORK.AGE2 has 2 observations and 4 variables.
+
+### How to Use Multiple IF statement  
+
+In SAS, you can use multiple IF statements using ELSE IF statement to implement more complex logic within a data step. The following SAS code is creating three new datasets, namely male, female, and invalid, based on the values of the variable Gender in the existing dataset mydata.  
+
+```sas
+data male female invalid;
+  set mydata;
+  if Gender = "Male" then output male;
+  else if Gender = "Female" then output female;
+  else output invalid;
+run;
+```
+
+### WHERE Statement: Filtering Data in SAS  
+
+In SAS, the WHERE statement can also be used to filter data. The WHERE statement can be used within both the data step and SAS Procedures. In the example below, we are using the condition of Age greater than or equal to 25 and we want filtered dataset in a new dataset named "filtered_data".
+
+```sas
+data filtered_data;
+  set mydata;
+  where Age >= 25;
+run;
+```
+
+You can also use the WHERE statement in the SET statement.
+
+```sas
+data filtered_data;
+  set mydata (where=(Age >= 25));
+run;
+```
+
+### Difference between IF and WHERE Statement
+
+Here are some of the key differences between the IF and WHERE Statement in SAS.
+
+Efficiency: The WHERE statement is more efficient than the IF statement as it tells SAS to read only those observations of the input dataset that meets criteria. Whereas, the IF statement reads all observations of the input dataset.  
+
+Filtering based on New Variables: If you create a new variable before filtering in the data step, you can't use the WHERE statement to filter based on this new variable. Whereas, the IF statement can filter data based on new variables.  
+
+Split Data into Multiple Datasets: The IF statement along with OUTPUT statement can be used to filter and output data into multiple datasets. Whereas, the WHERE statement does not allow to filter and send data to multiple datasets.  
+
+The WHERE statement can be used in SAS procedures (PROC) to filter data while the IF statement cannot be used in procedures.  
+
+### How to Use Multiple Conditions  
+
+Please refer to the table below showing how to use logical operators in SAS.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b91a5d5d-eb66-4777-9dd3-cdd29ec3a9cf)  
+
+The following code filters the "mydata" dataset based on two conditions: Gender = "Female" or Age > 29.
+
+```sas
+data filtered_data;
+  set mydata;
+  where Gender = "Female" OR Age > 29;
+run;
+```
+
+You can also write the above condition using "|" instead of OR operator like this :
+where Gender = "Female" | Age > 29;  
+
+In the example below, the condition NOT (Gender = 'Female') means it will select all rows where the Gender is NOT equal to "Female".  
+
+```sas
+data filtered_data;
+  set mydata;
+  where NOT (Gender = "Female");
+run;
+```
+
+### Text Filters in SAS
+
+Text filters are a type of filter that can be used to find text that matches a specific pattern. This can be useful for selecting rows having specific words, phrases in a character variable.
+
+```sas
+data sample_data;
+   input name $;
+   datalines; 
+Sam
+Saina
+Dave
+Riana
+DIANA
+Hiana
+David
+davia
+;
+run;
+```
+
+### Filter: Contains Some Text
+
+The CONTAINS operator checks if the specified substring is present anywhere within the character variable. The following code creates a dataset that will only contain observations with names that contain the substring 'IANA' in any case (upper or lower).
+
+```sas
+data filtered_data;
+  set sample_data;
+  where upcase(name) contains 'IANA';
+run;  
+```
+
+The filtered dataset will look like this:
+
+```sas
+name
+--------
+Riana
+DIANA
+Hiana
+```
+
+### Filter: Does Not Contain Some Text
+
+The following SAS program creates a dataset that will only contain observations that do not meet the specified condition, i.e., those where the 'name' variable does not contain the substring 'IANA' in any case.
+
+ ```sas 
+data filtered_data;
+  set sample_data;
+  where upcase(name) not contains 'IANA';
+run; 
+```
+
+### Filter: Starts with Some Text
+
+The following SAS program creates a dataset that will only contain observations those where the 'name' variable starts with 'D' or 'd'. The result will include all names such as 'Dave', 'David', 'DIANA', 'davia' as long as they start with 'D' or 'd'.
+
+```sas
+data filtered_data;
+  set sample_data;
+  where upcase(name) like 'D%';
+run;
+```
+
+### Filter: Ends with Some Text  
+
+The following SAS program creates a dataset that will only contain observations those where the 'name' variable ends with 'NA' or 'na'.
+
+```sas
+data filtered_data;
+  set sample_data;
+  where upcase(name) like '%NA';
+run;
+```
+
+### Filter Data based on First N Characters  
+
+The following SAS program filters data where the first two characters of the 'name' variable are 'DA' or 'da'. The SUBSTR function is used to extract the first two characters of the name variable, and the UPCASE function converts them to uppercase so that we can select both 'DA' and 'da'.
+
+```sas
+data filtered_data;
+  set sample_data;
+  where upcase(substr(name,1,2)) = 'DA';
+run;
+```
+
+## SAS PROC PRINT: LEARN WITH EXAMPLES
+
+This tutorial explains how to use the PROC PRINT procedure in SAS, along with examples.  
+
+PROC PRINT is a commonly used SAS procedure that displays the contents of a dataset.    
+
+### Sample Dataset 
+
+Let's create a sample SAS dataset that will be used in the examples of this tutorial.   
+
+```sas
+data mydata;
+input name $ height weight sex $ sale;
+datalines;
+John 175 70 M 1000
+Emily 160 55 F 800
+Michael 180 80 M 1200
+Sophia 165 60 F 950
+David 170 75 M 1100
+Emma 155 50 F 750
+;
+run;
+```
+
+### Print Entire Dataset
+
+The simplest usage of PROC PRINT is that it displays all variables in the dataset.  
+
+```sas
+proc print data=mydata;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6b5204ae-ed11-405d-b704-b27756ef92a8)  
+
+### Print First N Observations  
+
+The OBS= option in PROC PRINT is used to display first N observations in the dataset. In this example, it displays first 5 observations.
+
+```sas
+proc print data=mydata(obs=5);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/87b6173e-618e-4c10-b5a7-620e0fa6ce6a)  
+
+### Print Specific Variables  
+
+You can specify which variables you want to display using the VAR statement.
+
+```sas
+proc print data=mydata;
+var name height weight;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/77af87ca-bf5c-4097-877f-bc0ee8aae027)  
+
+### Exclude Observation Number in the Output  
+
+You can tell SAS not to display observation number in the output using the NOOBS option.
+
+```sas
+proc print data=mydata noobs;
+var name height weight;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/bc51a88f-a642-4f66-b107-1a778a404107)  
+
+### Conditional Printing  
+
+You can use the WHERE statement to display only specific observations that meet a condition. The following code generates an output that displays only the observations where the 'sex' variable has a value of 'M'.
+
+```sas
+proc print data=mydata noobs;
+where sex='M';
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/63069c89-2afd-4207-9f7d-d48ba02d5d2d)  
+
+### How to Use Formats in PROC PRINT  
+
+You can apply formats to the variables using the format statement. In the code below, format sale dollar10.1; applies a dollar format to the "sale" variable.
+
+```sas
+proc print data=mydata;
+format sale dollar10.1;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c19d235f-5994-4de9-b204-fe9767e5f222)  
+
+### How to Use Title and Footnote in PROC PRINT  
+
+You can use the TITLE and FOOTNOTE statements to print the dataset with a title and a footer.
+
+```sas
+proc print data=mydata;
+title "Students Dataset";
+footnote "Sample Dataset";
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ce71a144-41c0-4796-815e-ea14710936de)  
+  
+### Labeling Variables in PROC PRINT  
+
+You can use the label statement to specify labels for the variables.
+
+```sas
+proc print data=mydata label obs='Observation No.';
+label name='Students Name' weight='Students Weight';
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2b3104a5-a086-4db2-9e0b-25d9b39d778d)  
+
+### Summing Variables in PROC PRINT  
+
+You can use the sum statement to display total at the bottom of the output.
+
+```sas
+proc print data=mydata;
+sum sale;
+run;
+```
+
+To sum all the numeric variables, you can use the SUM statement with keyword _numeric_. To label the grand total, use the grandtotal_label= option.
+
+```sas
+proc print data=mydata grandtotal_label='Grand Total';
+sum _numeric_;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/783b6f05-420d-4874-b973-3c6c6689a6e6)  
+
+### Print Data Grouped by Specific Variable  
+
+The following code displays the data in groups based on the "sex" variable. It is important to sort the dataset when you are using the BY statement in PROC SORT. If data is already sorted by the variable which is used in the BY statement, you don't need to sort the dataset prior to PROC PRINT procedure.
+
+```sas
+proc sort data=mydata;
+by sex;
+run;
+
+proc print data=mydata noobs;
+by sex;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/757bccc5-5044-48d8-b1c7-20915e59e59f)  
+
+### Summing Variables Grouped by Specific Variable  
+
+The following code generates a report that displays sales data by 'sex', including a total row, a count of observations, and a dynamic title for each group. The sales values will be formatted as dollars with one decimal place.
+
+```sas
+proc sort data=mydata;
+by sex;
+run;
+
+options nobyline;
+proc print data=mydata noobs sumlabel='Total'
+           n='Number of observations for the sex type: '
+           'Number of observations in the data set: ';
+sum sale;
+by sex;
+title 'Sales for #byval(sex)';
+format sale dollar7.1;
+run;
+options byline;
+```
+
+When you use PROC PRINT with the NOBYLINE option, each BY group starts on a new page. The TITLE statement adds a title in the output. The #BYVAL keyword tells SAS to include the current value of the BY variable "sex" in the title.
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b3656480-5591-4a18-9523-630668ecce6c)  
+
+### How to Style Table in PROC PRINT  
+
+You can use the style(location)= option to modify the appearance of the output. In the code below, the header cells of the output will appear with an italic font and a black background, while the data cells will have a red background with white text.
+
+```sas
+proc print data=mydata noobs
+   style(HEADER)={fontstyle=italic backgroundcolor=black foreground=white}
+   style(DATA)={backgroundcolor=red foreground=white};
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/10a5bf1c-471b-4ec3-afad-0e255559e9d9)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
 
 
 
