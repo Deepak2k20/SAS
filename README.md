@@ -832,7 +832,518 @@ Range Name: In MS Excel, it is a name that represents a cell, range of cells. Yo
 
 Creating a range name is very simple. Select a cell or range of cells and Click on the Name box above Column A and Tye any name you want and Press Enter.
 
-In the example below, Range A1:C10 is selected and then type Info in the name box and Press Enter.  
+In the example below, Range A1:C10 is selected and then type Info in the name box and Press Enter.    
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/557dac22-8245-40f2-b57e-2818b25891a8)  
+
+```sas
+PROC IMPORT OUT= WORK.want
+ DATAFILE= "C:\Desktop\File1.xlsx"
+ DBMS=XLSX REPLACE;
+RANGE="Info";
+GETNAMES=YES;
+RUN;
+```
+
+RANGE="Info" tells SAS to import data from excel using user defined named range Info.  
+
+### Rename Columns while Importing
+
+The variable names can be renamed using RENAME= option next to OUT= option.  
+
+```sas
+PROC IMPORT DATAFILE= "E:\SAS Code Repository\Book1.xlsx"
+ DBMS=XLSX
+ OUT= TEMP (RENAME=(Score=TotalScore))  REPLACE;
+ GETNAMES=YES;
+RUN;
+```
+
+### Importing an Excel File from Website into SAS
+
+```sas
+filename test temp;
+proc http
+ url="https://www2.census.gov/acs2005/GEORES.xls"
+ method="GET"
+ out=test;
+run;
+
+proc import file=test
+out=readin replace
+dbms=xls ;
+ NAMEROW=3;
+ STARTROW=4;
+run;
+```
+
+SAS provides a method for extracting data from web pages by procedure named PROC HTTP. This method makes it easy to read data from web pages. In this case, variable name starts from row number 3 in datafile and data values start from row4 onwards. To import CSV file from website, you just need to change the DBMS=XLS to DBMS=CSV.  
+
+To learn more about other data file formats in PROC IMPORT, you can refer the tutorial below.   
+
+## HOW TO IMPORT CSV FILES INTO SAS  
+
+This tutorial explains how to import CSV files into SAS, along with examples.  
+
+### Syntax to import CSV file into SAS
+
+You can use PROC IMPORT to import a CSV files into SAS. The syntax of PROC IMPORT is as follows:  
+
+```sas
+PROC IMPORT OUT=newdata
+    DATAFILE="/home/deepanshu88us0/mydata.csv"
+    DBMS=CSV
+    REPLACE;
+    GETNAMES=YES;
+RUN;
+```
+
+OUT: Specify name of the dataset to be imported into SAS  
+
+DATAFILE: File location of CSV file which you want to import  
+
+DMBS: Specify CSV Format  
+
+REPLACE: Optional argument. If the file already exists, replace it.  
+
+GETNAMES: Optional argument. By default, it takes first row as variable names. If the file doesn't have a header,set GETNAMES=NO.  
+
+### Example 1: Import Data from CSV File into SAS
+
+Suppose you have data in CSV file named customers.csv. You can import it into SAS using the code below.  
+
+```sas
+PROC IMPORT OUT=newdata
+    DATAFILE="/home/deepanshu88us0/mydata/customers.csv"
+    DBMS=CSV
+    REPLACE;
+    GETNAMES=YES;
+RUN;
+```
+
+The code above uses the PROC IMPORT procedure in SAS to import a CSV file located at "/home/deepanshu88us0/mydata/customers.csv". The imported data will be stored in a dataset named "newdata". The DBMS option is set to CSV, telling SAS the file format is CSV. The REPLACE option is specified, which means that if a dataset with the same name already exists, it will be replaced. The GETNAMES option is set to YES, indicating that the first row of the CSV file contains variable names. It is by default so you can exclude this option if you want.   
+
+To view and print the dataset, you can use   
+```sas
+proc print data=newdata;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1ed2671f-a11e-4724-9f1b-c50c8d919c2e)  
+
+### Example 2: Import Data from CSV File without Header into SAS
+
+If your CSV file does not have header, you can use GETNAMES=NO option in PROC IMPORT.  
+
+```sas
+PROC IMPORT OUT=newdata
+    DATAFILE="/home/deepanshu88us0/mydata/customers.csv"
+    DBMS=CSV
+    REPLACE;
+    GETNAMES=NO;
+RUN;
+```
+
+### Example 3: Import Data from CSV File with Custom Delimiter into SAS
+
+By default, SAS considers comma (,) as a delimiter which separates the values in the CSV file when importing using PROC IMPORT. To change delimiter, you can specify it in the DELIMITER= option in PROC IMPORT. The following code uses semicolon (;) as a delimiter.  
+
+```sas
+PROC IMPORT OUT=newdata
+    DATAFILE="/home/deepanshu88us0/mydata/customers.csv"
+    DBMS=CSV
+    REPLACE;
+    DELIMITER=";";
+RUN;
+```
+
+### Example 4: Change Starting Row in PROC IMPORT
+
+You can use the DATAROW= option to import a CSV file from a specific row. The following code imports the CSV file from 5th row.  
+
+```sas
+PROC IMPORT OUT=newdata
+    DATAFILE="/home/deepanshu88us0/mydata/customers.csv"
+    DBMS=CSV
+    REPLACE;
+    DATAROW=5;
+RUN;
+```
+
+### Example 5: Guess the Data Type when Importing a CSV File
+
+By default, PROC IMPORT makes decisions about the data type in SAS by examining the first 20 rows of the CSV file. This helps determine whether a variable should be treated as numeric or character. To change it to 30, you can use the GUESSINGROWS=30 option.  
+
+```sas
+PROC IMPORT OUT=newdata
+    DATAFILE="/home/deepanshu88us0/mydata/customers.csv"
+    DBMS=CSV
+    REPLACE;
+    GUESSINGROWS=30;
+RUN;
+```
+
+## SAS: DATALINES STATEMENT
+
+The DATALINES statement in SAS is used to create a dataset. You can input data directly into a SAS program using the DATALINES statement, without the need for an external data file.  
+
+### Syntax of DATALINES statement
+
+The syntax of DATALINES statement is as follows.  
+
+```sas
+DATA new_dataset;
+INPUT variable1 $ variable2 variable3;
+DATALINES;
+A 10 20
+B 15 25
+C 8 18
+;
+RUN;
+```
+
+DATA new_dataset;: This line starts the DATA step and defines a new dataset named new_dataset.  
+
+INPUT variable1 $ variable2 variable3;: This line specifies the variable names and their data types. In this case, variable1 is a character variable, while variable2 and variable3 are numeric variables.  
+
+DATALINES;: This line indicates the start of the data section.  
+
+The lines following DATALINES; represent the data values for each variable. Each line represents one observation, and the values for each variable are separated by spaces.  
+
+RUN;: This line marks the end of the DATA step and executes it, creating the "new_dataset" dataset.  
+
+```sas
+A dollar sign $ following a variable name indicates that the variable is a character variable.
+```
+
+Let's print the dataset using PROC PRINT procedure.  
+
+```sas
+proc print data=new_dataset;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/71ccae21-0f3c-4c2d-828f-0c968b01384f)  
+
+### How to read a large character variable in SAS
+
+By default, the length of a character variable is set at the first occurrence of the variable. If you want to read a large character variable, you can use colon modifier : which tells SAS to read variable until there is a space or other delimiter. The $20. indicates the length of the character variable.  
+
+```sas
+DATA new_dataset;
+   INPUT variable1 :$20. variable2 variable3;
+   DATALINES;
+   Sam 10 20
+   MarkSpencers 15 25
+   RandyHortonia 8 18
+   ;
+RUN;
+
+proc print data=new_dataset;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ab83577f-1783-4a56-9a55-064bfced0da1)  
+
+## SAS CARDS STATEMENT: LEARN WITH EXAMPLES
+
+The CARDS statement in SAS is used to create a dataset. You can directly enter data into a SAS program using the CARDS statement, without the need for an external data file.  
+
+The CARDS statement is an alternative to the DATALINES statement and serves the same purpose. It is used in the same way as DATALINES to specify inline data within the SAS program.  
+
+### Syntax of CARDS statement
+
+The syntax of CARDS statement is as follows.  
+
+```sas
+DATA new_dataset;
+INPUT variable1 $ variable2 variable3;
+CARDS;
+A 10 20
+B 15 25
+C 8 18
+;
+RUN;
+```
+
+DATA new_dataset;: Starts the DATA step and defines a new dataset named new_dataset.  
+
+INPUT variable1 $ variable2 variable3;: Specifies the variable names and their data types. In this case, variable1 is a character variable, while variable2 and variable3 are numeric variables.  
+
+CARDS;: Indicates the start of the data section.  
+
+The lines following CARDS; are the data values for each variable. Each line represents one observation, and the values for each variable are separated by spaces.  
+
+RUN;: marks the end of the DATA step and executes it, creating the "new_dataset" dataset.  
+
+```sas
+A dollar sign $ following a variable name indicates that the variable is a character variable.
+```
+
+Let's print the dataset using PROC PRINT procedure.  
+
+```sas
+proc print data=new_dataset;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/cf91a23a-8f53-46d0-96a8-ec7cba5110d7)  
+
+### How to read a large character variable in SAS
+
+By default, the length of a character variable is set at the first occurrence of the variable. If you want to read a large character variable, you can use colon modifier : which tells SAS to read variable until there is a space or other delimiter. The $20. indicates the length of the character variable.  
+
+```sas
+DATA new_dataset;
+   INPUT variable1 :$20. variable2 variable3;
+   CARDS;
+   Arjun 10 20
+   DavidHouse 15 25
+   TomHorton 8 18
+   ;
+RUN;
+
+proc print data=new_dataset;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9ea19a9a-700f-47c5-bf64-7de614d78452)  
+
+## IMPORTING DATA INTO SAS
+
+This tutorial will show you how to read data into SAS. It also covers how to import external data to SAS. It includes examples of importing most common formats such as CSV, Excel File and Text Files etc. After finishing this tutorial, you would be comfortable how to extract data into SAS.  
+
+### I. Entering Data Directly in SAS Program
+
+You can enter your lines of data directly in your SAS program by using a DATALINES statement.  
+
+Let's start out by clarifying the main keywords associated with the following program.
+The keywords are as follows:  
+
+DATA - The DATA step always begins with a DATA statement. The purpose of the DATA statement is to tell SAS that you are creating a new data set i.e. outdata.  
+
+INPUT - Use the INPUT statement to define the variables used in the data set.  
+
+Dollar sign ($) - The dollar sign ($) is used to identify a variable as character type.  
+
+DATALINES - The DATALINES statement is used to indicate that the lines following it contain the actual data.  
+
+PROC PRINT - The PROC PRINT statement is used to print out the contents of the data set in the output window.  
+
+RUN - The DATA step ends with a RUN statement.  
+
+```sas
+DATA outdata; 
+   INPUT age gender $ dept obs1 obs2 obs3; 
+   DATALINES; 
+1 F 3 17 6 24
+1 M 1 19 25 7
+3 M 4 24 10 20
+3 F 2 19 23 8
+2 F 1 14 23 12
+2 M 5 1 23 9
+3 M 1 8 21 7
+1 F 1 7 7 14
+3 F 2 2 1 22
+1 M 5 20 5 2
+3 M 4 21 8 18
+1 M 4 7 9 25
+2 F 5 10 17 20
+3 F 4 21 25 7
+3 F 3 9 9 5
+3 M 3 7 21 25
+2 F 1 1 22 13
+2 F 5 20 22 5
+;
+proc print;
+run;
+```
+
+You can also use CARDS instead of DATALINES. Both means the same. There is no difference between these two keywords. See the program below -  
+
+```sas
+DATA outdata;
+   INPUT age gender $ dept obs1 obs2 obs3;
+   CARDS; 
+1 F 3 17 6 24
+;
+proc print;
+run;
+```
+
+### Reading Delimited Data
+
+The default delimiter is blank. If you have a data file with other delimiters such as comma or tab you need to define the delimiter before defining the variables using INFILE and DLM = options.  
+
+```sas
+Syntax : Infile 'file-description' dlm=','
+```
+
+For tab delimiter, the syntax would be infile 'file-description' dlm='09'x  
+
+For colon delimiter, the syntax would be infile 'file-description' dlm=':'  
+
+```sas
+DATA outdata; 
+   INFILE Datalines dlm =",";
+   INPUT age gender $ dept obs1 obs2 obs3; 
+   Datalines; 
+1,F,3,17,6,24
+1,M,1,19,25,7
+3,M,4,24,10,20
+3,F,2,19,23,8
+2,F,1,14,23,12
+;
+proc print;
+run;
+```
+
+### Importing External Data into SAS
+
+### Method I : PROC IMPORT
+
+PROC IMPORT is a SAS procedure to import external files into SAS. It automates importing process. You don't need to specify variable type and variable length to import an external file. It supports various formats such as excel file, csv, txt etc.  
+
+#### 1. Importing an Excel File into SAS
+
+The main keywords used in the following program are :  
+
+1. OUT - To specify name of a data set that SAS creates. In the program below, outdata is the data set saved in work library (temporary library)
+
+3. DBMS - To specify the type of data to import.
+
+5. REPLACE - To overwrite an existing SAS data set.
+
+7. SHEET - To import a specific sheet from an excel workbook
+
+9. GETNAMES - To include variable names from the first row of data.
+
+```sas
+PROC IMPORT DATAFILE= "c:\deepanshu\sampledata.xls"
+OUT= outdata
+DBMS=xls
+REPLACE;
+SHEET="Sheet1";
+GETNAMES=YES;
+RUN;
+```
+
+#### 2. Importing a Tab-Delimited File into SAS
+
+The program below is similar to the code of importing excel file. The only difference is DBMS = DLM and delimter = '09'x.  
+
+```sas
+PROC IMPORT DATAFILE= "c:\deepanshu\sampledata.txt"
+OUT= outdata
+DBMS=dlm
+REPLACE;
+delimiter='09'x;
+GETNAMES=YES;
+RUN;
+```
+
+#### 3. Importing a Comma-Delimited File with TXT extension
+
+To get comma separated file with a txt extension into SAS, specify delimeter = ','  
+
+```sas
+PROC IMPORT DATAFILE= "c:\deepanshu\sampledata.txt"
+OUT= outdata
+DBMS=dlm
+REPLACE;
+delimiter=',';
+GETNAMES=YES;
+RUN;
+```
+
+#### 4. Importing a Comma-Delimited File with CSV extension
+
+To get comma separated file into SAS, specify DBMS= CSV  
+
+```sas
+PROC IMPORT DATAFILE= "c:\deepanshu\sampledata.txt"
+OUT= outdata
+DBMS=csv
+REPLACE;
+GETNAMES=YES;
+RUN;
+```
+
+#### 5. Importing a Space-Delimited File
+
+To extract a space delimited file, specify delimiter = '20'x  
+
+```sas
+PROC IMPORT DATAFILE= "c:\deepanshu\sampledata.txt"
+OUT= outdata
+DBMS=dlm
+REPLACE;
+delimiter='20'x;
+GETNAMES=YES;
+RUN;
+```
+
+#### 6. Importing a file containing multiple delimiter
+
+If two or more delimiters, such as comma and tabs, quote them following delimiter = option  
+
+```sas
+PROC IMPORT DATAFILE= "c:\deepanshu\sampledata.txt"
+OUT= outdata
+DBMS=dlm
+REPLACE;
+delimiter=','09'x ';
+GETNAMES=YES;
+RUN;
+```
+
+### Method II : Get External File - INFILE
+
+In SAS, there is one more method called INFILE to import an external file. It's a manual method of importing an external file as you need to specify variables and its types and length.  b
+
+#### 1. Reading a CSV File
+
+INFILE statement - To specify path where data file is saved.  
+ 
+DSD - To set the default delimiter from a blank to comma.  
+
+FIRSTOBS=2 : To tell SAS that first row contains variable names and data values starts from second row.  
+
+```sas
+data outdata; 
+infile 'c:\users\deepanshu\documents\book1.csv' dsd firstobs=2;
+input id age gender $ dept $; 
+run;
+```
+
+#### 2. Reading a TAB Delimited File
+
+We can use DLM='09'x to tell SAS that we are going to import a tab delimited file. The TRUNCOVER statement tells SAS to assign the raw data value to the variable even if the value is shorter than expected by the INPUT statement.  
+
+```sas
+data outdata;
+  infile 'c:\deepanshu\dummydata.txt' DSD dlm='09'x truncover;
+  input employee :$30. DOJ :mmddyy8. state :$20.;
+run;
+```
+
+#### How to handle an external file :
+
+Using a FILENAME statement to handle an external file.  
+
+```sas
+FILENAME sample 'c:\deepanshu\sampledata.csv' ;
+DATA outdata;
+infile sample dsd;
+INPUT age gender $ dept obs1 obs2 obs3;
+run;
+```
+  
+
+
+
+
+ 
+
 
 
 
