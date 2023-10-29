@@ -3233,7 +3233,172 @@ proc print data=mydata noobs
 run;
 ```
 
-![image](https://github.com/Deepak2k20/SAS/assets/65231118/10a5bf1c-471b-4ec3-afad-0e255559e9d9)
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/10a5bf1c-471b-4ec3-afad-0e255559e9d9)  
+
+## SAS: HOW TO USE THE IN OPERATOR
+
+The IN operator in SAS is used to compare a value against a list of values. It allows you to select multiple values from a SAS dataset. It is an alternative of multiple OR conditions.  
+
+The syntax for using the IN operator in SAS is as follows:  
+```sas
+variable IN (value1, value2, ..., valueN)  
+```
+Here values of the variable will be compared against the list of values - (value1, value2, ..., valueN)  
+
+### How to use IN Operator in DATA STEP in SAS  
+
+The following code filters the dataset based on the values of the MAKE variable. It selects cars of these 3 brands 'Audi', 'Acura', 'BMW' and puts them into a new dataset named "newdata".
+
+```sas
+data newdata;
+set sashelp.cars;
+where make in('Audi', 'Acura', 'BMW');
+run;
+```
+To check if the above code filters dataset correctly, we can use the PROC FREQ procedure to see the unique values of the column MAKE.  
+
+```sas
+proc freq data=newdata;
+table make;
+run;
+```
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c9ab0bf2-a9a6-4443-a1c6-a02bb11b967f)  
+
+### How to use IN Operator in PROC SQL in SAS
+
+```sas
+proc sql;
+select *
+from sashelp.cars
+where make in('Audi', 'Acura', 'BMW');
+quit;
+```
+
+### How to use NOT IN Operator in SAS  
+
+The NOT IN operator is used in SAS to filter rows based on the condition that a column does not match any of the values. The following code returns all cars that have makers not included in the list - 'Audi', 'Acura', 'BMW'.
+
+```sas
+proc sql;
+select *
+from sashelp.cars
+where make not in('Audi', 'Acura', 'BMW');
+quit;
+```
+
+## HOW DATA STEP AND PROC SQL WORKS
+
+This tutorial explains the steps to process data in SAS.
+
+### How Data Step Works
+
+The processing of data is in 2 steps :
+
+__1. Compilation Phase__
+
+Step I : Syntax Checking
+
+SAS scans each statement in the DATA step and check syntax errors, such as missing semicolons and invalid statements.  
+
+Step II : Creating Input Buffer  
+
+If you read in a raw data set such as txt or csv file, the input buffer is created. The input buffer is used to hold raw data. If you read in a SAS data set, the input buffer will not be created.  
+  
+Step III : Creating Program Data Vector (PDV)  
+
+1. SAS creates a program data vector (memory on your system) containing the automatic variables _N_ and _ERROR_.
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1aecce3a-887d-4ae9-baee-c483941a3cdf)  
+
+_N_ = 1 indicates the first observation is being processed, _N_ = 2 indicates the second observation is being processed, and so on.  
+
+The automatic variable _ERROR_ with values of 1 or 0, if it is equal to 1 signals the data error of the currently-processed observation, such as reading the data with an incorrect data type.  
+
+2. In addition to the two automatic variables, there is one space allocated for each of the variables in the input statement (reading data).  
+
+3. SAS also adds a position to the program data vector for any variables that are created in the DATA step. See the program below. The newly created FinalScore variable is derived from Score.
+
+```sas
+Data temp2;
+set temp;
+FinalScore = Score + 25;
+ Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/46f4e56a-c153-4a3b-9b77-a96b11f788a8)  
+
+4. If the variables specified in the DROP statement, it will never be written to the output data set.  
+
+5. At the end of the compilation phase, SAS makes the descriptor portion of the SAS data set which includes the data set name, the number of observations, and the number, names, and attributes of variables.
+
+__2. Execution Phase__
+
+Sequential Processing (Iterative)
+
+The DATA step executes once for each observation in the input data set. Suppose dataset consists of 500 records, SAS will execute 500 times.  
+
+1. At the beginning of the execution phase, SAS sets all of the data set variables in the program data vector to missing:
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/dbf51ea5-6f39-445a-8aff-6c32a314fafe)  
+
+Variables that you specify in a RETAIN statement are not reset to missing values.  
+
+2. The SET statement reads the first observation from the input data set and writes the values to the program data vector.
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f31c4e9e-d019-4271-97af-59580f780e06)  
+
+3. Compute the first value for the derived variable, FinalScore.
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b0bbdcad-4fe8-4d81-bf8d-9ba3bfeef6f0)  
+
+4. At the end of the first iteration of the DATA step, the values in the program data vector are written to the output data set temp2 as the first observation.  
+
+Loop until all of the observations are read  
+
+The value of the automatic variable _N_ is increased to 2. The values from the second observation are written to the program data vector. Repeat above Steps 2, 3 and 4. It continues until all of the observations are read.  
+
+### How PROC SQL Works
+
+PROC SQL is a simultaneous process for all the observations.  
+
+Step I : Syntax Checking  
+
+SAS scans each statement in the SQL procedure and check syntax errors, such as missing semicolons and invalid statements.  
+
+Step II : SQL Optimizer  
+
+SQL optimizer scans the query inside the statement. The SQL Optimizer decides how the SQL query should be executed in order to minimize run time. The Optimizer examines submitted SQL code and characteristics of the SAS system and then creates efficient executable statements for the submitted query. The created code can be quite complicated and often involves the creating, sorting and merging of many temporary files as well as the trimming of variables and observation at times that will minimize run time.  
+
+Step III : Load into Data Engine  
+
+Any tables in the FROM statement are loaded into the data engine where they can then be accessed in memory.  
+
+Step IV : Code and Calculations are executed  
+
+Step V : Final Table is created in memory  
+ 
+Step VI : Final Table sent to the output table described in the CREATE TABLE statement.  
+
+__Main Distinction : Data Step vs. Proc SQL__ 
+
+DATA step is a sequential process (one at a time for each observation), whereas the SQL procedure is a simultaneous process for all the observations.  
+
+__Efficiency : DATA STEP vs. PROC SQL__  
+
+The SQL procedure performed better with the smaller datasets (less than approx. 100 MB) whereas the data step excelled with the larger ones (more than approx. 100 MB).  
+
+It is because the DATA step handles each record sequentially so it never uses a lot of memory, however, it takes time to process one at a time. So with a smaller dataset, the DATA step is going to take more time sending each record through.  
+
+With the SQL procedure, everything is loaded up into memory at once. By doing this, the SQL procedure can process small datasets rather quickly since everything is available in memory. Conversely, when you move to larger datasets, your memory can get bogged down which then leads to the SQL procedure being a little bit slower compared to the DATA step which will never take up too much memory space.  
+
+If you need to connect directly to a database and pull tables from there, then use PROC SQL.
+
+
+
+
+
+
+
 
 
 
