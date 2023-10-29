@@ -3391,7 +3391,1534 @@ It is because the DATA step handles each record sequentially so it never uses a 
 
 With the SQL procedure, everything is loaded up into memory at once. By doing this, the SQL procedure can process small datasets rather quickly since everything is available in memory. Conversely, when you move to larger datasets, your memory can get bogged down which then leads to the SQL procedure being a little bit slower compared to the DATA step which will never take up too much memory space.  
 
-If you need to connect directly to a database and pull tables from there, then use PROC SQL.
+If you need to connect directly to a database and pull tables from there, then use PROC SQL.  
+
+## SAS: PROC FREQ WITH EXAMPLES
+
+This tutorial explains how to use PROC FREQ with various examples in SAS.  
+
+The PROC FREQ is one of the most frequently used SAS procedures which helps to summarize categorical variable. It calculates count/frequency and cumulative frequency of categories of a categorical variable. In other words, it returns the number and percentage of cases falling in multiple categories of a categorical variable. It's not just restricted to counts. It also produces bar charts and tests for association between two categorical variables.  
+
+### Create a sample data set  
+
+The program below creates a sample SAS dataset which will be used to demonstrate PROC FREQ with examples.  
+
+```sas
+data example1;
+input x y $ z;
+cards;
+6 A 60
+6 A 70
+2 A 100
+2 B 10
+3 B 67
+2 C 81
+3 C 63
+5 C 55
+;
+run;
+```
+The created dataset looks like below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8542484d-ce42-4b26-9db5-def063b793ea)  
+
+### Example 1 : To check the distribution of a categorical variable (Character)  
+
+Suppose you want to see the frequency distribution of variable 'y'.  
+
+```sas
+proc freq data = example1;
+tables y;
+run;
+```
+
+The TABLES statement tells SAS to return n-way frequency and crosstabulation tables and computes the statistics for these tables. 
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/314dc43d-5ebd-4880-b43d-6c0d66d91df3)  
+
+It answers a question 'which category holds the maximum number of cases'. In this case, the category 'C' contains maximum number of values.  
+
+__Tip :__  
+
+Categorical variables are of two types - Nominal and Ordinal. A nominal variable is a categorical variable in which categories do not have any order. For example, gender, city etc. An ordinal categorical variable has categories that can be ordered in a meaningful way. For example, rank, status (high/medium/low) etc.  
+
+### Example 2 : To remove unwanted statistics in the table  
+
+Suppose you do not want cumulative frequency and cumulative percent to be displayed in the table. The option NOCUM tells SAS to not to return cumulative scores.  
+
+```sas
+proc freq data = example1; 
+tables y /nocum;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b1a933ba-087c-456a-bf2e-f2c497787847)  
+
+If you want only frequency, not percent distribution and cumulative statistics.  
+
+```sas
+proc freq data = example1;
+tables y /nopercent nocum;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6225d2b3-6b5d-428f-aadd-6a6e1424853a)  
+
+### Example 3 : Cross Tabulation ( 2*2 Table)  
+
+Suppose you want to see the distribution of variable 'y' by variable 'x'.  
+
+```sas
+proc freq data = example1;
+tables y * x;
+run; 
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1aa6d456-fd89-427b-8ea7-eb5ad8612d83)  
+
+The output of the above SAS program is shown in the image above.
+
+
+### Example 4 : Show Table in List Form    
+
+Suppose you do not want output to be shown in tabular form. Instead, you want final analysis to be displayed in list form (See the image below)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8e87673b-7ad1-4310-81ab-d17a2444f91a)  
+
+```sas
+proc freq data = example1;
+tables y * x / list;
+run;
+```
+
+The forward slash followed by LIST keyword produces the list styled table.
+
+### Example 5 : Hide Unwanted Statistics in Cross Tabulation  
+
+```sas
+proc freq data = example1;
+tables y * x / norow nocol nopercent;
+run;
+```
+
+The NOROW option hides row percentage in cross tabulation. Similarly, NOCOL option suppresses column percentage.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c747f974-5a57-4bfd-892d-80cfafe9a0c3)  
+
+### Example 6 : Request Multiple Tables  
+
+Suppose you want to generate multiple crosstabs. To accomplish it, you can run the command below-  
+
+```sas
+proc freq data = example1;
+tables y * (x z) / norow nocol nopercent;
+run;
+```
+
+The tables y*(x z) statement is equivalent to tables y*x y*z statement. In this case, it returns two tables - y by x and y by z.  
+
+Example - tables (a b)*(c d); is equivalent to tables a*c  b*c  a*d  b*d;  
+
+### Example 7 : Number of Distinct Values  
+
+The NLEVELS option is used to count number of unique values in a variable.  
+
+```sas
+proc freq data = example1 nlevels;
+tables y;
+run;
+```
+
+In this case, it returns 3 for variable Y.  
+
+### Example 8 : Use WEIGHT Statement  
+
+The WEIGHT statement is used when we already have the counts. It makes PROC FREQ use count data to produce frequency and crosstabulation tables.  
+
+```sas
+Data example2;
+input pre $ post $ count;
+cards;
+Yes Yes 30
+Yes No 10
+No Yes 40
+No No 20
+;
+run;
+
+proc freq data=example2;
+tables pre*post;
+weight count;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2b8671e2-93dd-4194-8e70-1e029aafc2b7)  
+
+### Example 9 : Store result in a SAS dataset  
+
+Suppose you wish to save the result in a SAS dataset instead of printing it in result window.  
+
+```sas
+proc freq data = example1 noprint;
+tables y *x / out = temp;
+run;
+```
+
+The OUT option is used to store result in a data file. NOPRINT option prevents SAS to print it in results window.
+
+### Example 10 : Run Chi-Square Analysis  
+
+The CHISQ option provides chi-square tests of homogeneity or independence and measures of association between two categorical variables.  Also it helps to identify the statistically significant categorical variables that we should include in our predictive model. All the categorical variables with a chi-square value less than or equal to 0.05 are kept.  
+
+```sas
+proc freq data = example1 noprint;
+tables y * x/chisq;
+output All out=temp_chi chisq;
+run; 
+```
+
+### Example 11 : Generate Bar Chart and Dot Plot  
+
+The bar chart can be generated with PROC FREQ. ​To produce a bar chart for variable 'y', the plots=freqplot (type=bar) option is added. By default, it shows frequency in graph. In order to show percent, you need to add scale=percent. The ODS graphics ON statement tells SAS to produce graphs. Later we turn it off.  
+
+```sas
+Ods graphics on;
+Proc freq data=example1 order=freq;
+Tables y/ plots=freqplot (type=bar scale=percent);
+Run;
+Ods graphics off;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/36bcc169-bf33-40b1-8bdd-f7ec3108f014)  
+
+Similarly, we can produce dot plot by adding type=dot. See the implementation below-  
+
+```sas
+Ods graphics on;
+Proc freq data=example1 order=freq;
+Tables y/ plots=freqplot (type=dot);
+Run;
+Ods graphics off;
+```
+
+### Example 12 : Include Missing Values in Calculation  
+
+By default, PROC FREQ does not consider missing values while calculating percent and cumulative percent. The number of missing values are shown separately (below the table). Refer the image below.  
+
+```sas
+Proc freq data=sashelp.heart;
+Tables deathcause;
+Run; 
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/33c8a398-dcaf-4695-bab9-fdbe402986d3)  
+
+By adding MISSING option, it includes missing value as a separate category and all the respective statistics are generated based on it.  
+
+```sas
+Proc freq data=sashelp.heart;
+Tables deathcause / missing;
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a7bbf859-d911-4d1d-b2f1-e604783799cd)  
+
+### Example 13 : Ordering / Sorting  
+
+In PROC FREQ, the categories of a character variable are ordered alphabetically by default. For numeric variables, the categories are ordered from smallest to largest value.  
+
+To sort categories on descending order by frequency (from largest to smallest count), add ORDER=FREQ option  
+
+```sas
+Proc freq data=sashelp.heart order = FREQ;
+Tables deathcause / missing;
+Run;
+```
+
+It is generally advisable to show distribution of a nominal variable after sorting categories by frequency. For ordinal variable, it should be shown based on level of categories.  
+
+To order categories based on a particular FORMAT, you can use order = FORMATTED option.  
+
+### Conclusion  
+
+PROC FREQ is a simple but powerful SAS procedure. This tutorial was designed for beginners who have no background of any programming language. Hope the above examples help to understand the procedure crystal clear.  
+
+## SAS TIP : SPECIFY A LIST OF VARIABLES
+
+Suppose you have a list of variables. You don't want to type the name of each variable to define them in a function or array. You are looking for a shortcut to accomplish this task.  
+
+Create a dataset with a list of variables  
+
+```sas
+data dummy;
+input q1 q3 q4 q2 q6$ bu$ q5;
+cards;
+1 2 3 5 sa an 3
+2 4 3 6 sm sa 4
+6 5 3 8 cb na 3
+;
+run;
+ ```
+
+How to specify a list of variables   
+
+A single dash (-) is used to specify consecutively numbered variables. For example : q1-q4;  
+
+A double dash (--) is used to specify variables based on the order of the variables as they appear in the file, regardless of the name of the variables.  
+
+```sas
+data dummy1 (drop= q1--q5);
+set dummy;
+sum = sum(of q1-q4);
+sum1 = sum(of q1--q4);
+run;
+```
+
+The output is shown in the image below -
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1786ef6f-86d9-402e-a7af-e9f7964043d2)  
+
+In the above program, q1-q4 includes q1,q2,q3 and q4, whereas q1--q4 includes q1,q3 and q4 only as they appear the same way in file.  
+
+How to specify all NUMERIC variables  
+
+```sas
+data dummy1 (drop= q1--q5);
+set dummy;
+sum = sum(of _numeric_);
+run;
+```
+
+How to use double dash in array
+
+The following program subtracts one from values in variables q1,q3 and q4.  
+
+```sas
+data dummy1;
+set dummy;
+array vars q1--q4;
+do over vars;
+vars = vars - 1;
+end;
+run;
+```
+
+How to use numeric variables in array
+
+The following program subtracts one from values in numeric variables.  
+
+```sas
+data dummy1;
+set dummy;
+array vars _numeric_;
+do over vars;
+vars = vars - 1;
+end;
+run;
+```
+
+More Dash Symbol Usage
+
+1. Print all NUMERIC variables from q1 through q6.
+
+```sas
+proc print;
+var q1-numeric-q6;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/62149b00-5b35-4606-9f7f-c3f3d840400d)  
+
+2.  Print all CHARACTER variables from q1 through q6.
+
+```sas
+proc print;
+var q1-character-q6;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/67dfebea-823e-4a60-942a-2b9cefe2caf3)  
+
+3.  Print all CHARACTER variables.  
+
+```sas
+proc print;
+var _character_;
+run;
+```
+
+## SAS : WILDCARD CHARACTER
+
+In this tutorial, you will learn how to use wildcard character in SAS.
+
+### Example 1 : Keep all the variables start with 'X'  
+
+```sas
+DATA READIN;
+INPUT ID X1 X_T $;
+CARDS;
+2 3 01
+3 4 010
+4 5 022
+5 6 021
+6 7 032
+;
+RUN;
+
+DATA READIN2;
+SET READIN (KEEP = X:);
+RUN;
+```
+
+The COLON (:) tells SAS to select all the variables starting with the character 'X'.  
+
+### Example 2 : Filter data using wildcard character  
+
+```sas
+DATA READIN2;
+SET READIN;
+IF X_T =: '01';
+RUN;
+```
+
+In this case, the COLON (:) tells SAS to select all the observations (rows) starting with the character '01'.  
+
+### Example 3 : Use of WildCard in IN Operator  
+
+```sas
+DATA READIN2;
+SET READIN;
+IF X_T IN: ('01', '02');
+RUN;
+```
+
+In this case, the COLON (:) tells SAS to select all the observations starting with the character '01' or '02'.
+
+### Example 4 : Use of WildCard in GT LT (> <) Operators  
+
+```sas
+DATA READIN2;
+SET READIN;
+IF X_T >: '01';
+RUN;
+```
+
+In this case, the COLON (:) 
+
+tells SAS to select all the cases from character '01' up alphabetically.  
+
+### Example 5 : WildCard in Function 
+
+```sas
+data example3;
+set temp2;
+total =sum(of height:);
+run;
+```
+
+The TOTAL = SUM(OF height:); statement calculates the sum of all variables that start with height and assigns the result to the total variable.  
+
+SUM() is a SAS function used to calculate the sum of numeric variables.  
+
+OF height: specifies a variable list that includes all variables that start with height.  
+
+The colon : is a wildcard that matches any characters following height.  
+
+
+### Example 6 : WildCard in Array
+
+```sas
+proc sort data = sashelp.class out=class;
+by name sex;
+run;
+
+proc transpose data = sashelp.class out=temp;
+by name sex;
+var height weight;
+run;
+
+proc transpose data = temp delimeter=_ out=temp2(drop=_name_);
+by name;
+var col1;
+id _name_ sex;
+run;
+
+proc sql noprint;
+select CATS('new_',name) into: newnames separated by " "
+from dictionary.columns
+where libname = "WORK" and memname = "TEMP2" and name like "Height_%";
+quit;
+
+data temp2;
+set temp2;
+array h(*) height:;
+array newh(*) &newnames.;
+do i = 1 to dim(h);
+newh{i} = h{i}*2;
+end;
+drop i;
+run;
+```
+
+## MISSING VALUES IN SAS
+
+In SAS, Numeric and Character missing values are represented differently.
+
+### Numeric Missing Values
+
+SAS stores 28 types of missing values in a numeric variable. They are as follows :  
+
+1) dot-underscore . _  
+2) dot .  
+3) .A through .Z ( Not case sensitive)  
+
+Sorting Order : dot- underscore is the lowest valued missing value. After the dot-underscore, comes the dot, and then the dot-A. The dot-Z is the highest valued missing value.  
+
+Run the following code and see how SAS treats them missing value  
+
+```sas
+data temp;
+input x;
+cards;
+1
+2
+3
+.
+.A
+.X
+.Z
+._
+4
+;
+run;
+
+proc freq;
+table x;
+run;   
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/deb0a45a-dc37-4817-ac0b-bc4d2d65c834)  
+
+### SAS: Check for missing numeric values  
+
+The following code checks for dot missing value only. It does not check for other 27 special numeric missing values (._ , .A through .Z)
+
+```sas
+data outdata;
+set temp;
+length y $12;
+If x=. then y = "Missing";
+else y = "Non-Missing";
+run;
+```
+
+The following code checks for all 28 numeric missing values (. , ._ , .A through .Z)  
+
+```sas
+data outdata;
+set temp;
+length y $12;
+If x<=.z then y = "Missing";
+else y = "Non-Missing";
+run;
+```
+
+The MISSING function accepts both character and numeric variables and returns the value 1 if the variable contains a missing value or zero otherwise.
+
+```sas
+data outdata;
+set temp;
+length y $12;
+If missing(x) then y = "Missing";
+else y = "Non-Missing";
+run;
+```
+
+### SAS: Check for missing character values  
+
+Character missing values are represented by a single blank enclosed in quotes ' '.  
+
+```sas
+DATA mydata;
+  INPUT Product $;
+  DATALINES;
+ProductA
+.
+ProductA
+ProductA
+.
+ProductB
+ProductB  
+;
+RUN;
+
+data outdata;
+set mydata;
+length y $12;
+If missing(Product) then y = "Missing";
+else y = "Non-Missing";
+run;
+```
+
+### SUM Function vs. + Operator for Missing Values  
+
+Suppose we have a data set containing three variables - X, Y and Z. They all have some missing values. We wish to compute sum of all the variables.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9ff8bb36-0f7b-4596-a82b-b3fa1a1b1e3f)  
+
+```sas
+data mydata;
+input x y z;
+datalines;
+1 . 3
+4 5 .
+. 8 9
+;
+run;
+
+data mydata2;
+set mydata;
+a=sum(x,y,z);
+p=x+y+z;
+run;
+```
+
+The SUM function returns the sum of non-missing values whereas "+" operator returns a missing value if any of the values are missing.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/60b3c70d-cff5-46c6-adf4-f409ec7fd070)  
+
+### Functions that handle MISSING data  
+
+NMISS : The NMISS() function will return the number of missing values in the specified list of numeric variables. The NMISS() function will convert any character values to numeric before assessing if the argument value is missing.  
+ 
+CMISS : The CMISS() function counts the number of missing values for both character and numeric variables without requiring character values to be converted to numeric.  
+
+N : The N() function returns the number of non-missing values in a list of numeric variables.  
+
+```sas
+/* Create a sample SAS dataset */
+data sample_dataset;
+  input var1 var2 var3 $;
+  datalines;
+10  20  A
+15   .  B
+.  25  C
+12  18   .
+.   .  D
+;
+
+/* Calculate the number of missing values for each variable */
+data missing_values;
+  set sample_dataset;
+
+  /* Use NMISS function to count missing numeric values */
+  num_missing_var1 = NMISS(var1);
+  num_missing_var1_var2 = NMISS(var1, var2);
+
+  /* Use CMISS function to count missing values */
+  missing_all = CMISS(var1, var2, var3);
+
+  /* Use N function to count total non-missing values for numeric values*/
+  num_non_missing = N(var1, var2, var3);
+  total_non_missing = 3-missing_all;
+
+run;
+
+/* Print the resulting dataset */
+proc print data=missing_values noobs;
+run;
+```
+
+### How to Count Missing Values in a Dataset  
+
+To count missing values in a SAS dataset, you can use the NMISS option in PROC MEANS procedures in SAS.  
+
+```sas
+/* Create a sample SAS dataset with missing values */
+DATA mydata;
+  INPUT ID Age Income;
+  DATALINES;
+1 25 50000
+2 . 60000
+3 30 .
+4 40 75000
+5 22 40000
+. 28 55000
+7 35 65000
+8 . .
+9 19 30000
+;
+RUN;
+
+PROC MEANS DATA=mydata NMISS;
+RUN;
+```
+
+### CALL MISSING  
+
+SAS provides the statement CALL MISSING() to explicitly initialise or set a variable value to be missing.
+
+```sas
+data _null_;
+call missing( num_1, num_2, x ); 
+num_3 = x;
+put num_1 = / num_2 = / num_3 = ;
+run;
+```
+
+See result in the Log Window. In the above SAS code, a data step is used to initialize and assign missing values to three variables (num_1, num_2, and x) using the call missing statement. Then, the value of x is assigned to num_3, and the values of num_1, num_2, and num_3 are printed using the put statement. Since num_1 and num_2 have been explicitly set to missing, their output will show as missing, while num_3 will take the value of x, which is also missing.  
+
+### Delete empty rows  
+
+```sas
+options missing = ' ';
+data readin;
+set outdata;
+if missing(cats(of _all_)) then delete;
+run;
+```
+
+### How missing values are handled in SAS procedures  
+
+1. PROC FREQ
+
+To count missing values for categorical variables, you can use the PROC FREQ procedure. By default, PROC FREQ excludes missing values and percentages are based on the number of non-missing values. If you use the "/ MISSING" option in the tables statement, the percentages are based on the total number of observations (non-missing and missing) and the percentage of missing values are reported in the table.  
+
+```sas
+DATA mydata;
+  INPUT Product $;
+  DATALINES;
+ProductA
+.
+ProductA
+ProductA
+.
+ProductB
+ProductB  
+;
+RUN;
+
+PROC FREQ DATA=mydata;
+  TABLES Product / MISSING;
+RUN;
+```
+
+2. PROC MEANS  
+
+It produces statistics on non-missing data only. The NMISS option is used to calculate number of missing values.  
+
+```sas
+Proc Means Data = test N NMISS;
+Var q1 - q5 ;
+Run;
+```
+
+To see number of observations having a missing value for the classification variable, type MISSING option in PROC MEANS.  
+
+```sas
+Proc Means data = test N NMISS MISSING;
+Class Age ;
+Var q1 - q5;
+Run;
+```
+
+3. PROC CORR  
+
+By default, correlations are computed based on the number of pairs with non-missing data (pairwise deletion of missing data). The nomiss option can be used on the proc corr statement to request that correlations be computed only for observations that have non-missing data for all variables on the var statement (listwise deletion of missing data).  
+
+4. PROC REG  
+
+If any of the variables on the model or var statement are missing, they are excluded from the analysis (i.e., listwise deletion of missing data)  
+
+5. PROC LOGISTIC  
+
+If any of the variables on the model or var statement are missing, they are excluded from the analysis (i.e., listwise deletion of missing data)  
+
+6. PROC FACTOR  
+
+Missing values are deleted listwise, i.e., observations with missing values on any of the variables in the analysis are omitted from the analysis.  
+
+## SAS : CONVERT CHARACTER VARIABLE TO DATE
+
+This tutorial explains multiple ways we can convert a character variable (string) to a date variable in SAS.  
+
+Suppose you encounter a problem in which you need to convert character variable to SAS date format. It happens most of the times when we upload raw data file in TXT, EXCEL or CSV format to SAS. The problem with dates in character format is you cannot apply any calculations on them.  
+
+### Create a Sample Data  
+
+The following SAS code creates a sample SAS dataset for demonstration purpose.  
+
+```sas
+data example;
+input dateofbirth $20.;
+cards;
+05/11/1980
+07/05/1990
+04/14/1981
+;
+run;
+```
+
+### Convert Character Variable to SAS Date  
+
+The INPUT function is used to convert character variable (string) to numeric. With MMDDYY10. format, we assign format of the date.  
+
+```sas
+data out;
+set example;
+dateofbirth2 = input(strip(dateofbirth),MMDDYY10.);
+format dateofbirth2 MMDDYY10.;
+run;
+```
+
+Important Note : Please make sure a new variable is created for conversion. If you use the same variable for conversion, the format of the variable would remain character.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a77fd139-a048-4482-a160-47d60b2b3553)  
+
+### How to Convert Character Variable to Different Date Format  
+
+As you can see our original dateofbirth variable is in Month-Date-Year format but stored as a character. If we need to convert it to Date-Month-Year format and stored as in SAS date format.  
+
+```sas
+data out;
+set example;
+dateofbirth2 = input(strip(dateofbirth), MMDDYY10.);
+format dateofbirth2 DDMMYY10.;
+run;
+```
+
+Make sure you put the original date format in INPUT function and put the desired date format in FORMAT statement. If you put the different date format in INPUT function, it may lead to missing value. For example, 04/14/1981 cannot be converted to DDMMYY10. format directly as SAS reads 14 as month which is not possible.  
+
+### How to convert character dates of DD-MMM-YYYY or DD/MMM/YYY format?  
+
+You can use the format date11. to convert character values in DD-MMM-YYYY format.  
+
+```sas
+DATA temp;
+     INPUT @6 dt $11.;
+     dt2 = input(strip(dt),date11.);
+     FORMAT dt2 date11.;
+     CARDS;
+     10/JUN/2014
+     ;
+PROC PRINT NOOBS;
+RUN;
+```
+
+### Convert Multiple Character Variables to Date  
+
+Suppose you need to convert multiple character variables to SAS datevalue format. We can create SAS array to convert them.  
+
+```sas
+data example2;
+input dateofbirth $10. hire $11.;
+cards;
+1971-11-21 1991-12-21
+1980-05-14 1999-10-20
+;
+run;
+```
+
+Real SAS Date values are numeric so numeric array is created for them.  
+
+```sas
+data out;
+set example2;
+array olddates $ dateofbirth hire;
+array newdates dt1 dt2;
+do i = 1 to dim(olddates);
+newdates(i) = input(strip(olddates(i)),yymmdd10.);
+end;
+drop i;
+format dt1-dt2 yymmdd10.;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b3a89615-a080-4ab9-9582-253be67db57f)  
+
+## HOW TO CONVERT NUMERIC VARIABLES TO DATE VARIABLES IN SAS (WITH EXAMPLES)
+
+This tutorial explains how to convert a numeric variable to a date variable in SAS.  
+
+Suppose you have a numeric variable that contains dates. You are asked to convert it to SAS date format. It seems to be a easy task but it sometimes becomes a daunting task when you don't know how SAS treats dates. The input data is shown below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9bb2bc72-a755-48ca-b2c5-8d86d4c21257)  
+
+### Sample Data  
+
+The following program is used to create a sample data.
+
+```sas
+data temp;
+input date;
+cards;
+20160514
+19990505
+20131104
+20110724
+;
+run;
+```
+
+### Solution  
+
+To convert a numeric variable into a date variable in SAS, you can use the following syntax.  
+
+```sas
+data temp2;
+set temp;
+newdate = input(put(date,8.),yymmdd8.);
+format newdate date10.;
+proc print noobs;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/0eaae94e-3e7f-4eec-ac9c-8f2c2c38a185)  
+
+__Explanation__
+
+PUT Function is used to convert the numeric variable to character format.  
+
+INPUT Function is used to convert the character variable to sas date format  
+
+yymmdd8 informat refers to years followed by month and days having width of total 8  
+
+FORMAT Function is used to display the SAS date values in a particular SAS date format. If we would not use format function, SAS would display the date in SAS datevalues format. For example, 20588 is a sas datevalue and it is equivalent to '14MAY2016'.  
+
+### ANYDTDTE : Powerful Informat for all dates  
+
+ANYDTDTE is relatively latest informat written or devloped by SAS Institute to handle dates. This is extremely useful when you hate remembering various SAS date informats and working with new dataset which you are not so familiar with the type of date format you may have in your date column. For example date can be like March 17, 2021, 17/03/2021, 03/17/2021 or 17MAR2021. If you wish there would be only one informat to handle all these dates, SAS has already fulfilled your promise.  
+
+```sas
+data temp2;
+set temp;
+newdate = input(put(date,8.),ANYDTDTE8.);
+format newdate date10.;
+proc print noobs;
+run;
+```
+
+## SAS FORMATS
+
+This tutorial explains how to use FORMATS in SAS, along with examples.
+
+### SAS Formats  
+
+SAS Formats decide how to display values of a variable. They define the appearance of variables when they are printed or exported. For example, you can use a format to display a numeric variable as a currency, percentage. Formats do not change the underlying data values; they only affect their presentation.  
+
+Below is a list of common SAS Formats.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3ad8d864-1584-435d-8aa1-246e06f918a8)  
+
+### Character Formats  
+
+$w.: Displays character values to a specified width.  
+
+$UPCASEw.: Displays character values in uppercase and optionally truncates them to a specified width.  
+
+The FORMAT statement is used to format values in a specific format. Here we are using the $UPCASEw. format.  
+
+```sas
+data mydata;
+set sashelp.cars; 
+format make $upcase.;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3530d51e-b985-4a86-8105-d46b637a2419)  
+
+Let's say we specify width 3 $upcase3., it will truncate to first 3 letters (as shown in the image below).  
+
+```sas
+data mydata;
+set sashelp.cars; 
+format make $upcase3.;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b97448d9-b468-469d-9693-5798b80f93cc)  
+
+### Numeric Formats  
+
+COMMAw.d: Displays numeric values with commas and a specified number of decimal places.  
+
+DOLLARw.d: Displays numeric values as currency with a dollar sign, commas, and a specified number of decimal places.  
+
+PERCENTw.d: Displays numeric values as percentages with a specified number of decimal places.  
+
+The "dollar8." format specifies that the values of the "msrp" variable should be displayed as currency with a dollar sign and commas, with a width of 8 characters. The "msrp" variable represents the manufacturer's suggested retail price of the cars.  
+
+```sas
+data mydata;
+set sashelp.cars; 
+format msrp dollar8.;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1e901c21-a11d-4d4f-a536-29f892b077c1)  
+
+If you only want commas in numeric values, you can use the format comma8.  
+
+```sas
+data mydata;
+set sashelp.cars; 
+format msrp comma8.;
+run;
+```
+
+In the code below, the percent8.2 format specifies that the "percent_gain" values should be displayed as percentages with two decimal places, with a total width of 8 characters.  
+
+```sas
+data mydata;
+percent_gain = 0.835; 
+format percent_gain percent8.2;
+run;
+```
+
+Result: 83.50%
+
+### Date Formats  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/22b62528-3cc8-4100-a245-624b58def042)  
+
+The line format date date11.; specifies that the "date" variable in the "mydata" dataset should be formatted using the "date11." format. This format represents the date values in the format "dd-MON-yyyy". The resulting dates will have a width of 11 characters.  
+
+```sas
+data mydata;
+set sashelp.pricedata;
+format date date11.;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1bd0b34c-fe4b-4e1c-ac72-614cf9047b17)  
+
+## SAS DATE FORMATS AND INFORMATS
+
+This tutorial describes the usage of SAS Date formats and informats. It includes practical real-world data problems related to SAS formats.  
+
+### What are Formats and Informats?
+
+Informats is used to tell SAS how to read a variable whereas Formats is used to tell SAS how to display or write values of a variable.  
+
+Informats is basically used when you read or import data from either an external file (Text/Excel/CSV) or read in sample data which was created using CARDS/DATALINES statement. It is also used when you create a new variable in a dataset.  
+
+Formats can be used in both Data Steps and PROC Steps whereas Informat can be used only in Data Steps. Let's understand by examples -  
+
+### Example 1 - Read Dates in SAS  
+
+In the program below, we have used INFORMATS ddmmyy8. and ddymmyy10. to read dates in SAS. It creates a dataset called sampledata which is stored in WORK library.  
+
+```sas
+DATA sampledata;
+     INPUT @6 date1 ddmmyy8. @15 date2 ddmmyy10.;
+    CARDS;
+     30-12-16 30-12-2016
+  ;
+RUN;
+```
+
+The INFORMATS ddmmyy8. is used to read 30-12-16 date and ddmmyy10. to read 30-12-2016 date. In this case, 8 and 10 refers to width of the date.
+
+The created dataset looks like below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/616e58d4-622b-45ff-a87e-09b05631d965)  
+
+It returns 20818 as it is in SAS date value form. It is not meaningful if you look at the value. You cannot tell which date it is. To display in real date form, use FORMAT statement.  
+
+```sas
+DATA sampledata;
+     INPUT @6 date1 ddmmyy8. @15 date2 ddmmyy10.;
+     FORMAT date1 ddmmyy8. date2 ddmmyy10.;
+  cards;
+     30-12-16 30-12-2016
+  ;
+RUN;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/59595e31-6c2b-4e9f-8b67-40ef5732e441)  
+
+### How to read DD-MMM-YY format
+
+You can use date11. format for both DD-MMM-YY and DD-MMM-YYYY format.  
+
+```sas
+DATA temp;
+     INPUT @6 dt date11.;
+     FORMAT dt date11.;
+     CARDS;
+     10-oct-14
+     ;
+PROC PRINT NOOBS;
+RUN;
+```
+
+Result : 10-OCT-2014  
+
+### Example 2 - Display Today's Date  
+
+The today() function can be used to generate current date.  
+
+```sas
+data _null_;
+    dt=today();
+    format dt yymmdd10.;
+    put dt ;
+run;
+```
+
+Result : It returns 2016-12-30 as 30DEC2016 is the today's date. It's in YYYY-MM-DD format because we've used yymmdd10. format. The 10 refers to the width of the date as 2016-12-30 contains 10 elements. The PUT statement is used to show value in log window.  
+
+### To display date in WORD format
+
+1. Short Word Date Format
+
+The format date9. returns 30DEC2016.
+```sas
+format dt date9.;
+```
+
+2. Complete Word Date Format
+
+The format WORDDATE. returns DECEMBER 30, 2016. No need to specify width in this format. It automatically adjusts the width depending on the month.  
+
+```sas
+format dt WORDDATE.;
+```
+
+3. Including WEEK
+
+The format WEEKDATE. gives Friday, December 30, 2016  
+```sas
+format dt WEEKDATE.;
+```
+
+### Display DAY / MONTH / YEAR
+
+In this section, we will see how we can write only day, month, year and weekday.  
+
+```sas
+data _null_;
+dt=today();
+put "Day :"  dt  DAY.;
+put "Month :" dt MONTH.;
+put "YEAR:" dt YEAR.;
+put "WEEKDAY:" dt DOWNAME.;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a83d02ab-b268-47d1-a150-3a3b98880b8f)  
+
+We can also use FORMAT in the PUT statement without specifying FORMAT statement explicitly. The DAY. format returned 30, MONTH. format returned 12 and YEAR. format returned 2016. In addition, we have used DOWNAME. format to extract weekday (Friday).  
+
+Other Popular Formats  
+
+Some of the commonly used date formats are listed below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/aeacfe94-dd29-4747-8761-46c311448033)  
+
+Endnotes
+
+Hope you have a better understanding of the difference between SAS Date Formats and Informats and how they are used after completing this tutorial.   
+
+
+## SAS : PROC FORMAT WITH EXAMPLES  
+
+This tutorial explains the uses of PROC FORMAT in data analysis tasks. It includes several examples to help understand the practical application of PROC FORMAT.
+
+### Sample Data  
+
+In this tutorial, we will be using the dataset sashelp.cars for demonstration purpose. See the sample data shown in the image below.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/66764f6b-8ccc-4188-b0f3-32df716f724c)  
+
+Example 1 : Suppose you are asked to group MSRP variable based on the following conditions and check the number of observations falling in each groups.
+
+Values greater than 40,000 should be labeled as 'High'  
+
+Values between 26,000 and 40,000 should be labeled as 'Medium'  
+
+Otherwise, label them as 'Low'  
+
+__Solution__ 
+
+```sas
+proc format;
+value range
+40000-high='High'
+26000-< 40000='Medium'
+other ='Low';
+run;
+
+proc freq data = sashelp.cars;
+table msrp;
+format msrp range.;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/4840f8d6-6339-49fa-b5d6-2ba74bcb4c57)  
+
+Example 2 : Same as with example 1. Here we are creating a new variable called TSRP based on the conditions applied on the MSRP variable.
+
+__Solution :__  
+
+```sas
+proc format;
+value range
+40000-high='High'
+26000-< 40000='Medium'
+other ='Low';
+run;
+
+data temp;
+set sashelp.cars;
+TSRP = put(msrp, range.);
+run;
+```
+
+The put() function is used to apply the format. The line TSRP = put(msrp, range.); applies the custom format range to the msrp variable and stores the formatted values in a new variable named TSRP.
+
+Example 3 : Subset Data - You can also filter data using PROC FORMAT.  
+
+The following code filters the dataset to only include observations where the formatted value is either 'High' or 'Medium'.  
+
+__Method 1 :__  
+
+```sas
+data temp;
+set sashelp.cars;
+where put(msrp, range.) IN ('High' 'Medium');
+run;  
+```
+
+__Method 2 :__  
+
+```sas
+data temp (where = (tsrp IN ('High' 'Medium')));
+set sashelp.cars;
+tsrp = put(msrp, range.);
+run;
+```
+
+__Method 3 :__
+
+```sas
+proc sql;
+select *,
+put(msrp, range.) as tsrp
+from sashelp.cars
+where calculated tsrp in ('High', 'Medium');
+quit;
+```
+
+## SAS : DELETE EMPTY ROWS IN SAS  
+
+Suppose you want to delete empty rows from a dataset in SAS. It generally happens when we import data from external sources such as excel / csv files. It loads additional rows that are totally blank. Sometimes blank observations also affect the desired output so it's necessary to check missing cases and treat them.  
+
+### Sample Dataset  
+
+The sample dataset looks like below. In the dataset, we have four variables - 1 character and 3 numeric. It would be used further in the example to demonstrate how to remove empty rows.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/bd62a8fc-ad9b-4de2-8db6-9da7368c84fa)  
+
+Create a SAS dataset
+
+The following program creates a sample dataset in SAS.  
+
+```sas
+data outdata;
+length Name $12.;
+input Name $ Score1 Score2 Score3 ;
+infile datalines missover;
+datalines;
+Sam 77 68 66
+Deepanshu 50 . 89
+Shane 55 78 89
+Roger 50 97 86
+Priya 88 68 93
+;
+run;
+```
+
+Method I : Remove rows where all variables having missing / blank values  
+
+```sas
+options missing = ' ';
+data readin;
+   set outdata;
+   if missing(cats(of _all_)) then delete;
+run;
+```
+
+Notes :  
+
+1. The MISSING= system option is used to display the missing values as a single space rather than as the default period (.) options missing = ' ';  
+
+2. The CATS function concatenates the values. It also removes leading and trailing blanks. cats(of _all_) - Concatenate all the variables  
+
+3.  missing(cats(of _all_)) - Identifies all the rows in which missing values exist in all the variables.
+
+Output
+
+In the output dataset, we have 5 rows. One row is deleted from the original dataset.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d179e853-8073-483c-81e0-d0e7fc9faa34)  
+
+Method 2   
+
+In this program, NMISS function checks the numeric of missing numeric values and CMISS checks the number of missing character values. In this code, we are telling SAS to delete records wherein both the character and numeric values are missing.  
+
+```sas
+data readin;
+set outdata;
+if nmiss( of _numeric_ ) and cmiss(of _character_) then delete ;
+run;
+```
+
+Method 3
+
+In the code below, we are using COALESCE and COALESCEC functions to return non-empty rows. These functions return first non-missing value. If all values are missing, it returns missing. Later we are checking whether these functions return missing or not.  
+
+```sas
+data readin;
+set outdata;
+if missing(coalescec(of _character_)) and missing(coalesce(of _numeric_)) then delete;
+run;
+```
+
+Example : Delete rows where any variable has missing values  
+
+```sas
+data readin;
+set outdata;
+if nmiss(of _numeric_) OR  cmiss(of _character_) > 0 then delete;
+run;
+```
+
+In this case, we are using OR operator to check if any of the variable has missing values. It returns 4 observations. Check out the output below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/46211c07-bdfc-4ae3-adb3-7ac3630498de)  
+
+### Practice Questions - Try it yourself
+
+Q1. Remove records wherein all numeric columns having empty rows.  
+
+Q2. Remove records wherein all character variables having empty rows.  
+
+
+## SAS : FIRST. AND LAST. VARIABLES
+
+This tutorial explains how to identify first and last observations within a group. It is a common data cleaning challenge to remove duplicates or store unique values. In SQL, we use window functions such as rank over() to generate serial numbers among a group of rows. In SAS, we can create first. and last. variables to achieve this task.
+
+### First. and Last. Variables  
+
+FIRST.VARIABLE assigns the value of 1 for the first observation in a BY group and the value of 0 for all other observations in the BY group.  
+
+LAST.VARIABLE assigns the value of 1 for the last observation in a BY group and the value of 0 for all other observations in the BY group.  
+
+Note : Data set must be sorted BY group before applying FIRST. and LAST. Variables.  
+
+SAMPLE DATA SET  
+
+Suppose you have a dataset consisting 3 variables and 12 observations. The variables are ID, Name and Score. The variable ID is a grouping variable and it contains duplicates.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f9fbc91d-1de6-4271-b544-589da550a642)  
+  
+Create this data set in SAS  
+
+The program below creates the dataset in SAS. Copy the program below and paste it into SAS program editor and run/submit it.  
+
+```sas
+data readin;
+input ID Name $ Score;
+cards;
+1     David   45
+1     David   74
+2     Sam     45
+2     Ram     54
+3     Bane    87
+3     Mary    92
+3     Bane    87
+4     Dane    23
+5     Jenny   87
+5     Ken     87
+6     Simran  63
+8     Priya   72
+;
+run;
+```
+
+Use PROC SORT to sort the data set by ID. It is required to sort the data before using first. and last. variables.  
+
+```sas
+PROC SORT DATA = READIN;
+BY ID;
+RUN;
+DATA READIN1;
+SET READIN;
+BY ID;
+First_ID= First.ID;
+Last_ID= Last.ID;
+RUN;
+```
+
+Note : FIRST./LAST. variables are temporary variables. That means they are not visible in the newly created data set. To make them visible, we need to create two new variables. In the program above, i have created First_ID and Last_ID variables.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6832bebf-0897-4b49-8020-43fef1c367ee)  
+
+How it works  
+
+FIRST.variable = 1 when an observation is the first observation in each group values of variable ID.  
+
+FIRST.variable = 0 when an observation is not the first observation in each group values of variable ID.  
+
+LAST.variable = 1 when an observation is the last observation in each group values of variable ID.  
+
+LAST.variable = 0 when an observation is not the last observation in each group values of variable ID.  
+
+When FIRST.variable = 1 and LAST.VARIABLE = 1, it means there is only a single value in the group. (See ID = 4 in the above data for reference)  
+
+### Selecting First Observation within a Group  
+
+Suppose you need to select only the first observation among a group of observations. It is very easy to do it with IF statement. The IF statement subsets data when IF is not used in conjunction with THEN or ELSE statements.  
+
+```sas
+PROC SORT DATA = READIN;
+BY ID;
+RUN;
+```
+
+```sas
+DATA READIN1;
+SET READIN;
+BY ID;
+IF FIRST.ID;
+PROC PRINT;
+RUN;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3a3b714d-4145-4e13-9878-fc294525bc97)  
+
+Note : It returns first observation among values of a group (total 7 observations).  
+
+### Selecting Last Observation within a Group  
+
+Suppose you are asked to include only last observation from a group. Like the previous example, we can use last. variable to subset data.  
+
+```sas
+PROC SORT DATA = READIN;
+BY ID;
+RUN;
+```
+```sas
+DATA READIN1;
+SET READIN;
+BY ID;
+IF LAST.ID;
+PROC PRINT;
+RUN;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/76cc79eb-97b1-462b-86c0-feb9733a6751)  
+
+### Can we use WHERE instead of IF with First. and Last. Variables?  
+
+No. WHERE statement cannot be used with First. and Last. Variables. It is because WHERE statement requires variables already be created in the dataset before processing.  
+
+How to generate serial number in a group?  
+
+Suppose you need to create serial numbers among a group of observations. See the snapshot below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/91d654d8-5890-425c-83de-786c6da6cb77)  
+
+```sas
+Data temp;
+set readin;
+by ID;
+if first.id then N = 1;
+else N +1;
+proc print;
+run;
+```
+
+In the above program, we are setting N=1 when it is the first value of a group i.e. ID. Otherwise adding 1 to N. The N+1 implies N = N + 1 in BY group processing. When there is a second observation in a group, N+1 adds 1 to N=1 so N becomes 2. It further increments by 1 when there is third observation in the group and so on.
+
+### Calculate Cumulative Score by Group  
+
+Suppose you need to calculate running cumulative score by variable ID.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/39d74468-599b-4568-a73d-2a6eb98444fe)  
+
+```sas
+Data temp;
+set readin;
+by ID;
+if first.id then CumScore = Score;
+else CumScore + Score;
+proc print;
+run;
+```
+
+In the above program, we are setting Cumscore = Score when it is the first value of a group i.e. ID. Otherwise adding Score to Cumscore. The Cumscore + Score implies CumScore = CumScore + Score in BY group processing.
+
+How to store Unique and Duplicate Values  
+
+```sas
+data unique duplicates;
+set readin;
+by id;
+if first.id = 1 and last.id = 1 then output unique;
+else output duplicates;
+run;
+```
+ 
+The DATA statement creates two temporary SAS data sets: DUPLICATES AND UNIQUE.  
+
+The SET statement reads observations from data set READIN.  
+
+The BY statement tells SAS to process observations by ID. Variables FIRST.ID and LAST.ID are created.  
+
+If the first and last observation have the same value, it implies it is a unique value; otherwise, the value is a duplicate.  
+ 
+### Case Studies  
+
+1. Identify and select only records having maximum Score among a group of observations of variable ID
+
+3. Select unique observations plus second observation from duplicate observations of variable ID
+
+### Solution 1  
+
+First we need to build a logic how we can select records having max score within variable ID. We can do it via PROC SORT. In this case, we need to sort data by 2 variables - first sorting on variable ID and then next sorting on Score by descending order. The DESCENDING keyword is used in PROC SORT to arrange data from largest to smallest. Sorting on descending order is used to place the max value at first observation in each group of ID.  
+
+```sas
+proc sort data= readin;
+by ID descending score;
+run;
+data readin1;
+set readin;
+by ID;
+if first.id;
+run;
+```
+
+After sorting, we retain records having maximum value by using FIRST. and IF statement. The IF FIRST.ID keeps the first record among a group of values of variable ID. The output is shown in the image below.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b282a5c9-6fda-4fc7-9345-69705bb3b78e)  
+
+Solve second case study yourself and post your answer in the comment box below. Make sure it should be solved in one data step code. Hint : BOTH FIRST. and LAST. variables would be used.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
