@@ -5052,6 +5052,72 @@ by product;
 run;
 ```
 
+## SAS : IDENTIFYING AND STORING UNIQUE AND DUPLICATE VALUES  
+
+This post demonstrates techniques to find unique and duplicate values in a SAS data set. It is one of the most common interview questions as it is commonly used in day-to-day data management activities. SAS has some easy inbuilt options to handle duplicate records.  
+
+Below is a sample data set that can be used for demonstration.  
+
+SAMPLE DATA SET  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5dbd5fd5-54ac-4ae5-bb5d-8ca0fae3f88c)  
+
+__Create this data set in SAS__
+
+```sas
+data readin;
+input ID Name $ Score;
+cards;
+1     David   45
+1     David   74
+2     Sam     45
+2     Ram     54
+3     Bane    87
+3     Mary    92
+3     Bane    87
+4     Dane    23
+5     Jenny   87
+5     Ken     87
+6     Simran  63
+8     Priya   72
+;
+run;
+```
+
+There are several ways to identify unique and duplicate values:  
+
+### 1. PROC SORT  
+
+In PROC SORT, there are two options by which we can remove duplicates.
+
+1) NODUPKEY Option
+2) NODUP Option
+
+The NODUPKEY option removes duplicate observations where value of a variable listed in BY statement is repeated while NODUP option removes duplicate observations where values in all the variables are repeated (identical observations).  
+
+The difference between these two options are explained in detail below with SAS codes-  
+
+
+PROC SORT DATA = readin NODUPKEY;
+BY ID;
+RUN;	
+
+PROC SORT DATA = readin NODUP;
+BY ID;
+RUN;
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/bfd14da7-86fe-493c-95d3-20684543b485)  
+
+The NODUPKEY has deleted 5 observations with duplicate values whereas NODUP has not deleted any observations.  
+
+__Why no value has been deleted when NODUP option is used?__  
+
+Although ID 3 has two identical records (See observation 5 and 7), NODUP option has not removed them. It is because they are not next to one another in the dataset and SAS only looks at one record back.
+
+To fix this issue, sort on all the variables in the dataset READIN.
+To sort by all the variables without having to list them all in the program, you can use the keyword ‘_ALL_’ in the BY statement (see below).
 
 
 
