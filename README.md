@@ -5114,14 +5114,1639 @@ The NODUPKEY has deleted 5 observations with duplicate values whereas NODUP has 
 
 __Why no value has been deleted when NODUP option is used?__  
 
-Although ID 3 has two identical records (See observation 5 and 7), NODUP option has not removed them. It is because they are not next to one another in the dataset and SAS only looks at one record back.
+Although ID 3 has two identical records (See observation 5 and 7), NODUP option has not removed them. It is because they are not next to one another in the dataset and SAS only looks at one record back.  
 
-To fix this issue, sort on all the variables in the dataset READIN.
+To fix this issue, sort on all the variables in the dataset READIN.  
+
 To sort by all the variables without having to list them all in the program, you can use the keyword ‘_ALL_’ in the BY statement (see below).
 
+```sas
+PROC SORT DATA = readin NODUP;
+BY _all_;
+RUN;
+```
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3d1280f3-6661-49cf-8d78-06c816e16d1e)  
+
+__STORING DUPLICATES__
+
+Use the DUPOUT= option with NODUPKEY (or NODUP) to output duplicates to the specified SAS data set:  
+
+```sas
+PROC SORT DATA = readin NODUPKEY DUPOUT= readin1;
+BY ID;
+RUN;
+```
+
+The output is shown below :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c6acb9d0-47dd-4a8f-a218-8071424d9bdb)  
+
+### FIRST. and LAST. VARIABLES  
+
+FIRST.VARIABLE assigns the value of 1 for the first observation in a BY group and the value of 0 for all other observations in the BY group.  
+
+LAST.VARIABLE assigns the value of 1 for the last observation in a BY group and the value of 0 for all other observations in the BY group.  
+
+Data set must be in sort order.  
+
+Use PROC SORT to sort the data set by ID.  
+
+```sas
+PROC SORT DATA = READIN;
+BY ID;
+RUN;
+
+DATA READIN1;
+SET READIN;
+BY ID;
+First_ID= First.ID;
+Last_ID= Last.ID;
+RUN;
+```
+
+__Note__ : FIRST./LAST. variables are temporary variables. That means they are not visible in the newly created data set. To make them visible, we need to create two new variables. In the program above, i have created First_ID and Last_ID variables.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/4cd5d180-006d-4ad1-a1c8-bbd4af2f7400)  
+
+__How to store unique and duplicate values?__  
+
+```sas
+DATA DUPLICATES UNIQUE;
+SET READIN;
+BY ID;
+First_ID= First.ID;
+Last_ID= Last.ID;
+IF NOT (First_ID = 1 and Last_ID = 1) THEN OUTPUT DUPLICATES;
+ELSE OUTPUT UNIQUE;
+RUN;
+```
+
+__Explanation__ 
+
+The DATA statement creates two temporary SAS data sets: DUPLICATES AND UNIQUE.  
+
+The SET statement reads observations from data set READIN  
+
+The BY statement tells SAS to process observations by ID. Variables FIRST.ID and LAST.ID are created.  
+
+The observations where both First_ID and Last_ID do not equal to 1 go to the newly created data set DUPLICATES.  
+
+The ELSE statement outputs all other observations (i.e., where First_ID and Last_ID equal to 1) to data set UNIQUE.  
 
 
+## SAS : DETAILED EXPLANATION OF PROC MEANS
 
+PROC MEANS is one of the most common SAS procedure used for analyzing data. It is mainly used to calculate descriptive statistics such as mean, median, count, sum etc. It can also be used to calculate several other metrics such as percentiles, quartiles, standard deviation, variance and sample t-test.  
+
+### Uses of PROC MEANS  
+
+1) Analyze numeric or continuous variables  
+
+2) Analyze numeric variables by group(s)  
+
+3) Identifies outlier or extreme values  
+
+4) Hypothesis Testing with Sample T-test
+
+### PROC MEANS Syntax  
+
+The syntax of PROC MEANS is shown below.  
+
+```sas
+PROC MEANS DATA=dataset-name ;
+  BY  variables;
+  CLASS variable(s) / ;
+  VAR variables;  
+  OUTPUT OUT=SAS-data-set ;
+RUN;
+```
+
+The explanation of statements of PROC MEANS is as follows :  
+
+PROC MEANS - Calculate descriptive statistics for variables  
+
+BY - Calculate separate statistics for each BY group  
+
+CLASS - Group the analysis  
+
+VAR - Numeric variables you want to analyze  
+
+OUTPUT - Create an output data set  
+
+### Dataset Description
+
+The data includes seven variables and 499 observations. It comprises of survey responses from variables Q1 through Q5 and two demographics - Age and BU (Business Unit). The survey responses lie between 1 to 6.  
+
+To use the dataset in SAS, you can use PROC IMPORT to read data into SAS. See the code below -  
+
+```
+proc import datafile='C:\Users\Deepanshu\Downloads\test.xls'
+out=test
+dbms = xls;
+run;
+```
+
+### Simple Example of PROC MEANS  
+
+In the DATA= option, you need to specify the dataset you want to use. In the VAR statement, you need to refer the numeric variables you want to analyze. You cannot refer character variables in the VAR statement.  
+
+```sas
+Proc Means Data = test;
+Var q1 - q5;
+Run;
+```
+
+The output of PROC MEANS is shown in the image below.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/073f7f55-1282-4d5c-9fee-04b87b844a0a)  
+
+By default, PROC MEANS generates N, Mean, Standard Deviation, Minimum and Maximum statistics.  
+
+### Common Statistical Options of PROC MEANS  
+
+The most frequent statistical options used in PROC MEANS are listed below against their description.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9a64d4e3-f2d8-461f-9de8-4f24dfb0fb34)  
+
+### Other Statistical Options  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/72fd13d5-9e20-4e76-8233-7cddeda4d18c)  
+
+### How to limit Descriptive Statistics  
+
+Suppose you want to see only two statistics - number of non-missing values and number of missing values.  
+
+```sas
+Proc Means Data = test N NMISS;
+Var q1 - q5 ;
+Run;
+```
+
+N refers to number of non-missing values and NMISS implies number of missing values.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/57eb0471-7acf-4363-9f8d-cb2460c29528)  
+
+__Tips__ : Add NOLABELS option to delete Label column in the PROC MEAN table.  
+
+```sas
+Proc Means data = test N NMISS NOLABELS;
+Var q1 - q5;
+Run;
+```
+
+### Group the analysis using PROC MEANS  
+
+Suppose you want to group or classify the analysis by Age. You can use the CLASS statement to accomplish this task. It is equivalent to GROUP BY in SQL.  
+
+```sas
+Proc Means data = test N NMISS NOLABELS;
+Class Age;
+Var q1 - q5;
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/38990341-235a-421c-8f10-a57611b3ee3a)  
+
+You can use NONOBS option to delete N Obs column from the Proc Means table.  
+
+```sas
+Proc Means data = test N NMISS NOLABELS NONOBS;
+Class Age;
+Var q1 - q5;
+Run;
+```
+ 
+### How to use Format in Proc Means  
+
+First, you need to create an user defined format.  
+
+```sas
+Proc Format;
+Value Age
+1 = 'Less than 25'
+2 = '25-34'
+3 = '35-43'
+4 = '44-50'
+5 = '51-59'
+6 = '60 or more';
+Run;
+```
+
+Add FORMAT statement to use user defined format in PROC MEANS.  
+
+```sas
+Proc Means data = test N MEAN;
+Class Age;
+Format Age Age.;
+Var q1 - q5;
+Run;
+```
+
+### How to change Sorting Order  
+
+The DESCENDING option to the right of the slash in the first CLASS statement instructs PROC MEANS to analyze the data in DESCENDING order of the values of Age.  
+
+```sas
+Proc Means Data = test;
+Class Age / descending;
+Var q1 - q5 ;
+Run;
+```
+
+Instead of displaying the results in “sort order” of the values of the Classification Variable (s) you specified in the CLASS Statement, order the results by frequency order using the ORDER=FREQ option in the CLASS Statement.  
+
+```sas
+Proc Means Data = test N;
+Class Age / Order = FREQ;
+Var q1 - q5 ;
+Run;
+```
+
+You can order the results by user defined format of a variable specified in the CLASS statement using the ORDER=FORMATTED option in the CLASS Statement.  
+
+```sas
+Proc Means data = test N MEAN;
+Class Age / Order = formatted;
+Format Age Age.;
+Var q1 - q5;
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/81e0d987-26cf-4c51-bc7e-573d60a751cb)  
+
+Note : If you specify CLASS statement without VAR statement, it classifies the analysis by all numeric variables in your data set.
+
+### Grouping and Output in Separate Tables  
+
+Suppose you want to analyze variables Q1 - Q5 by variable AGE and want the output of each levels of AGE in separate tables. You can use BY statement to accomplish this task. See the example below-  
+
+Make sure you sort the data before using BY statement.  
+
+```sas
+proc sort data= test;
+by age;
+run;
+```
+
+```sas
+proc means data = test;
+by age;
+var q1 - q5 ;
+run;
+```
+
+### Difference between CLASS and BY statement  
+
+The CLASS statement returns analysis for a grouping (classification) variable in a single table whereas BY statement returns the analysis for a grouping variable in separate tables. Another difference is CLASS statement does not require the classification variable to be pre-sorted whereas BY statement demands sorting.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2f7b4f42-45cd-48ac-8c93-4f5df7d11f84)  
+
+### Save output in a data set  
+
+You can use NOPRINT option to tell SAS not to print output in output window.  
+
+```sas
+Proc Means data = test NOPRINT;
+Class Age / Order = formatted;
+Format Age Age.;
+Var q1 - q5;
+Output out = readin mean= median = /autoname;Run;
+```
+
+In the above code, readin is a data set in which output will be stored. The MEAN= MEDIAN= options tells SAS to generate mean and median in the output dataset. The AUTONAME Option automatically assigns unique variable names in the Output Data Set “holding” the statistics requested in the OUTPUT statement.  
+
+You can use AUTOLABEL option to automatically assigns unique label names in the Output Data Set “holding” the statistics requested in the OUTPUT statement.  
+
+```sas
+Proc Means Data = test noprint;
+Class Age ;
+Var q1 q2;
+Output out=F1 mean= / autoname autolabel;
+Run;
+```
+
+You can specify variables for which you want summary statistics to be saved in a output data set.  
+
+```sas
+Proc Means Data = test noprint;
+Class Age ;
+Var q1 q2;
+Output out=F1 mean(q1)= median(q2)= / autoname;
+Run;
+```
+
+You can give custom names to variables stored in a output data set.  
+
+```sas
+Proc Means Data = test noprint;
+Class Age;
+Var q1 - q5 ;
+Output out=F1 mean=_mean1-_mean5 median=_median1-_median5;Run;
+```
+
+### DROP = , KEEP = option
+
+We can use DROP and KEEP options to remove or keep some specific variables.  
+
+```sas
+Proc Means Data = test noprint;
+Class Age;
+Var q1 - q5 ;
+Output out=F1 (drop = _type_ _freq_) mean=_mean1-_mean5 median=_median1-_median5;
+Run;
+```
+
+### WHERE Statement
+
+The WHERE statement is used to filter or subset data. In the code below, we are filtering on variable Q1 and telling SAS to keep only those observations in which value of Q1 is greater than 1. 
+
+```sas
+Proc Means Data = test noprint;
+Where Q1 > 1;Class Age;
+Var q1 - q5 ;
+Output out=F1(drop= _FREQ_) mean= median= / autoname;
+Run;
+```
+
+Like WHERE statement, we can use WHERE= OPTION to filter data. See the following program -  
+
+```sas
+Proc Means Data = test (Where=( Q1 > 1)) noprint;
+Class Age;
+Var q1 - q5 ;
+Output out=F1(drop= _FREQ_) mean= median= / autoname;
+Run;
+```
+
+### GROUPING on 2 (or more) Variables  
+
+When two ore more variables are included in the CLASS statement, PROC MEANS returns 3 levels of classification which is shown in the _TYPE_ variable. Suppose we are specifying variables AGE BU in the CLASS statement. SAS first returns mean and median of variables Q1-Q5 by BU. It is the first level of classification which can be filtered by using WHERE = ( _TYPE_ = 1). The same analysis by AGE is shown against _TYPE_ = 2. When _TYPE_ = 3, SAS returns analysis by both the variables AGE and BU.  
+
+```sas
+Proc Means Data = test noprint;
+Class Age BU;
+Var q1 - q5 ;
+Output out=F1 (where=(_type_=1) drop= AGE _FREQ_) mean= median= / autoname;
+Output out=F2 (where=(_type_=2) drop= BU _FREQ_) mean= median= / autoname;
+Output out=F3 (where=(_type_=3) drop= _FREQ_) mean= median= / autoname;
+Run;
+```
+
+Using the NWAY option instructs PROC MEANS to output only observations with the highest value of _TYPE_ to the new data set it is creating. 
+
+```sas
+Proc Means Data = test nway noprint;
+Class Age;
+Var q1 - q5 ;
+Output out=F1 mean=_mean1-_mean5 median=_median1-_median5;
+Run;
+```
+
+ By default, PROC MEANS will analyze the numeric analysis variables at all possible combinations of the values of the classification variables. With the TYPES statement, only the analyses specified in it are carried out by PROC MEANS.  
+
+ ```sas
+Proc Means Data = test noprint;
+Class Age BU Q1;
+Types()
+Age * BU
+Age * BU * Q1;
+Var q1 - q5;
+Output out=F1 mean=_mean1-_mean5 max=_median1-_median5;
+Run;
+```
+
+DESCENDTYPES Option : Orders rows/observations in the output data set by descending value of _TYPE_.  
+
+```sas
+Proc Means Data = test DESCENDTYPES noprint;
+Class Age;
+Var q1 - q5 ;
+Output out=F1 mean=_mean1-_mean5 median=_median1-_median5;
+Run;
+```
+
+### Multiple CLASS Statements  
+
+Multiple CLASS statement permit user control over how the levels of the classification variables are portrayed or written out to new data sets created by PROC MEANS. It means any one of the classification variable can be displayed in descending order.  
+
+```sas
+Proc Means Data = test noprint;
+Class Age / descending;
+Class BU;Var q1 - q5 ;
+Output out=F1 mean=_mean1-_mean5 max=_median1-_median5;
+Run;
+```
+
+### Identifying Extreme Values of Analysis Variables using the IDGROUP Option  
+
+```sas
+proc means data=electric.electricity noprint nway;
+class transformer;
+var total_revenue ;
+output out= F1
+idgroup (max(total_revenue) out[2] (total_revenue)=maxrev) idgroup (min(total_revenue) out[2] (total_revenue)=minrev) sum= mean= /autoname;
+run;
+```
+
+### Sample T-Test using PROC MEANS  
+
+With PROC MEANS, we can perform hypothesis testing using sample t-test.  
+
+Null Hypothesis - Population Mean of Q1 is equal to 0  
+
+Alternative Hypothesis - Population Mean of Q1 is not equal to 0.  
+
+```sas
+proc means data = test t prt;
+var Q1;
+run;
+```
+
+The PRT option returns p-value which implies lowest level of significance at which we can reject null hypothesis. Since p-value is less than 0.05, we can reject the null hypothesis and concludes that mean is significantly different from zero.  
+
+### Difference between PROC MEANS and PROC FREQ  
+
+PROC MEANS is used to calculate summary statistics such as mean, count etc of numeric variables. It requires at least one numeric variable whereas Proc Freq does not have such limitation. In other words, if you have only one character variable to analyse, PROC FREQ is your friend and procedure to use.  
+
+## PROC SUMMARY IN SAS: LEARN WITH EXAMPLES
+
+This tutorial explains how to use PROC SUMMARY in SAS, along with examples.  
+
+PROC SUMMARY is a powerful SAS procedure that can be used to calculate descriptive statistics for variables either across all observations or within specific groups of observations.  
+
+### How to use PROC SUMMARY?  
+
+Below is the syntax of PROC SUMMARY.  
+
+```sas
+PROC SUMMARY DATA=input_dataset;
+   BY variable;
+   CLASS variable(s) </ options>;
+   VAR variable(s);
+   OUTPUT OUT=output_dataset </ options>;
+RUN;
+```
+
+Please refer to the explanation of the PROC SUMMARY statements below.  
+
+DATA=input_dataset: Specifies the input dataset containing the variables you want to summarize.  
+
+BY=variable: Specifies the classification variable. It calculates separate statistics for each BY group and returns the analysis for the variable in separate tables.  
+
+CLASS variable(s): Specifies the list of classification variables. It calculates summary statistics for a variable grouped by the variable specified in this statement and returns analysis for the variable in a single table.  
+
+VAR variable(s): Specifies the list of variables for which you want to calculate summary statistics. You can include multiple variables separated by spaces.  
+
+OUTPUT OUT=output_dataset: Specifies the output dataset where the summarized results will be stored. You can choose a name for the output dataset.  
+
+We are using SAS built-in dataset named CARS, which contains information about various cars, including their specifications and attributes.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9c0ec603-e963-4843-b2b1-08e06dbdb6e9)  
+
+In the code below, we are summarising three numeric variables MSRP, INVOICE and LENGTH. The variable "MSRP" refers to the Manufacturer's suggested retail price of the car. The variable "INVOICE" refers to the invoice price of the car. The variable "LENGTH" refers to the length of the car.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS PRINT;
+VAR MSRP INVOICE LENGTH;
+RUN;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c9dc9f25-a693-4764-9567-b488d8158ecb)  
+
+By default, PROC SUMMARY produces N, Mean, Standard Deviation, Minimum and Maximum statistics.  
+
+The PRINT option is used to print results in the output window. By default, PROC SUMMARY does not print results, hence it is required to include PRINT option to view results.  
+
+### Common Statistical Options of PROC SUMMARY  
+
+Below is a list of common statistical options of PROC SUMMARY.  
+
+N: Number of observations  
+
+MEAN: Mean  
+
+STD: Standard Deviation  
+
+MIN: Minimum value  
+
+MAX: Maximum value  
+
+NMISS: Number of missing observations  
+
+SUM: Sum of observations  
+
+MEDIAN: Middle value (50th percentile)  
+
+P1: 1st percentile  
+
+P5: 5th percentile  
+
+P10: 10th percentile  
+
+P90: 90th percentile  
+
+P95: 95th percentile  
+
+P99: 99th percentile  
+
+Q1: First Quartile  
+
+Q3: Third Quartile  
+
+In the SAS program below, we are only showing 3 descriptive statistics - Number of missing observations, Mean and Median.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS NMISS MEAN MEDIAN PRINT;
+VAR MSRP INVOICE LENGTH;
+RUN;
+```
+
+Since the dataset does not have missing values, it is showing 0 against the variables under "NMISS" column.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d263caf6-6695-42ba-9572-58107c090459)  
+
+To remove label column in PROC SUMMARY, you can use the option NOLABELS.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS NMISS MEAN MEDIAN PRINT NOLABELS;
+VAR MSRP INVOICE LENGTH;
+RUN;
+```
+
+### How to group rows using PROC SUMMARY?  
+
+To group numeric variable by categorical variable, you can use the CLASS statement. It is similar to GROUP BY in SQL.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS MEAN PRINT NOLABELS;
+CLASS TYPE;
+VAR MSRP INVOICE;
+RUN;
+```
+
+In the code above, we are calculating mean for "MSRP" and "INVOICE" by variable "TYPE".  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f69a325f-2ee0-4c28-9dcb-2e13734effa5)  
+
+To remove "N Obs" column from the output, we can use NONOBS option.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS MEAN PRINT NOLABELS NONOBS;
+CLASS TYPE;
+VAR MSRP INVOICE;
+RUN;
+```
+
+### How to change order of categorical variable?  
+
+By default, PROC SUMMARY returns result in ascending order of classification variable. You can use DESCENDING option in the CLASS statement to arrange it in descending order.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS MEAN PRINT NOLABELS NONOBS;
+CLASS TYPE  / DESCENDING;
+VAR MSRP INVOICE;
+RUN;
+```
+
+### How to save output of PROC SUMMARY in a dataset?  
+
+You can use OUTPUT OUT=output_dataset to save output of PROC SUMMARY in a SAS Dataset. In the code below, output will be stored in the dataset named READIN. Here we are saving MEAN and MEDIAN of each of the 3 variables - MSRP, INVOICE and LENGTH. The AUTONAME option automatically assigns variable names in the output dataset.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS;
+VAR MSRP INVOICE LENGTH;
+OUTPUT OUT = READIN MEAN= MEDIAN = /AUTONAME;
+RUN;
+```
+
+We can use AUTOLABEL option to automatically assigns label names in the variables in the output dataset.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS;
+VAR MSRP INVOICE LENGTH;
+OUTPUT OUT = READIN MEAN= MEDIAN = /AUTONAME AUTOLABEL;
+RUN;
+```
+
+To assign custom variable names of your choice, you can use syntax -MEAN(original_variable)=new_variable_name.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS;
+VAR MSRP INVOICE;
+OUTPUT OUT = READIN MEAN(MSRP)=Avg_MSRP MEAN(INVOICE)=Avg_INVOICE;
+RUN;
+```
+
+### How to interpret _TYPE_ column?  
+
+By Default SAS creates two variables named _TYPE_ and _FREQ_ in the output dataset.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS;
+CLASS TYPE;
+VAR MSRP INVOICE;
+OUTPUT OUT = READIN MEAN(MSRP)=Avg_MSRP MEAN(INVOICE)=Avg_INVOICE;
+RUN;
+```
+
+_TYPE_=0 refers to the entire dataset which means descriptive statistics like frequency, mean are calculated based on the entire dataset.  
+
+_TYPE_=1 refers to descriptive statistics of unique categories of a classification variable named TYPE. Similarly, if you have more than 1 classification variable in the CLASS statement, _TYPE_ will be incremented accordingly.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8ff21342-ca28-4dfa-a810-a865ff261fa5)  
+
+The _FREQ_ variable contains the number of rows (frequency).  
+
+
+### How to select or remove variables in PROC SUMMMARY?  
+
+We can use DROP option to remove the variables _TYPE_ and _FREQ_. Similarly we can also use KEEP option to retain the specific variables.  
+
+```sas
+PROC SUMMARY DATA = SASHELP.CARS;
+VAR MSRP INVOICE;
+OUTPUT OUT = READIN (DROP = _TYPE_ _FREQ_) MEAN(MSRP)=AVG_MSRP MEAN(INVOICE)=AVG_INVOICE;
+RUN;
+```
+
+### How to format and summarise using PROC SUMMARY?  
+
+Suppose you need to categorise MSRP column into the following bands and then calculates average horsepower by the cohorts.  
+
+Values from 0 to 20,000: Displayed as 'Up to 20K'  
+
+Values from 20,000 to 50,000: Displayed as '20K-50K'  
+
+Values from 50,000 to 100,000: Displayed as '50K-100K'  
+
+Values greater than 100,000: Displayed as '100K or more'  
+
+FORMAT statement in PROC SUMMARY tells SAS to apply user-defined formats before producing summary table.  
+
+```sas
+proc format;
+value MSRP
+0-20000 = 'Up to 20K'
+20000-50000 = '20K-50K'
+50000-100000 = '50K-100K'
+100000-high = '100K or more';
+run;
+
+PROC SUMMARY DATA = SASHELP.CARS MEAN PRINT NOLABELS;
+CLASS MSRP;
+FORMAT MSRP MSRP.;
+VAR HORSEPOWER;
+RUN;
+```
+
+### Difference between PROC SUMMARY and PROC MEANS  
+
+PROC SUMMARY and PROC MEANS are very similar, but they have a few differences. Here are the main differences between PROC SUMMARY and PROC MEANS.  
+
+Proc MEANS by default produces printed output in the OUTPUT window whereas Proc SUMMARY does not. PROC SUMMARY requires PRINT option to print results in the output window.  
+
+If you don't include the VAR statement in PROC MEANS, it analyses all the numeric variable whereas if you exclude the VAR statement in PROC SUMMARY, it produces a simple count of observations.  
+
+Compare results of PROC MEANS and PROC SUMMARY when we are not using the VAR statement.  
+
+```sas
+PROC MEANS DATA=SASHELP.CARS;
+CLASS MSRP;
+RUN;
+
+PROC SUMMARY DATA=SASHELP.CARS PRINT;
+CLASS MSRP;
+RUN;
+```
+
+## COMPLETE GUIDE TO PROC UNIVARIATE  
+
+This tutorial explains how to explore data with PROC UNIVARIATE. It is one of the most powerful SAS procedure for running descriptive statistics as well as checking important assumptions of various statistical techniques such as normality, detecting outliers. Despite various powerful features supported by PROC UNIVARIATE, its popularity is low as compared to PROC MEANS. Most of the SAS Analysts are comfortable running PROC MEANS to run summary statistics such as count, mean, median, missing values etc, In reality, PROC UNIVARIATE surpass PROC MEANS in terms of options supported in the procedure. See the main difference between the two procedures.  
+
+### PROC UNIVARIATE vs. PROC MEANS
+
+1. PROC MEANS can calculate various percentile points such as 1st, 5th, 10th, 25th, 50th, 75th, 90th, 95th, 99th percentiles but it cannot calculate custom percentiles such as 20th, 80th, 97.5th, 99.5th percentiles. Whereas, PROC UNIVARIATE can run custom percentiles.
+
+2. PROC UNIVARIATE can calculate extreme observations - the five lowest and five highest values. Whereas, PROC MEANS can only calculate MAX value.
+
+3. PROC UNIVARIATE supports normality tests to check normal distribution. Whereas, PROC MEANS does not support normality tests.
+
+4. PROC UNIVARIATE generates multiple plots such as histogram, box-plot, steam leaf diagrams whereas PROC MEANS does not support graphics.
+
+### Basic PROC UNIVARIATE Code
+
+In the example below. we would use sashelp.shoes dataset. SALES is the numeric (or measured) variable.  
+
+```sas
+proc univariate data = sashelp.shoes;
+var sales;
+run;
+```
+
+Default Output of PROC UNIVARIATE
+
+1. Moments : Count, Mean, Standard Deviation, SUM etc  
+
+2. Basic Statistics : Mean, Median, Mode etc
+
+3. Tests for Location : one-sample t-test, Signed Rank test.
+
+4. Percentiles (Quantiles)
+
+5. Extreme Observations - first smallest and largest values against their row position.
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9c914768-1521-4d35-86fa-9d3e0facabe5)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/feea22e5-33f9-44da-88ad-667505498ee2)  
+
+### Example 1 : Analysis of Sales by Region
+
+Suppose you are asked to calculate basic statistics of sales by region. In this case, region is a grouping (or categorical) variable. The CLASS statement is used to define categorical variable.  
+
+```sas
+proc univariate data = sashelp.shoes;
+var sales;
+class region;
+run;
+```
+
+See the output shown below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6e9de2f4-f9d9-45ac-9f2d-a63f7a7cc0ae)  
+
+The similar output was generated for other regions - Asia, Canada, Eastern Europe, Middle East etc.  
+
+### 2. Generating only Percentiles in Output
+
+Suppose you want only percentiles to be appeared in output window. By default, PROC UNIVARIATE creates five output tables : Moments, BasicMeasures, TestsForLocation, Quantiles, and ExtremeObs. The ODS SELECT can be used to select only one of the table. The Quantiles is the standard table name of PROC UNIVARIATE for percentiles which we want. ODS stands for Output Delivery System.  
+
+```sas
+ods select Quantiles;
+proc univariate data = sashelp.shoes;
+var sales;
+class region;
+run;
+```
+
+### How to know the table names generated by SAS procedure
+
+The ODS TRACE ON produces name and label of tables that SAS Procedures generates in the log window.  
+
+```sas
+ods trace on;
+proc univariate data = sashelp.shoes;
+var sales;
+run;
+ods trace off;
+```
+
+### How to write Percentile Information in SAS Dataset
+
+The ODS OUTPUT statement is used to write output in results window to a SAS dataset. In the code below, temp would be the name of the dataset in which all the percentile information exists.  
+
+```sas
+ods output Quantiles = temp;
+proc univariate data = sashelp.shoes;
+var sales;
+class region;
+run;
+ods output close;
+```
+
+### 3. Calculating Extreme Values
+
+Like we generated percentiles in the previous example, we can generate extreme values with extremeobs option. The ODS OUTPUT tells SAS to write the extreme values information to a dataset named outlier. The "extremeobs" is the standard table name of PROC UNIVARIATE for extreme values.   
+
+```sas
+ods output extremeobs = outlier;
+proc univariate data = sashelp.shoes;
+var sales;
+class region;
+run;
+ods output close;
+```
+
+### 4. Checking Normality
+
+Most of the statistical techniques assumes data should be normally distributed. It is important to check this assumption before running a model.  
+
+There are multiple ways to check Normality :  
+
+Plot Histogram and see the distribution    
+Calculate Skewness  
+Normality Tests  
+
+### I. Plot Histogram
+
+Histogram shows visually whether data is normally distributed.  
+
+```sas
+proc univariate data=sashelp.shoes NOPRINT;
+var sales;
+HISTOGRAM / NORMAL (COLOR=RED);
+run;
+```
+
+It also helps to check whether there is an outlier or not.  
+
+### II. Skewness
+
+Skewness is a measure of the degree of asymmetry of a distribution. If skewness is close to 0, it means data is normal.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/fb67c760-c8bf-412d-8c9d-7c22e7693939)  
+
+A positive skewed data means that there are a few extreme large values which turns its mean to skew positively. It is also called right skewed.  
+
+Positive Skewness : If skewness > 0, data is positively skewed. Another way to see positive skewness : Mean is greater than median and median is greater than mode.   
+
+A negative skewed data means that there are a few extreme small values which turns its mean to skew negatively. It is also called left skewed.  
+
+Negative Skewness : If skewness < 0, data is negatively skewed. Another way to see negative skewness : Mean is less than median and median is less  than mode.  
+
+__Rule :__
+
+If skewness < −1 or > +1, the distribution is highly skewed.  
+
+If skewness is between −1 and −0.5 or between 0.5 and +1, the distribution is moderately skewed.  
+
+If skewness > −0.5 and  <  0.5, the distribution is approximately symmetric or normal.  
+
+```sas
+ods select Moments;
+proc univariate data = sashelp.shoes;
+var sales;
+run;
+ ```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/442dd3f8-0b02-42af-9316-bc0b995b0d81)  
+
+Since Skewness is greater than 1, it means data is highly skewed and non-normal.  
+
+### III. Normality Tests
+
+The NORMAL keyword tells SAS to generate normality tests.  
+
+```sas
+ods select TestsforNormality;
+proc univariate data = sashelp.shoes normal;
+var sales;
+run;
+  ```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/91629999-8f7a-4e83-83fe-ee2f92fd016a)  
+
+The two main tests for normality are as follows :
+
+### 1. Shapiro Wilk Test [Sample Size <= 2000]  
+
+It states that the null hypothesis - distribution is normal.  
+
+In the example above, p value is less that 0.05 so we reject the null hypothesis. It implies distribution is not normal. If p-value > 0.05, it implies distribution is normal.  
+
+This test performs well in small sample size up to 2000.  
+
+### 2. Kolmogorov-Smirnov Test [Sample Size > 2000]
+
+In this test, the null hypothesis states the data is normally distributed.  
+
+If p-value > 0.05, data is normal. In the example above, p-value is less than 0.05, it means data is not normal.  
+
+This test can handle larger sample size greater than 2000.  
+
+### 5. Calculate Custom Percentiles
+
+With PCTLPTS= option, we can calculate custom percentiles. Suppose you need to generate 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 percentiles.  
+
+```sas
+proc univariate data = sashelp.shoes noprint;
+var sales;
+output out = temp
+pctlpts = 10 to 100 by 10 pctlpre = p_;
+run;
+```
+
+The OUTPUT OUT= statement is used to tell SAS to save the percentile information in TEMP dataset. The PCTLPRE= is used to add prefix in the variable names for the variable that contains the PCTLPTS= percentile.  
+
+Suppose you want to calculate 97.5 and 99.5 percentiles.  
+
+```sas
+proc univariate data = sashelp.shoes noprint;
+var sales;
+output out = temp
+pctlpts = 97.5,99.5 pctlpre = p_;
+run;
+```
+
+### 6.  Calculate Winsorized and Trimmed Means  
+
+The Winsorized and Trimmed Means are insensitive to Outliers. They should be reported rather than mean when the data is highly skewed.  
+
+Trimmed Mean : Removing extreme values and then calculate mean after filtering out the extreme values. 10% Trimmed Mean means calculating 10th and 90th percentile values and removing values above these percentile values.  
+
+Winsorized Mean : Capping extreme values and then calculate mean after capping extreme values at kth percentile level. It is same as trimmed mean except removing the extreme values, we are capping at kth percentile level.  
+
+Winsorized Mean
+
+In the example below, we are calculating 20% Winsorized Mean.  
+
+```sas
+ods select winsorizedmeans;
+ods output winsorizedmeans=means;
+proc univariate winsorized = 0.2 data=sashelp.shoes;
+var sales;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/15208b09-61cb-482f-aaf4-2684dffcd379)  
+
+Percent Winsorized in Tail : 20% of values winsorized from each tail (upper and lower side)  
+
+Number Winsorized in Tail : 79 values winsorized from each tail  
+
+Trimmed Mean
+
+In the example below, we are calculating 20% trimmed Mean.  
+
+```sas
+ods select trimmedmeans;
+ods output trimmedmeans=means;
+proc univariate trimmed = 0.2 data=sashelp.shoes;
+var sales;
+run;
+```
+
+### 7. Calculate Sample T-test  
+
+It tests the null hypothesis that mean of the variable is equal to 0. The alternative hypothesis is that mean is not equal to 0. When you run PROC UNIVARIATE, it defaults generates sample t-test in 'Tests for Location' section of output.  
+
+```sas
+ods select TestsForLocation;
+proc univariate data=sashelp.shoes;
+var sales;
+run;
+```
+
+Since p-value is less than 0.05. we reject the null hypothesis. It concludes the mean value of the variable is significantly different from zero.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6df82dc8-28d7-46d8-bd07-a1f34fe55d2b)  
+
+### 8. Generate Plots
+
+PROC UNIVARIATE generates the following plots :  
+
+Histogram  
+Box Plot  
+Normal Probability Plot  
+
+The PLOT keyword is used to generate plots.  
+
+```sas
+proc univariate data=sashelp.shoes PLOT;
+var sales;
+run;
+```
+
+## SAS PROC CONTENTS: LEARN WITH EXAMPLES
+
+In this tutorial, we will cover how to use PROC CONTENTS in SAS, along with examples.
+
+### What does PROC CONTENTS do?  
+
+The PROC CONTENTS procedure provides a summary of a dataset's contents, including details such as variable names, types, and attributes (such as formats, informats, and labels). It also tells you the number of observations and variables present in the dataset, as well as the creation date of the dataset.  
+
+Below is the syntax for PROC CONTENTS  
+
+```sas
+PROC CONTENTS DATA= dataset_name;
+RUN;
+```
+
+Here, we are using the built-in SAS dataset named CARS from the SASHELP library. Our goal is to explore this dataset using the PROC CONTENTS procedure.  
+
+```sas
+PROC CONTENTS DATA = SASHELP.CARS;
+RUN;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c136c894-ec9f-4943-bcd8-a4d3169cbb36)  
+
+__1 Observations__ : The number of rows in the dataset. The dataset "CARS" from the SASHELP library contains 428 observations.  
+
+__2 Variables__ : The number of columns in the dataset. The dataset "CARS" from the SASHELP library contains 15 variables.  
+
+__3 Created__ : The dataset's creation date and time.  
+
+### Variables Summary  
+
+Here is the summary of variables in the dataset provided by PROC CONTENTS.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a094b989-8067-42a3-b413-fb9df449fed9)  
+
+#: Represents the original order of the variable in the dataset. PROC CONTENTS displays variables in alphabetical order by name, rather than their original order of appearance in the dataset.  
+
+Type: Indicates whether the variable is numeric (Num) or character (Char).  
+
+Len: Refers to length of variables.  
+
+Format: Displays the format applied to the variables' values when printed on the output window.  
+
+Informat: Represents the format used to read the variables' data in SAS.  
+
+Label: Displays the labels of variables. Please note that these are not value labels.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f3718445-cf3c-442b-96ad-4f9d56096e3e)  
+
+Sortedby: Displays the variable(s) by which the dataset is sorted.  
+
+Validated: It shows YES if PROC SORT/SQL sorted the dataset. Else NO.  
+
+Character Set: The character set used to sort the data, can be ASCII, EBCDIC, or PASCII.  
+
+### VARNUM Option  
+
+By default, PROC CONTENTS lists variables in alphabetical order. However, when using the VARNUM option, SAS displays the variables in the order they appear in the dataset.  
+
+```sas
+proc contents data=sashelp.cars varnum;
+run;
+```
+
+### How to display only Variable Names using PROC CONTENTS  
+
+To display only the variable names using PROC CONTENTS, you can specify the SHORT option. This option restricts the output to only the variable names.  
+
+```sas
+proc contents data=sashelp.cars short varnum;
+run;
+```
+
+### How to run PROC CONTENTS on the entire library  
+
+To run PROC CONTENTS on all the datasets in a SAS library, we can use the keyword _ALL_.  
+
+```sas
+proc contents data=work._all_;
+run;
+```
+
+### How to save output of PROC CONTENTS in a dataset   
+
+We can use the NOPRINT option to disable the printing of output. The OUT= option is used to create a new dataset and save the output in that dataset.  
+
+```sas
+proc contents data=sashelp.cars noprint out=readin;
+run;
+```
+
+## SAS : PROC TRANSPOSE WITH EXAMPLES
+
+This tutorial explains how to use the PROC TRANSPOSE procedure in SAS, along with examples.  
+
+### What does PROC TRANSPOSE do?   
+
+PROC TRANSPOSE in SAS is useful when you want to reshape your data. For example, if your data is in a vertical format but you want to convert it into a wide/horizontal format, PROC TRANSPOSE can do this task easily.  
+
+You can transpose data through data step technique but it would require writing complex code that can be time consuming to develop and test. Hence it is recommended to use the TRANSPOSE procedure to transpose your data in SAS.  
+
+### Sample Data Set  
+
+Let's create sample data which is used for explaining the TRANSPOSE procedure.
+Suppose you have data for students with their marks in respective subjects. In the data set, you have three variables 'Name', 'Subject' and 'Marks'. See the table below showing this data.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8e654cea-9ac1-4d2f-8f20-36792f5b2364)  
+
+### Create data set in SAS  
+
+To see this data in SAS data set format, run the following code -  
+
+```sas
+data transp;
+input Name $ Subject $ Marks;
+cards;
+Samma Maths 96
+Sandy English 76
+Devesh German 76
+Rakesh Maths 50
+Priya English 62
+Kranti Maths 92
+William German 87
+;
+run;
+```
+
+It creates a data set named 'TRANSP' which is stored in WORK library.  
+
+### Simplest Form of PROC TRANSPOSE  
+
+```sas
+proc transpose data = transp out= outdata;
+run; 
+```
+
+The above code creates a data set called outdata which contains values of variable 'Marks' stored in horizontal (wide) format. In other words, it transposes only variable i.e. Marks (which is numeric). It is because by default, PROC TRANSPOSE transposes all numeric variables in the data set.  
+
+Output Data Set  
+
+The output of the data set looks like below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f0bec167-dd55-496e-82a8-d6db8e562e61)  
+
+### Options in PROC TRANSPOSE  
+
+The NAME= option allows you to change the name of the _NAME_ variable. It is the name of the variable that is transposed.  
+
+The PREFIX= option allows you to change the prefix "COL". It is prefix to the transposed values.  
+
+```sas
+proc transpose data = transp name=VarName prefix=Student out= outdata;
+run;
+```
+
+Observe the above code with the previous section code - There are two changes in the code above that are : specifying name 'VarName' to the variable Name. The other change is adding a prefix 'Student' to the transposed marks.  
+
+Output Data Set  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/56d8fb3a-1cdd-4d3c-814e-d87057328bc9)  
+
+### Statements in PROC TRANSPOSE  
+
+ID -[Move to Column Name] It allows you to include the values of a variable as variable names in the output data set. In other words, it tells SAS to give the variable names in the output file which were observations (rows) values in a variable in the input data set. If the variable in the ID statement is numeric, an underscore will be put by default at the beginning of the variable name. Instead of a default '_', you can use PREFIX= option to give a specific prefix which can be any character value.For example, you want to add 'Height' as a prefix which would create variables like 'Height20' 'Height30'.  
+
+BY -It allows you to transpose data within the combination of the BY variables. The BY variables themselves aren’t transposed. The variables need to be sorted before running PROC TRANSPOSE. You can sort the variables with PROC SORT.  
+
+VAR -[Transpose Column] It lists the actual data that needs to be transposed. If you do not include a VAR statement, the procedure will transpose all numeric variables that are not included in a BY statement or a ID statement. If youwant to transpose a character variable, a VAR statement is required.  
+
+Example 2 : Give name to transposed columns  
+
+Suppose you want to have actual students' name instead of 'Student1 Student2 etc' in the variable names. You can use ID statement to accomplish this task. Check out the code below -  
+
+```sas
+proc transpose data = transp name=VarName out= outdata;
+id name;
+run;
+```
+
+Output Data Set  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2cd72c81-fdc0-4ba5-927d-7d07cd663166)  
+
+In this case, the variable 'name' is used for naming variables.  
+
+Example 3 : Restructure Data  
+
+Suppose you want to change the structure of data in the manner in which the row values of the variable 'Subjects' come at top i.e. heading / variable names and marks under the respective column in the output dataset.  
+
+In this case, we need to sort the data as we are going to use BY processing in PROC TRANSPOSE.  
+
+```sas
+proc sort data = transp;
+by Name;
+run;
+
+proc transpose data = transp out= outdata;
+by Name;
+id Subject;
+var Marks;
+run;
+```
+
+In this example, we are specifying variable Name in the BY option which means we do not want to transpose this variable.. The variable Marks specified in the VAR option implies this variable is actually transposed and shape of the data format would be changed in the output data set.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1ac94277-217e-4c8e-a247-fa7053ce044d)  
+
+If you look at the output above, everything looks perfect except the variable '_NAME' which is not relevant. We can eliminate this variable with DROP= option.  
+
+```sas
+proc transpose data = transp out= outdata (drop=_name_);
+by Name;
+id Subject;
+var Marks;
+run;
+```
+
+Is SORTING required when i use BY statement?  
+
+Answer is No. The NOTSORTED option tells SAS that data is not sorted and it is not required to sort it. If you don't specify NOTSORTED option, you need to sort the variable that is listed in BY statement.  
+
+```sas
+proc transpose data = transp out= outdata (drop=_name_) ;
+by Name NOTSORTED;
+id Subject;
+var Marks;
+run;
+```
+
+Output Data Set  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8a3bc907-4c30-418c-9bae-a4f0a16df64e)  
+
+See the above output. You must have observed the names are not sorted in the output data set.  
+
+How to use Two Variables in ID Statement  
+
+We can use DELIMITER= option to separate values of two variables specified in the ID statements. In this example, we have used underscore ( _ ) as a delimiter.    
+```sas
+proc transpose data = transp delimiter=_ name=VarName out= outdata;
+id name subject;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b3c9a07f-cb05-4c42-8007-2cef7cca8344)  
+
+### How to label the Output Variables with PROC TRANSPOSE  
+
+The ID statement tells SAS to provide variable names to the variables after the transpose. But if you want to label these variables, you can use IDLABEL statement which picks labels from a variable from the input file.  
+
+```sas
+proc transpose data=temp out=outdata prefix=height;
+by id;
+var scores;
+id height;
+idlabel heightl;
+run;
+```
+ 
+Practice Example  
+
+Suppose you have monthly financial data. You need to convert long formatted data to wide format.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6d3db2f2-4d23-498c-b601-e57439b2b366)  
+
+SAS Code
+
+```sas
+data example;
+input ID Months Revenue Balance;
+cards;
+101 1 3 90
+101 2 33 68
+101 3 22 51
+102 1 100 18
+102 2 58 62
+102 3 95 97
+;
+```
+
+Output  
+
+The final output should like the following table.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/219e0821-f656-4afa-8e63-ddfb4e9719dd)  
+
+Solution :  
+
+```sas
+proc transpose data=example out= Output1 (drop = _NAME_) prefix=balance_;
+id months;
+var balance;
+by ID;
+run;
+```
+
+In this case, the variable 'Month' specified in ID statement is a numeric variable. Hence, we have added prefix 'balance_' to make it to the desired output.  
+
+If you want to see your output looks like the data shown in the image below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5546b73a-ed2a-43f9-8ecf-799c344f2d6a)  
+
+```sas
+proc transpose data=example out=out1 name=variable prefix=x;
+by id months;
+run;
+```
+
+In this case, the information of the 'Revenue' and 'Balance' variables are stacked to one variable. And the variable 'x1' refers to the values corresponding to it.  
+
+Exercise : Try yourself!  
+
+Suppose you have three columns - ID, Date and Flag. ID refers to unique value assigned to customers. Flag refers to status of customer as on date whether it is active or not. Input Dataset looks like the image shown below.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/fed80ad1-a5dc-4ceb-b4e4-17c20ac1a870)  
+
+```sas
+data readin;
+   input ID date ddmmyy8. Flag$;
+   format date ddmmyy8.;
+   cards;
+1 30-12-16 Y
+1 30-08-17  N
+1 31-08-18  N
+2 30-06-16 Y
+2 31-12-18 N
+;
+run;
+```
+
+Desired Output should be appeared like the table below. Post your solution in the comment box below.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f48d069e-246b-43ce-ad87-b5a06cc32c2a)  
+
+## SAS : PROC RANK
+
+This tutorial explains how to calculate rank for one or more numeric variables with PROC RANK. In SAS, there are multiple ways to calculate rank overall or by a grouping variable. In data step, it can be done via retain statement. SAS made it easy to compute rank with PROC RANK.  
+
+### Create Sample Data  
+
+```sas
+data temp;
+input ID Gender $ Score;
+cards;
+1 M 33
+2 M 94
+3 M 66
+4 M 46
+5 F 92
+6 F 95
+7 F 18
+8 F 11
+;
+run;
+```
+
+### Compute rank of numeric variable - "Score"   
+
+```sas
+proc rank data= temp out = result;
+var Score;
+ranks ranking;
+run;
+```
+ 
+Notes :   
+
+The OUT option is used to store output of the rank procedure.  
+
+The VAR option is used to specify numeric variable (s) for which you want to calculate rank  
+
+The RANKS option tells SAS to name the rank variable  
+
+By default, it calculates rank in ascending order.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f291b19a-96bc-46b2-a374-470fa7e5f4c2)  
+
+### Reverse order of ranking (Descending)
+
+Suppose you need to assign the largest value of a variable as rank 1 and the last rank to the lowest value. The descending keyword tells SAS to sort the data in descending order and assign rank to the variable accordingly.  
+
+```sas
+proc rank data= temp descending out = result;
+var Score;
+ranks ranking;
+run;
+```
+
+### Percentile Ranking (Quartile Rank)
+
+Suppose you need to split the variable into four parts, you can use the groups option in PROC RANK. It means you are telling SAS to assign only 4 ranks to a variable.  
+
+```sas
+proc rank data= temp descending groups = 4 out = result;
+var Score;
+ranks ranking;
+run;
+```
+
+Note :   
+
+GROUPS=4 for quartile ranks, and GROUPS=10 for decile ranks, GROUPS = 100 for percentile ranks.  
+
+### Ranking within BY group (Gender)
+
+Suppose you need to calculate rank by a grouping variable. To accomplish this task, you can use the by statement in proc rank. It is required to sort the data before using by statement.  
+
+```sas
+proc sort data = temp;
+by gender;
+run;
+proc rank data= temp descending out = result;
+var Score;
+ranks ranking;
+by Gender;
+run;
+```
+
+### How to compute rank for same values
+
+Let's create a sample dataset. See the variable score having same values (33 appearing twice).  
+
+```sas
+data temp2;
+input ID Gender $ Score;
+cards;
+1 M 33
+2 M 33
+3 M 66
+4 M 46
+;
+run;
+```
+
+Specify option TIES = HIGH | LOW | MEAN | DENSE in PROC RANK.  
+
+```sas
+proc rank data= temp2 ties = dense out = result;
+var Score;
+ranks rank_dense;
+run;
+```
+
+LOW - assigns the smallest of the corresponding ranks.  
+
+HIGH - assigns the largest of the corresponding ranks.  
+
+MEAN - assigns the mean of the corresponding ranks (Default Option).  
+
+DENSE - assigns the smallest of the corresponding rank and add +1 to the next rank (don't break sequence)  
+
+See the comparison between these options in the image below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5deb353d-db49-47c5-b1eb-b6ac1d0fb7ea)  
+
+## PROC DATASETS IN SAS: LEARN WITH EXAMPLES  
+
+This tutorial shows how to use PROC DATASETS in SAS, along with examples.  
+
+The PROC DATASETS statement in SAS is used to manipulate SAS datasets. It can be used to perform a variety of operations on datasets, such as copying, renaming, deleting, and modifying datasets.  
+
+### Syntax of PROC DATASETS  
+
+The syntax of PROC DATASETS is as follows:  
+
+```sas
+proc datasets library=mylibrary;
+run;
+quit;
+```
+
+If you don't use the library= option, SAS will consider the WORK library as the default library for managing datasets in the PROC DATASETS.  
+
+### Sample Datasets  
+
+Let's create two datasets in the WORK library from the SASHELP library. These datasets will be used in further examples.  
+
+```sas
+data cars;
+set sashelp.cars;
+run;
+
+data class;
+set sashelp.class;
+run;
+```
+
+### Display a list of all the datasets in a library  
+
+To view a list of all the datasets in a specific library, you can use PROC DATASETS. Here we are looking in the WORK library.  
+
+```sas
+proc datasets library=work;
+run;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/de09f98d-f4de-475e-91b1-a5c92c8b4d4a)  
+
+In the image above, the first two highlighted ones are datasets. Others are item store and catalogs. Item store is a binary system file created by the SAS. Catalogs are SAS files that can contain macros, formats, and other SAS objects.  
+
+To display only datasets in the results window, you can use memtype=data.  
+
+```sas
+proc datasets library=work memtype=data;
+run;
+quit;
+```
+
+### How to copy all the datasets in a library  
+
+Suppose you have a library named mylib and you want to copy all the datasets from the WORK library to "mylib" library.  
+
+Create library if you already don't have. Specify location in the library as per your location.  
+
+```sas
+libname mylib '/home/deepanshu88us0/';
+```
+
+```sas
+proc datasets;
+copy in=work out=mylib;
+run;
+quit;
+```
+
+### How to copy all the datasets from a library  
+
+Suppose you have a library named mylib and you want to copy all the datasets from the WORK library to "mylib" library.  
+
+Create library if you already don't have. Specify location in the library as per your location.  
+
+```sas
+libname mylib '/home/deepanshu88us0/';
+```
+
+```sas
+proc datasets;
+copy in=work out=mylib;
+run;
+quit;
+```
+
+### How to copy some datasets from a library  
+
+Suppose you want to copy only specific datasets from the WORK library to "mylib" library. You can mention them in the SELECT statement.  
+
+```sas
+proc datasets;
+copy in=work out=mylib;
+select cars class;
+run;
+quit;
+```
+
+### How to move datasets from a library  
+
+We can use the MOVE option in the COPY statement to move a dataset from one library to another. HERE "CARS" dataset has been moved to the "mylib" library from the "work" library.  
+
+```sas
+proc datasets;
+copy in=work out=mylib move;
+select cars;
+run;
+quit;
+```
+
+To check if the moved dataset is available in the WORK library, we can run the command below. We can see that CARS dataset is no more available in the WORK library. "MOVE" option is like cut-paste from a old libarry to a new library.  
+
+```sas
+proc datasets library=work memtype=data;
+run;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2cdc7024-436c-4ff7-89ef-15595958a89f)  
+
+### How to delete the whole library in SAS  
+
+We can use the KILL option in PROC DATASETS to delete the whole SAS library. Here we are removing the library named "mylib".  
+
+```sas
+proc datasets lib=mylib kill;
+run;
+quit;
+```
+
+### How to delete datasets from a library  
+
+We can use the DELETE statement in the PROC DATASETS to delete specific datasets from a SAS library. Here we are deleting "CLASS" dataset from the "WORK" library.  
+
+```sas
+proc datasets lib=work memtype=data;
+delete class;
+run;
+quit;
+```
+
+### How to rename SAS dataset  
+
+We can use the CHANGE old-dataset-name = new-dataset-name statement in the PROC DATASETS procedure to rename a SAS dataset. In the code below, we are renaming "cars" dataset to "automobiles".  
+
+```sas
+data cars;
+set sashelp.cars;
+run;
+
+proc datasets lib=work nolist;
+change cars = automobiles;
+quit;
+run;
+```
+
+### How to combine SAS dataset  
+
+In the code below, we are combining CARS dataset to itself (doubling it). You can follow the same approach if you have two datasets with the same variables and you need to combine them.  
+  
+Appended the file WORK.CARS to itself.  
+
+There were 428 observations read from the data set WORK.CARS.  
+
+Added 428 observations.  
+  
+The data set WORK.CARS now has 856 observations.  
+
+```sas
+data cars;
+set sashelp.cars;
+run;
+
+proc datasets lib=work;
+append out=cars data=cars;
+run;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f68bf524-e1fe-4717-8034-0aba45df584a)  
 
 
 
