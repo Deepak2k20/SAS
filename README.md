@@ -4906,6 +4906,92 @@ After sorting, we retain records having maximum value by using FIRST. and IF sta
 
 Solve second case study yourself and post your answer in the comment box below. Make sure it should be solved in one data step code. Hint : BOTH FIRST. and LAST. variables would be used.  
 
+## SAS PROC SORT: LEARN WITH EXAMPLES
+
+This tutorial explains the PROC SORT SAS procedure in detail, along with examples.  
+
+In SAS, the PROC SORT procedure is used to sort datasets based on one or more variables.  
+
+### Syntax of PROC SORT
+
+The syntax of the PROC SORT procedure in SAS is as follows:  
+
+```sas
+PROC SORT DATA=input_dataset OUT=output_dataset;
+  BY variable(s);
+RUN;
+```
+
+DATA: Specifies the input dataset that needs to be sorted.  
+
+OUT: Specifies the output dataset where the sorted data will be stored.  
+
+BY statement: Used to specify the variable(s) by which the dataset should be sorted. You can list multiple variables separated by spaces to perform sorting based on multiple criteria.  
+
+
+### Sample Dataset  
+
+Let's create a sample dataset for the examples in this tutorial. Here we have 3 columns and 10 rows.  
+
+```sas
+data mydata;
+input product $ transactions sale;
+datalines;
+A 84 158
+A 75 118
+A 64 421
+A 12 592
+B 75 206
+B 17 855
+B 46 360
+C 87 650
+C 96 922
+C 40 860
+;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/50156de6-4b69-4e3d-8fe0-4f8d78e54fa8)  
+
+### Example 1: Sort Data in Ascending Order
+
+The following code sorts data in ascending order (smallest to largest) based on a column named transactions. The sorted data will be stored in the dataset named "newdata".  
+
+```sas
+proc sort data=mydata out=newdata;
+by transactions;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2631c51b-dd1f-4db4-8493-bb71264b0ad1)  
+
+### Example 2: Sort Data in Descending Order  
+
+To sort the dataset in descending order, we can use the DESCENDING keyword before the variable name in the BY statement in PROC SORT procedure. The following code sorts the data from largest to smallest based on a column named transactions. The sorted data will be stored in the dataset named "newdata".  
+
+```sas
+proc sort data=mydata out=newdata;
+by descending transactions;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c571e99c-be93-4b1d-8abf-8eeebbb0917d)  
+
+### Example 3: Filter and Sort Data  
+
+If you want to filter the data before sorting, you can use WHERE= option in PROC SORT. The following code selects data for product A only and then sorts the filtered data based on "transactions" column.  
+
+```sas
+proc sort data=mydata (where=(product = 'A')) out=newdata;
+by transactions;
+run;
+```
+
+
+
+
+
+
 
 
 
