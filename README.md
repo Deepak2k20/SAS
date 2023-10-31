@@ -4987,6 +4987,72 @@ by transactions;
 run;
 ```
 
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ee810859-6e6b-4f4c-90d0-e46e96ded4a9)  
+
+### Example 4: FIRSTOBS= AND OBS= Options in PROC SORT  
+
+The FIRSTOBS= option tells SAS to start reading from a specified observation. Whereas, the OBS= option specifies the observation at which SAS processing ends. In the code below, we are reading data from 5th row till 8th row (inclusive).  
+
+```sas
+proc sort data=mydata (firstobs= 5 obs=8) out=newdata;
+by transactions;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7ca80eb6-73c8-4f4f-a5d5-146986e07076)  
+
+### Example 5: Format in PROC SORT  
+
+In the code below, a format named $PRODUCT is defined using the proc format procedure. This format labels the values 'A', 'B', and 'C' to their corresponding labels 'Product A', 'Product B', and 'Product C'.  
+
+```sas
+proc format;
+value $PRODUCT 'A'='Product A' 'B'='Product B' 'C'='Product C';
+run;
+
+proc sort data=mydata out=newdata;
+format product $PRODUCT.;
+by transactions;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3d05e8e1-a50f-4f74-b8c8-a1303c00a54e)  
+
+### Example 6: Sort Data by multiple columns  
+
+Here the sorting is performed based on two columns - "product" and "transactions".  
+
+```sas
+proc sort data=mydata out=newdata;
+by product transactions;
+run;
+```
+ 
+### Example 7: NODUP AND NODUPKEY in PROC SORT  
+
+In PROC SORT, the NODUP and NODUPKEY options are used to remove duplicate observations from the dataset.  
+
+The NODUPKEY option is used to remove duplicates based on the variable(s) specified in BY statement. Whereas the NODUP option is used to remove duplicates based on values of all variables in a dataset.  
+
+In the code below, 7 observations with duplicates based on "product" column were deleted.  
+
+```sas
+proc sort data=mydata nodupkey out=newdata;
+by product;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a6246a07-adf3-4e2c-a4e1-8deb2378793a)
+
+In the code below, 0 duplicate observations were deleted as there is no duplicate rows in the dataset.
+
+```sas
+proc sort data=mydata nodup out=newdata;
+by product;
+run;
+```
+
+
 
 
 
