@@ -9618,6 +9618,186 @@ run;
 
 If you don't specify delimiter in the second parameter of COUNTW function, the function will use the default delimiter, which is a blank space.  
 
+## INPUT Function  
+
+### SAS: HOW TO CONVERT CHARACTER TO NUMERIC VARIABLE    
+
+In SAS, the INPUT function is used to convert a character variable to a numeric variable. You can specify a informat within the INPUT function to control the conversion. The informat tells SAS how to interpret the data in the character variable.  
+
+Below is the syntax of INPUT function.  
+```sas
+new_numeric_variable = input(character_variable, comma9.);  
+```
+
+### Example: Convert Character to Numeric Variable in SAS   
+
+Here we are creating a sample dataset for demonstration. The dataset consists of a character variable with length 10. The dataset name is example and the character variable name is var1.  
+
+```sas
+data example;
+  input var1 $10.;
+  datalines;
+123
+456
+789
+;
+run;
+
+
+data want;
+set example;
+var2 = input(var1, comma9.);
+run;
+```
+
+To confirm conversion, we can use PROC CONTENTS to check the data type and length of variable var2.  
+
+```sas
+proc contents data=want;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2206c590-cc08-4e9d-a631-4fa91081a800)  
+  
+As shown in the image above, var2 is a numeric variable whereas var1 is a character variable.    
+
+Note- comma9. also handles character variable having commas or dollar signs.  
+
+In order to use the same variable name after conversion, you can use DROP= option to remove the character variable. Then you can rename the new numeric variable to the old name using RENAME statement.  
+
+```sas
+data want (drop = var1);
+set example;
+var2 = input(var1, comma9.);
+rename var2=var1;
+run;
+```
+
+## PUT Function  
+
+### SAS: HOW TO CONVERT NUMERIC TO CHARACTER VARIABLE  
+
+In SAS, the PUT function is used to convert a numeric variable to a character variable. You can specify a format within the PUT function to control the conversion.  
+
+Below is the syntax of PUT function.  
+
+```sas
+new_character_variable = put(numeric_variable, 8.);
+```
+
+### Example: Convert Numeric to Character Variable in SAS  
+
+Let's create a sample dataset consisting of a numeric variable. The dataset name is example and the numeric variable name is var1.  
+
+```sas
+data example;
+  input var1;
+  datalines;
+10
+20
+30
+40
+50
+;
+run;
+
+data want;
+set example;
+var2 = put(var1, 8.);
+run;
+```
+
+To validate conversion, we can use PROC CONTENTS to check the data type and length of variable var2.  
+
+```sas
+proc contents data=want;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3e0450ea-88d7-4a42-a6d3-dd4810e9a0f5)  
+
+As shown in the image above, var2 is a character variable whereas var1 is a numeric variable.  
+
+To maintain the same variable name after converting a numeric variable to a character variable in SAS, you can use the DROP= option to exclude the numeric variable from the dataset. Afterwards, you can proceed to rename the newly created character variable to match the original variable name using RENAME statement.  
+
+```sas
+data want (drop= var1);
+set example;
+var2 = put(var1, 8.);
+rename var2=var1;
+run;
+```
+
+## SUBSTR Function  
+
+### SAS SUBSTR FUNCTION: LEARN WITH EXAMPLES   
+
+This tutorial explains how to use SUBSTR function in SAS, along with examples.  
+
+The SUBSTR function in SAS is used to extract a specific part of a string.  
+
+### Syntax of SUBSTR Function  
+
+Below is the syntax of SUBSTR function in SAS.
+
+```sas
+SUBSTR(string, start, length)
+```
+string: String from which you want to extract a substring.  
+
+start: Starting position where the extraction should start.  
+
+length: Number of characters to extract from the string. This is an optional argument. If you don't specify it, SAS would read the number of characters from the starting position to the end of the string.  
+
+### Create Sample Dataset  
+
+Let's create a sample SAS dataset that will be used to demonstrate examples in this tutorial.  
+
+```sas
+data readin;
+  input name $20.;
+  datalines;
+John Simpson
+Dane Stewart
+Deepanshu Bhalla
+Jonathan Lee
+;
+run;
+```
+
+### How to extract First N Characters?  
+
+In the example below, we are extracting first name from the full name. We are pulling first 4 characters from the variable name.  
+
+```sas
+data readin2;
+  set readin;
+  firstname = substr(name, 1, 4);
+run;
+
+proc print data=readin2;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/120b3c01-0214-4d00-8570-20e79f8926cf)  
+
+Incorrect Method: As shown in the image above, the first names of the last two individuals have a length greater than 4 characters. Hence, this results in an incorrect output.  
+
+Correct Method: We can use the FIND function to find out the position of the first space in the name. The "firstname" variable extracts characters from the beginning of the name until the space. We have modified the SUBSTR function accordingly by combining it with the FIND function to make the code dynamic.  
+
+```sas
+data readin2;
+  set readin;
+  firstname = substr(name, 1, find(name, ' ') - 1);
+run;
+
+proc print data=readin2;
+run;
+```
+
+
+
+
 
 
 
