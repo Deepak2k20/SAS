@@ -6749,8 +6749,595 @@ quit;
 ![image](https://github.com/Deepak2k20/SAS/assets/65231118/f68bf524-e1fe-4717-8034-0aba45df584a)  
 
 
+## HOW TO USE PROC COMPARE IN SAS (WITH EXAMPLES)
+
+In this tutorial, we will cover how to use PROC COMPARE in SAS, along with examples.  
+
+### Introduction : PROC COMPARE  
+
+PROC COMPARE in SAS is used to compare the contents and structure of two datasets. It returns a summary of both the similarities and differences found between two datasets.  
+
+### Syntax of PROC COMPARE  
+
+The syntax of PROC COMPARE is as follows:  
+
+```sas
+proc compare
+ base = data1
+ compare = data2;
+run;
+```
+
+This compares the datasets data1 and data2 and displays the differences between them. By default, PROC COMPARE compares all the variables in the datasets.  
+
+Let's compare two built-in SAS datasets: sashelp.class and sashelp.classfit.  
+
+```sas
+proc compare
+ base = sashelp.class
+ compare = sashelp.classfit;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7e4cace8-bd34-46ef-92d0-5086889842fa)  
+
+### Dataset Summary  
+
+In the dataset summary section, it shows the comparison of the structure of both the datasets and returns the following analysis.  
+
+Dataset Creation Dates  
+
+Dataset Modification Dates  
+
+Number of Variables  
+
+Number of Observations   
+
+Labels  
+
+### Variable Summary  
+
+In the Variable Summary section, it shows how many variables which are common in both the datasets and how many variables are in one dataset but not in the other dataset.  
+
+### Observation Summary  
+
+In the Observation Summary section, it displays how many observations are in both the datasets and how many of them have equal or unequal values in some or all of the variables.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/56158e30-5b6b-43c8-9f34-952c246571a5)  
+
+### Values Comparison Summary  
+
+In the "Values Comparison summary" section, it displays summary about the variables that either have all values exactly equal or contain some unequal values.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/57e9883c-def9-401c-8833-aa6a1932f925)  
+
+### How to Compare Specific Variables  
+
+You can use the VAR statement in PROC COMPARE to compare specific variables of both the datasets. Please note that the initial summary about dataset and variables remain unchanged. You should focus on the Value Comparison Results. In the code below, we are comparing "name" variable in both the datasets.  
+
+```sas
+proc compare
+ base = sashelp.class
+ compare = sashelp.classfit;
+ var name;
+run;
+```
+
+### How to Compare Only Structure of Datasets  
+
+By using NOVALUES option in PROC COMPARE, we can tell SAS not to compare values between the two datasets. In short it returns only the similarities and difference in the variables, not values. The LISTVAR option is used to list the variables which are in one dataset but not in the other dataset.  
+
+```sas
+proc compare
+ base = sashelp.class
+ compare = sashelp.classfit
+ novalues listvar;
+run;
+```
+
+## SAS : COMBINING AND APPENDING DATASETS  
+
+This tutorial explains how to combine / append two data sets in SAS. In SAS, there are various method to append data sets. It can be done with data step method, PROC SQL as well as procedure called PROC APPEND to accomplish it. It is one of the most frequently data manipulation task in analytics work. For example, you have multiple human records files from various departments of your company and you are asked to join them so that there would be a single file containing information of all the departments.  
+
+### 1. Concatenate two data sets vertically / Appending Data Sets  
+
+Let's create two data sets - Data Set I and Data Set II  
+
+```sas
+Data Dataset1;
+Input Name $ Score;
+cards;
+David 30
+Ram 25
+Sam 74
+Sandy 36
+;
+run;
+
+Data Dataset2;
+Input Name $ Score;
+cards;
+Ken 36
+Obama 74
+Raj 30
+Shyam 25
+;
+run;
+```
+
+__Append / Concatenate two data sets__  
+
+```sas
+Data Stack;
+Set Dataset1 Dataset2;
+Run;
+```
+
+__Output__  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/341207a9-908f-432a-8c26-5037c465449e)  
+
+__Note__ : The stacked data set is not sorted because we have not used BY statement.  
+
+### 2. Interleaving SAS Data Sets (Sorted Stacked Data Set)  
+
+Interleaving combines individual sorted SAS data sets into one sorted data set. You interleave data sets using a SET statement and a BY statement in a DATA step.  
+
+Make sure data sets are sorted before appending datasets. Datasets can be sorted with PROC SORT.  
+
+```sas
+proc sort data = dataset1;
+by name;
+run;
+proc sort data = dataset2;
+by name;
+run;
+```
+
+```sas
+Data Stack1;
+Set Dataset1 Dataset2;
+By Name;
+Run;
+```
+
+__Output__
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/e4356cc6-d069-4809-8dd1-eaa817595727)  
+
+### 3. PROC SQL for concatenating two data sets  
+
+OUTER UNION CORR keyword is used in PROC SQL to concatenate two data sets. The CORR tells SAS to append data sets by name (not by column position).  
+
+```sas
+PROC SQL;
+CREATE TABLE stackk AS
+SELECT *
+FROM Dataset1
+OUTER UNION CORR 
+SELECT *
+FROM Dataset2
+ORDER BY Name;
+QUIT;
+```
+
+The output of PROC SQL is same as the output of previous example.  
+
+### 4. PROC APPEND to concatenate data sets  
+
+In PROC APPEND, the data set specified in BASE= option refers to a data set in which other data set would be added or appended. In log, it writes 'Appending Dataset2 to Dataset1' for our example. After running this code, the dataset1 contains 8 records ( 4 from the original 'dataset1' file and 4 from the dataset2)  
+
+```sas
+proc append base=dataset1 data=dataset2;
+run;
+```
+
+ If you want to append data and store it to another dataset, you can run PROC APPEND twice to do it. In the first PROC APPEND, it would create a base table ALLDATA (as specfied in the code below).  If the dataset ALLDATA does not already exist, it would be automatically created by SAS.  
+
+ ```sas
+proc append base=alldata data=dataset1;
+run;
+proc append base=alldata data=dataset2;
+run;
+```
+ 
+### Is PROC APPEND faster?  
+
+PROC APPEND is faster than SET statement or PROC SQL UNION because it only reads in the data set being appended (i.e. the dataset identified by the syntax ‘DATA=’).  
+
+### Application of PROC APPEND  
+
+PROC APPEND is most useful when you use it in a macro. For example, you create a macro in which there is a loop for calculation of some metrics of multiple variables. In each iteration, it returns a data set which needs to be appended with the output of subsequent iterations so that once loop completes all the iterations, we would have complete data set.  
+
+### Important Point  
+
+Suppose you have two datasets having same variable names but the length of the common variable is different, It would throw a warning and it would not append datasets. To workaround this issue, we can use FORCE option to append the data sets.  
+
+```sas
+proc append base=dataset1 data=dataset2 force;
+run;
+```
+  
+### 5. Usage of Multiple Set Statement  
+
+Instead of specifying multiple data sets in a single SET statement, we can also multiple SET statements but the result /output would be totally different. See the output shown below -  
+
+```sas
+Data Stack3;
+Set Dataset1;
+Set Dataset2;
+Run;
+```
+
+__Warning__ : It overwrites data.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/80f9c792-870a-4398-9fa1-c9ec042f1cc1)  
+
+The question arises " why do we use multiple set statement if it overwrites data". The next topic describes the application of multiple set statement.  
+
+### Application of Multiple Set Statement  
+
+It combines data sets by adding column from the other dataset. Unlike INNER/LEFT Joins, it does not require any primary or unique key to join two datasets.  
+
+Lets create a new data set - Data Set 3  
+
+```sas
+Data Dataset3;
+Input Section $;
+cards;
+A
+B
+C
+D
+;
+run;
+```
+
+```sas
+Data Stack3;
+Set Dataset1;
+Set Dataset3;
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/25a38fb2-99b9-4eb5-8710-3c2061ce7cca)  
+
+### Append Data : Many to Many Relationship  
+
+Multiple SET statement can also produce cartesian product of two tables. It can be done with POINT= option.  
+
+```sas
+Data Stack2;
+set Dataset1;
+do i=1 to num;
+set Dataset3 nobs=num point=i;
+if i=i then output;
+end;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/de038ab2-a0dc-4e3b-b804-4df52fbfb569)  
+
+## SAS PROC REPORT: LEARN WITH EXAMPLES  
+
+In this tutorial, we will cover how to use PROC REPORT in SAS, along with examples.   
+
+### What does PROC REPORT do?  
+
+PROC REPORT is a powerful procedure in SAS used for creating highly customizable tabular reports. It allows you to summarize, analyze, and present data in a structured format.  
+
+Here are some key benefits of using PROC REPORT:
+
+Tabular Reporting: PROC REPORT enables you to create tabular reports that organize data in rows and columns.  
+
+Grouping and Breaks: You can group data based on one or more variables and create break lines that visually separate the groups. This helps in organizing and summarizing data by different categories.  
+
+Calculated Columns: PROC REPORT allows you to create new columns in the report that are calculated based on expressions or computations involving existing variables.  
+
+Summary Statistics: You can calculate summary statistics such as sums, means, counts, minimums, maximums, and more for specific variables or groups using PROC REPORT.  
+
+Conditional Formatting: PROC REPORT supports conditional formatting, allowing you to highlight specific cells, rows, or columns based on certain conditions.  
+
+Customization and Formatting: PROC REPORT provides a wide range of options for customizing the appearance and layout of your report. You can control fonts, colors, borders, spacing, alignment, and other formatting aspects to create visually appealing reports.  
+
+### Syntax of PROC REPORT  
+
+The basic syntax of PROC REPORT is as follows.  
+
+```sas
+proc report data=dataset-name;
+column variable1 variable2 variable3;
+run;
+```
+
+data=dataset-name: Specify the dataset that contains the data you want to include in the report.  
+
+column: The COLUMN statement specifies the order and variables to be displayed in the report.  
+
+### Sample Dataset  
+
+Let's create a sample dataset for the examples in this tutorial.  
+
+```sas
+data mydata;
+input product$ country$ transactions country;
+cards;
+Electric USA 35 3650
+Electric UK 25 2450
+Electric France 16 680
+Electric India 29 3150
+Cosmetic USA 15 3350
+Cosmetic UK 31 2750
+Cosmetic France 26 990
+Cosmetic India 41 3050
+Garments USA 125 4350
+Garments UK 121 2150
+;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/44e9f645-8f2b-4ed2-8737-346a981647ea)  
+
+### Print Data  
+
+The basic syntax of PROC REPORT prints data like PROC PRINT procedure. In the code below, we are using the PROC REPORT procedure to create a tabular report with three columns: "product", "country" and "sales"  
+
+```sas
+proc report data=mydata;
+column product country sales;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/80f888c1-ebd9-467d-9843-860f4173b545)  
+
+### How to Customize Columns in a Report  
+
+You can change the headers of the columns using the display option in the define statement. This will change how the column names appear in the report without modifying the actual variable names. In this example, "Revenue" is the new header label assigning to the "sales" column.  
+
+You can format the values in a column using the format option in the define statement. In the code below, dollar format is being applied.  
+
+```sas
+proc report data=mydata;
+column product country sales;
+define sales / display "Revenue" format=dollar8.;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d25fd191-2444-435a-a3ae-bd08821a99bb)  
+
+### How to Group Data in a Report  
+
+group: This option specifies that the "product" variable should be used for grouping the data in the report. "Categories" is the new header label assigned to the "product" column.   
+
+```sas
+proc report data=mydata;
+column product country sales;
+define sales / display "Revenue" format=dollar8.;
+define product / group "Categories";
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8ab4da0c-4e62-42d3-838d-1dabf386cfc5)  
+
+### How to Summarize Data in a Report  
+
+By using PROC REPORT, you can produce descriptive statistics such as sum, mean, min, max etc. In this example, we are calculating sum of sales by countries.  
+
+```sas
+proc report data=mydata;
+column country sales;
+define country / group "Locations";
+define sales / analysis sum "Sum of Sales" format=dollar8.;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b4bd8f8e-cb45-4f33-91dc-81b7cc212110)  
+
+### How to Transpose a Variable in a Report  
+
+across: This option specifies that the "country" variable should be used for creating a separate header above the data. "Location" is the new header label assigned to the "country" column.  
+
+```sas
+proc report data=mydata;
+column product country sales;
+define sales / display "Revenue" format=dollar8.;
+define product / group "Categories";
+define country / across "Location";
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8e98c976-8d3d-4b3f-b9a6-32e548b2ebe7)  
+
+### How to Create Grouped Columns in a Report  
+
+(transactions sales): The "transactions" and "sales" variables will be nested under the "country" column.  
+
+```sas
+proc report data=mydata;
+column product country, (transactions sales);
+define product / group "Categories";
+define country / across "Location";
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/abd988af-8a6f-477e-95dc-baf3214b3e4e)  
+
+### How to add Grand Total in PROC REPORT   
+
+```sas
+proc report data=mydata;
+column product country, (transactions sales);
+define product / group "Categories";
+define country / across "Location";
+compute after;
+product = 'Total';
+endcomp;
+rbreak after /summarize;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/96dc5c12-f05d-4f0c-80a4-a38bc3941e4a)  
+
+compute after: The COMPUTE AFTER block is used to insert a custom computation after each group of data.  
+
+product = 'Total';: This line assigns the value "Total" to the "product" variable. It will display "Total" as a row label after each group of data.  
+
+rbreak after: The RBREAK statement is used to create a row break after each group of data.  
+
+/summarize: The SUMMARIZE option in the RBREAK statement indicates that summary statistics, such as sums, will be displayed for the numeric variables in the report.  
+
+### Conditional Formatting in PROC REPORT  
+
+The following code defines a custom format named "mycolor" using PROC FORMAT and then uses it to format the background color of the "transactions" column in the PROC REPORT. If number of transactions are below 30, they will be formatted with a "lightred" background color, else with a "lightgreen" background color.  
+
+```sas
+proc format;
+value mycolor
+Low-30 = 'lightred'
+30-High = 'lightgreen';
+run;
+
+proc report data=mydata;
+column product country, (transactions sales);
+define product / group "Categories";
+define country / across "Location";
+compute after;
+product = 'Total';
+endcomp;
+rbreak after /summarize;
+compute transactions;
+call define
+(_col_,'style',"STYLE=[BACKGROUND=mycolor.]");
+endcomp;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c2c5b637-c5ca-4d6e-957c-2f7d9655e770)  
+
+### How to Style PROC REPORT  
+
+```sas
+proc report data=mydata
+style(column)=[background=lightgrey]
+style(header)=[background=grey color=white];
+column product country, (transactions sales);
+define product / group "Categories";
+define country / across "Location";
+compute after;
+product = 'Total';
+endcomp;
+rbreak after /summarize;
+compute transactions;
+call define
+(_col_,'style',"STYLE=[BACKGROUND=mycolor.]");
+endcomp;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/634c7645-cc26-401c-882b-5bee83b0c21f)  
+
+style(column): This style option applies to all data cells in the columns of the report.  
+
+[background=lightgrey]: This specifies the background color for the data cells in all columns. In this case, the background color will be "lightgrey."  
+
+style(header): This style option applies to all header cells in the report.  
+
+[background=grey color=white]: This specifies the background color for the header cells and also changes the font color to "white." In this case, the background color of the headers will be "grey," and the text color will be "white."  
+
+## SAS : PROC TABULATE EXPLAINED  
+
+### What does Proc Tabulate do?  
+  
+Proc Tabulate is mainly used to create a professional looking table.  
+
+__Terminologies__  
+
+VAR : The Var statement tells SAS that these variables are analysis variables. They must be numeric. They are used to create summary statistics.  
+
+CLASS : The Class statement tells SAS that these variables are categorical variable  
+
+TABLE : The Table statement tells SAS which variables are row expressions, which are column expressions.  
+
+Table Salary; -  If there are no commas in the TABLE statement, SAS assumes you are only defining the column expression.   
+ 
+Table Gender, Salary; -  If there is one comma, then it is a row expression before comma and column expression after comma.  
+
+### Create a dataset  
+
+```sas
+Data test;
+Input T1 T2 T3 T4 T5 Age BU;
+Cards;
+1 5 2 3 4 3 3
+4 5 2 1 2 1 3
+3 4 4 3 2 3 2
+4 3 2 5 3 3 3
+1 2 4 2 1 2 2
+;
+Run;
+```
+
+### Simple Table  
+
+```sas
+Proc tabulate data = test;
+Var T1;                                                                                          
+Table T1;          
+Run;
+```
+
+The output is shown in the image below -
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5a5386f3-cc03-46fa-86bd-3117d93b8a5d)  
+
+By default, it calculates SUM for variables.  
+
+### How to add different Statistics Options
+
+The asterisk * is used to add statistical keywords.  
+ 
+Suppose you want to calculate COUNT for T1 variable :  
+
+```sas
+Proc tabulate data = test;
+Var T1;
+Table T1 * N;
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/95d56a73-a1f9-4b02-8214-4101460ac587)  
+
+Suppose you want to calculate both COUNT and SUM for T1 variable :  
+
+```sas
+Proc tabulate data = test;
+Var T1;
+Table T1 * (N SUM);
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a15abe85-e020-4118-87cb-0713eecba32e)  
+
+### Statistics Options  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9303887f-b75a-4860-83e3-a1dfd1ddbd0d)  
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 
 
 
