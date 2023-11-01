@@ -1,4 +1,4 @@
-# SAS
+	# SAS
 
 # What is SAS?
 
@@ -9794,6 +9794,514 @@ run;
 proc print data=readin2;
 run;
 ```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b5698445-4d99-4279-b882-1cb9732e6a89)  
+
+### How to extract Last N Characters?  
+ 
+In this example, we are showing how to extract last 3 characters using SUBSTR function in SAS.  
+
+The LENGTH function is used here to determine the length of the variable "name". We have substracted 2 from it to set as starting position so that we can fetch last 3 characters from the variable "name".  
+
+```sas
+data readin2;
+  set readin;
+  last3 = substr(name, length(name)-2,3);
+run;
+
+proc print data=readin2;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c3e0335f-c781-41d9-a1bd-1722366ddde0)  
+
+To extract last name from the variable name, you can use the code below.  
+
+```sas
+data readin2;
+  set readin;
+  lastname1 = substr(name, 6);
+  lastname2 = substr(name, find(name, ' ') + 1);
+run;
+
+proc print data=readin2;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d2c48c4a-4c2d-489a-aa55-0f93a57b74e5)  
+
+The lastname1 variable is static and always extracts from the 6th character till the end .  
+
+The lastname2 variable extracts characters after the space till the end of the name. Here we are using FIND function like the previous example to determine the position of space.  
+
+__Note__: In the code above, we have not defined the third argument of the SUBSTR function. SAS automatically considers it as extracting characters till the last character by default.  
+
+### How to use SUBSTR in IF-ELSE?  
+
+Suppose you want to create a new variable based on the first letter of the variable "name". If the first letter is 'J' then set new variable as 'pass' else 'fail'.  
+
+```sas
+data readin2;
+  set readin;
+  if substr(name, 1,1) = 'J' then newvar = 'pass';
+  else newvar = 'fail';
+run;
+
+proc print data=readin2;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a66043be-a054-4271-83df-6d4fdf82748f)  
+
+### How to replace characters using SUBSTR?  
+
+Suppose you have a phone number and you want to change the country code of the number. Here we are replacing the second and third character with '87'.  
+
+```sas
+data _null_ ;
+phone='(91) 9811-4343' ;
+substr(phone, 2, 2)='87' ;
+put phone=;
+run;
+```
+
+Result: phone=(87) 9811-4343  
+
+phone has been changed from (91) 9811-4343 to (87) 9811-4343.  
+
+## INDEX Function  
+
+### SAS INDEX FUNCTION: LEARN WITH EXAMPLES  
+
+This article explains how to use the INDEX function in SAS. It includes several examples that you can practice with to become proficient in using the INDEX function.  
+
+### What does the INDEX Function do?  
+
+The INDEX function in SAS is used to return the position of the first occurrence of a substring within a character string.  
+
+### Syntax: INDEX Function  
+
+The syntax of the INDEX Function is as follows -  
+```sas
+INDEX(string, substring)
+```
+
+string: The string within which you want to find the substring.  
+
+substring: The substring you want to find within the string.  
+
+### Examples: INDEX Function  
+
+Here are some examples that will help you understand how to use the INDEX function in SAS. Let's generate a sample dataset for demonstration purposes.  
+
+```sas
+data mydata;
+input names $30.;
+cards;
+Raj Gates
+Allen Lee
+Dave Sandy
+William Gates
+Jon Jedi
+;
+run;
+```
+
+In the example below we are using the INDEX function to find the position of the first occurrence of the string "Gates" in each observation of the variable "names".  
+
+```sas
+data readin;
+set mydata;
+position = index(names, "Gates");
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/132ff055-7331-49d0-a324-3ff9213653d3)  
+
+In the above SAS Program, we have created a new variable named position which stores the position of the first occurrence of the string "Gates". The INDEX function returns 0 if the substring does not exist in the string. In this example it returns a value of 0 when the variable "names" does not contain "Gates" in the observation.  
+
+### How to handle case sensitivity in INDEX Function?  
+
+The INDEX function is case-sensitive which means it treats "gates", "Gates" and "GATES" as different substrings.  
+
+```sas
+data readin;
+set mydata;
+position = index(names, "gates");
+proc print;
+run;
+```
+
+__Wrong Output__  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/76b7cb24-c281-4d21-84c9-c5e194326b1a)  
+
+The INDEX function returned 0 because it couldn't find 'gates' in the 'names' variable. 'Gates' does exist in the variable, but the function differentiates between uppercase 'G' and lowercase 'g'.  
+
+To fix this issue, we can convert the variable to lowercase using the LOWCASE function. This will result in "Gates" becoming "gates".  
+
+```sas
+data readin;
+set mydata;
+position = index(lowcase(names), "gates");
+proc print;
+run;
+```
+
+__Correct Output__  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/99a36c0d-ee5a-4732-bc1c-49c66d83ea0b)  
+
+### How to handle spaces in INDEX Function?  
+
+Let's say you have a variable that contains leading spaces. See the sample dataset below. Leading spaces cause a change in the position of a substring within the longer string.  
+
+```sas
+data mydata;
+input names $char15.;
+datalines;
+peter smith
+  peter doe
+ peter johnson
+;
+run;
+```
+
+To fix this, we can use STRIP function to remove leading (and trailing) spaces. Compare the values of two variables named "position" and "position2". The variable "position2" leverages the STRIP function whereas the variable "position" is without the STRIP function.  
+
+```sas
+data readin;
+set mydata;
+position  = index(names, "peter");
+position2 = index(strip(names), "peter");
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/21196092-72be-42e3-be3d-ca04136dac39)  
+
+### How to filter data using INDEX Function?  
+
+In this example we are using a dataset named CARS from SASHELP library. It is a built-in SAS dataset that contains information about various car models. We are selecting only those models that contain "convertible" in their names.  
+
+To filter data using the INDEX function in SAS, we added a WHERE statement to specify the condition for filtering. The INDEX function is used within the WHERE statement to check if the substring "convertible" exists in the variable. If the result of the INDEX function is greater than 0, it means the substring is found, and the record is included in the filtered dataset.  
+
+```sas
+data readin;
+set sashelp.cars;
+where index(lowcase(model), 'convertible') > 0;
+run;
+```
+
+## SCAN Function  
+
+### SAS SCAN FUNCTION: LEARN WITH EXAMPLES  
+
+This article explains how to use the SCAN function in SAS. It includes various examples to practice and master the SCAN function. By the end of the tutorial, you should be able to understand how this function works and its practical use cases.  
+
+### What does the SCAN Function do?  
+
+The SCAN Function in SAS extracts words from a character string. Character string is a variable having text. For example let's say you have a variable which contains this sentence I love SAS and you wish to extract the second word "love" from this sentence.    
+
+### Syntax: SCAN Function  
+
+The syntax of the SCAN Function is as follows -  
+```sas
+SCAN(text, nth-word, [delimiters], [modifiers])
+```
+
+text: The string from which you want to extract the word.  
+
+nth-word: The nth-word is the position of the word you want to extract. A positive value extracts from left to right, and a negative value extracts from right to left.  
+
+delimiters: The delimiter that separate the words within the string. It is optional. By default it takes space as delimiter.  
+
+modifiers: It is an optional argument that can be used to change or expand the default behavior of SCAN Function. For example it can be used to perform a case-insensitive search. See the list of modifiers in the next section of this tutorial.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f494077b-883a-464d-a096-deaa37fb75e2)  
+
+### Examples: SCAN Function  
+
+Let's take a simple example. We have a string I love SAS Programming and we want to extract second word from the string.  
+
+```sas
+data _null_;
+text = "I love SAS Programming";
+result = scan(text,2);
+put result=;
+run;
+```
+
+__Output__  
+
+As shown in the image below, "love" is the second word extracted from the string. The DATA _NULL_ statement is used when you need to perform some operations or calculations without creating an output dataset. In the above example, we have not created any dataset as we just wanted to show how SCAN function works.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/bf0b59bf-76a4-468c-a9d9-2e19907a9a46)  
+
+### SCAN : Extract the second last word  
+
+There are two ways to scan from right to left in the SCAN function.  
+
+Solution 1  
+
+The SCAN function can also be used to read from right to left. When you specify a negative number in the second argument of the function nth-word, SAS starts scanning from the right. For example -1 means the last word of the string.  
+
+Since we wish to find the second last word in the string, we have mentioned -2 in the second argument of the SCAN function.  
+
+```sas
+data _null_;
+text = "I love SAS Programming";
+result = scan(text,-2);
+put result=;
+run;
+```
+
+Output  
+
+As shown in the image below, the SAS Program returns "SAS" as the second-to-last word.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/35722baa-9535-455a-a698-5764e71291b7)  
+
+Solution 2 : Use Modifier  
+
+We can also scan from right to left using modifier which is the fourth argument of the SCAN Function. The "b" modifier tells SAS to scan backward which means reading string from right to left.  
+
+```sas
+data _null_;
+text = "I love SAS Programming";
+result = scan(text,2," ","b");
+put result=;
+run;
+```
+
+### SCAN : Handle Delimiters  
+
+Let's create a sample dataset for demonstration. In the dataset, we have a variable (column) named 'text' which contains names not in a proper format. Suppose you are asked to pull lastname from the variable. 
+
+Comma (,) is a separator or delimiter in the example below. Hence we will use comma as a third argument in the function to extract last name from the variable 'text'.  
+
+```sas
+data readin;
+input text $30.;
+datalines;
+Mrs Serena, Williams
+Mr. Dave, Sandy
+Rakesh Kumar, Arora
+Peter,Sandreas
+;
+run;
+
+data readin2;
+set readin;
+lastname=scan(text,2,",");
+proc print;
+run;
+```
+ 
+Output  
+
+In the above SAS program, we have created a new variable named 'lastname' which contains last names.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/64d0da5d-8f58-44e3-866b-06df59cee542)  
+
+### SCAN : Convert a String into Multiple Observations  
+
+Suppose you have a string that consists of multiple substrings delimited by commas, and you wish to transform it into multiple observations (rows).  
+
+```sas
+data readin;
+input text $30.;
+datalines;
+live, love, laugh, repeat
+;
+run;
+```
+
+```sas
+data readin2(keep=word);
+set readin;
+  do i = 1 to countw(text, ',');
+    word = scan(text, i, ',');
+    output;
+  end;
+proc print;	
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8d97b406-d845-402d-850e-46ab3fa4ea5e)  
+
+Explanation  
+
+A DO loop is initiated with the variable 'i' iterating from 1 to the number of words in the 'text' variable, separated by commas. This is done using the 'COUNTW' function.  
+
+Within the loop, the SCAN function is used to extract each word from the 'text' variable based on the current value of 'i' and the comma delimiter. The extracted word is then assigned to the 'word' variable.  
+
+The 'OUTPUT' statement is used to store each word as a separate observation in the new dataset named 'readin2'. It is run within the loop.  
+
+In the new dataset named 'readin2', we have kept the variable 'word' only. We didn't retain the variables 'i', 'text'.  
+
+### SCAN : Convert a String into Multiple Variables  
+
+In the previous example, we converted a string into multiple rows. Here, we are transforming it into multiple columns (variables). We have used the same sample dataset in this example.  
+
+```sas
+data readin;
+input text $30.;
+datalines;
+live, love, laugh, repeat
+;
+run;
+```
+
+```sas
+data _null_;
+set readin;
+call symputx('nWords', countw(text, ","));  
+run;
+
+data readin2;
+  set readin;
+  array word[&nWords] $12 word1-word&nWords;  
+  do i = 1 to &nWords;
+    word[i] = scan(text, i, ',');
+  end;
+  drop i;
+proc print;  
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b93aa7fe-0655-4813-8481-f08a43bc758b)  
+
+Explanation  
+
+First we count the number of words in the variable "text" using the countw function, with the delimiter as a comma (","). The call symputx statement was used to create a macro variable named "nWords" and assigned the count of words to it.  
+
+We declared an array named "word" with a size equal to the value stored in the macro variable "nWords". Each array element is a character variable of length 12, and the variables are named "word1" to "word4". Then we executed a do-loop that iterates from 1 to the value of "nWords".  
+
+Within the do-loop, we assigned each word from the variable "text" to the corresponding element of the array "word" using the scan function with a comma (",") as the delimiter. In simple words, we created a new variable for each word in the variable "text". Later we removed the variable "i" from the dataset.  
+
+## FIND Function  
+
+### SAS FIND FUNCTION: LEARN WITH EXAMPLES  
+
+In this tutorial, we will show how to use the FIND Function in SAS, along with examples.  
+
+### What does FIND Function do in SAS?  
+
+The FIND function is used in SAS to search for a specific substring within a string. It returns the position of the first occurrence of the substring within the string.  
+
+### Syntax of FIND Function  
+
+Below is the syntax of FIND Function in SAS.  
+```sas
+FIND( string, substring , [modifier], [start-position])
+```
+
+string: The character variable or string that you want to search.  
+
+substring: The character variable or string that you want to find within the string.  
+
+modifier (optional): Specifies the type of search to be performed. It can be any of the following:  
+
+i: Performs a case-insensitive search.
+t: Trims trailing blanks from string and substring.  
+
+start-position (optional): Specifies the position in the string where the search should start. It can be a positive or negative integer. A positive value starts the search from the beginning of the string, while a negative value starts the search from the end of the string.  
+
+### Sample Dataset  
+
+Let's create a sample dataset for demonstration purpose.  
+
+```sas
+data mydata;
+input text $22.;
+datalines;
+What is your name?
+His name sounds cool
+He looks sharper
+His name is David
+Name:What's in a name
+;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/34301d53-9a23-4f41-8d38-716661ec98a1)  
+
+### Examples: FIND Function  
+
+In this section, we will cover various examples of the FIND function to gain a better understanding of how it works.  
+
+Find Position of First Occurrence of String  
+
+Here we are using the FIND function to search for the occurrence of "name" within the variable "text".  
+
+```sas
+data newdata;
+set mydata;
+first_name = find(text, "name");
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ada06607-eec8-4331-b47b-305c35c8c894)  
+
+"What is your name?": The first occurrence of "name" is at position 14 in the text.  
+
+"His name sounds cool": The first occurrence of "name" is at position 5 in the text.  
+
+"He looks sharper": The word "name" is not present in this text, so the result is 0, indicating no occurrence.  
+
+"His name is David": The first occurrence of "name" is at position 5 in the text.  
+
+"Name: What's in a name": The first occurrence of "name" is at position 18 in the text. Please note it is case-sensitive.  
+
+The position of the first occurrence is stored in the variable "first_name" in the new dataset "newdata.  
+
+Find Case-Insensitive First Occurrence Position  
+
+To make the search case-insensitive i.e. treating uppercase and lowercase letters as equal, we can use the modifier i in the FIND function.  
+
+```sas
+data newdata;
+set mydata;
+first_name = find(text, "name", "i");
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ec0cf938-55b2-4787-9fc9-9ab8d4d79652)  
+
+Look at the last observation - "Name: What's in a name". It has two occurrences of "name". After enabling case-insensitive search, it returns 1 instead of 18.  
+
+Customize Search with Custom Start Position  
+
+In the code below, the number 6 represents the position in the text string from where the search should start.  
+
+```sas
+data newdata;
+set mydata;
+first_name = find(text, "name", "i", 6);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/984b00d8-779a-4c63-9fc9-290221a278a8)  
+
+It returns 0 for second and fourth row as "name" in these two rows are at position 5.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 
 
 
