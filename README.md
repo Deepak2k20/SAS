@@ -11949,6 +11949,598 @@ yearnumber = year(date_var);
 run;
 ```
 
+## SAS : Time and DateTime Functions  
+
+In this post we have covered various ways to handle time and datetime values in SAS, along with examples.  
+
+Suppose you have a variable that has a timestamp of 29-Jun-2023 04:59:02.  
+
+hour(timestamp) - Extracts hour from timestamp. It returns 4.  
+  
+minute(timestamp) - Extracts minutes from timestamp. It returns 59.  
+
+second(timestamp) - Extracts seconds from timestamp. It returns 2.  
+
+timepart(timestamp) - Extracts time from timestamp.  
+
+datepart(timestamp) - Extracts date from timestamp.  
+
+put(timepart(timestamp), time8.) - Extracts time from timestamp and formats it. It returns 4:59:02.  
+
+put(timepart(timestamp), hhmm.) - Extracts time from timestamp and formats it as hours and minutes. It returns 4:59.  
+
+put(datepart(timestamp),worddate.) - Extracts date from timestamp and formats it in word form. It returns June 29, 2023.  
+
+put(datepart(timestamp),date11.) - Extracts date from timestamp and formats it. It returns 29-JUN-2023.  
+
+put(timestamp, dateampm.) - Formats the timestamp as datetime with AM or PM. It returns 29JUN23:04:59:02 AM.  
+
+put(timestamp, datetime20.) - Formats the timestamp as datetime. It returns 29JUN2023:04:59:02.  
+  
+### Sample SAS Dataset  
+
+In the code below, we are creating a sample SAS dataset for demonstration purposes. This dataset will be used in the examples throughout this tutorial.  
+
+```sas
+data example;
+input date DATETIME20. sale; 
+datalines;
+29-Jun-2023 04:59:02 83
+27-Jun-2023 13:51:23 81
+run;
+```
+
+### How to Extract Time from DateTime  
+
+The TIMEPART function is used to extract time from datetime values in SAS.   
+
+The HOUR function is used to extract hour from timestamp in SAS.  
+
+The MINUTE function is used to extract minutes from timestamp in SAS.  
+
+The SECOND function is used to extract seconds from timestamp in SAS.  
+
+In this example, the PUT function is used to convert and format a value into a specific format.  
+
+```sas
+data readin;
+set example;
+datetime = put(date, datetime20.);
+time_hour = hour(date);
+time_minute = minute(date);
+time_second = second(date);
+time8 = put(timepart(date), time8.);
+hhmm = put(timepart(date), hhmm.);
+hours52 = put(timepart(date), hour5.2);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a7ff0f0b-8ce6-40c3-aa89-7a73bd174b95)  
+
+### How to Extract Date from DateTime  
+
+In SAS, the DATEPART function is used to extract date from datetime values. See the examples below.  
+
+```sas
+data readin;
+set example;
+date9    = put(datepart(date),date9.);
+date11   = put(datepart(date),date11.);
+worddate = put(datepart(date),worddate.);
+weekdate = put(datepart(date),WEEKDATE.);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5f796bab-3cc6-4c58-a5f9-047e8c1174e7)  
+
+### DateTime Formats  
+
+The DATETIMEw.d format shows SAS datetime values in the form ddmmmyy:hh:mm:ss.ss.  
+
+The code below creates new variables and assigns them the value of the variable "date" converted to a character using the PUT function. The format is used to specify how the date value should be formatted as a datetime value.  
+
+```sas
+data readin;
+set example;
+datetime1= put(date, datetime18.);
+datetime2= put(date, datetime20.);
+datetime3= put(date, datetime21.2);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/068650b3-04de-41b6-8ffc-5ab04c019276)  
+
+The DATEAMPMw.d format displays SAS datetime values in the form ddmmmyy:hh:mm:ss.ss with AM or PM.  
+
+```sas
+data readin;
+set example;
+datetime1= put(date, dateampm.);
+datetime2= put(date, dateampm13.);
+datetime3= put(date, dateampm22.2);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/967df773-5ab2-4555-adb7-fc526a9f8c31)  
+
+## SAS: Numeric Functions  
+
+In this post we will cover various numeric functions in SAS, along with examples.  
+
+### List of most frequently used numeric functions in SAS  
+
+See the syntax of SAS numeric functions including their description.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/387ea221-4e28-4ffd-b3af-12b89179e9d4)  
+
+### Create SAS Dataset  
+
+Let's create a sample SAS dataset for the examples in this tutorial.  
+
+```sas
+data have;
+input sale1 sale2 sale3;
+cards;
+12 24 17
+25 . 67
+20 39 44
+34 69 82
+;
+run;
+```
+
+### Difference between SUM Function and + Operator  
+
+The SUM function handles missing values when calculating the sum, whereas the + operator does not return SUM if missing value(s) exist in any of the variable.  
+
+```sas
+data want;
+set have;
+newsale  = sale1 + sale2 + sale3;
+newsale1 = sum(sale1, sale2, sale3);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ecf88b74-8ca3-46ff-84e6-4c2cdf145671)  
+
+The above code creates a new SAS dataset named "want" using the "have" dataset as input. Two new variables, "newsale" and "newsale1," are calculated using the sum of "sale1," "sale2," and "sale3." Finally, the "run" statement ends the data step. You may have noticed the second value of "newsale" is blank whereas it is not blank for "newsale1".  
+
+### How to use Numeric Functions in SAS  
+
+```sas
+data want;
+set have;
+avg = mean(sale1, sale2, sale3);
+middle = median(sale1, sale2, sale3);
+count = n(sale1, sale2, sale3);
+nonmissing = nmiss(sale1, sale2, sale3);
+run;
+```
+
+You can also use the of keyword with a variable range (sale1-sale3) to specify that the functions should be applied to all variables within that range. The code below returns the similar output as output generated from the code shown in the previous section.  
+
+```sas
+data want;
+  set have;
+  avg = mean(of sale1-sale3);
+  middle = median(of sale1-sale3);
+  count = n(of sale1-sale3);
+  nonmissing = nmiss(of sale1-sale3);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c7e0522d-05f8-42fc-b7fd-8309dca8cb1b)  
+
+__Explanation__
+
+avg variable is assigned the mean value of sale1, sale2, and sale3 using the mean function.  
+
+middle variable is assigned the median value of sale1, sale2, and sale3 using the median function.  
+
+count variable is assigned the count of non-missing values of sale1, sale2, and sale3 using the n function.  
+
+nonmissing variable is assigned the count of missing values of sale1, sale2, and sale3 using the nmiss function.  
+
+## ROUND Functions  
+
+In this tutorial, we will show how to round numbers in SAS using various round functions, along with examples.  
+
+### ROUND Functions in SAS  
+
+new_variable = round(variable); : round to the nearest integer  
+
+new_variable = round(variable, 0.1); : round to 1 decimal place  
+
+new_variable = round(variable, 0.01); : round to 2 decimal places  
+
+new_variable = round(variable, 10); : round to the nearest multiple of 10  
+
+new_variable = round(variable, 100); : round to the nearest multiple of 100  
+
+new_variable = ceil(variable); : round up to the nearest integer  
+
+new_variable = floor(variable); : round down to the nearest integer  
+
+new_variable = ceil(variable*10)/10; : round up to 1 decimal place  
+
+new_variable = floor(variable*10)/10; : round down to 1 decimal place  
+
+### Sample Dataset  
+
+Let's create a sample SAS dataset for the examples in this tutorial.  
+
+```sas
+data mydata;
+input number;
+format number best20.;
+cards;
+1.23
+2.367
+4.1235
+105.67
+7000.55
+80.4
+;
+run;
+```
+
+### Example 1: Round to Nearest Integer  
+
+In the SAS code below, we are rounding values of a variable to the nearest integer. Here name of the variable is number.  
+
+```sas
+data output_data;
+set mydata;
+new_value = round(number);
+new_value2 = round(number, 1);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7abeb091-8673-4825-be49-533fb8f04238)  
+
+The round function without a second argument or 1 as the second argument rounds the variable to the nearest integer. Hence, both new_value and new_value2 variables store the nearest whole number to the number variable.  
+
+### Example 2: Round to N Decimal Places  
+
+The following code shows how to round values of a variable to specific decimal places in SAS.  
+
+```sas
+data output_data;
+set mydata;
+new_value = round(number, 0.1); /*round to 1 decimal place*/
+new_value2 = round(number, 0.01); /*round to 2 decimal places*/
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/96b79ff0-3e6a-40eb-b659-4017f176ee69)  
+
+### Example 3: Round to Nearest Multiple  
+ 
+The following code shows how to round values of a variable to the nearest multiple of 10 and 100.  
+
+```sas
+data output_data;
+set mydata;
+new_value = round(number, 10); /*round to nearest multiple of 10*/
+new_value2 = round(number, 100); /*round to nearest multiple of 100*/
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7a921799-7847-4055-9da0-5f550abc7159)  
+
+### Example 4: ROUND UP in SAS  
+
+The CEIL function is used in SAS to round up the values of a variable to the nearest integer.  
+
+```sas
+data output_data;
+set mydata;
+new_value = ceil(number); /*round a number up*/
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b7937e5b-bd2b-44b9-99b8-a4dea9754946)  
+
+### Example 5: ROUND DOWN in SAS  
+
+The FLOOR function is used in SAS to round down the values of a variable to the nearest integer.  
+
+```sas
+data output_data;
+set mydata;
+new_value = floor(number); /*round a number down*/
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9b42550d-a55b-4a4a-b47c-dcb384c75b97)  
+
+### Example 6: Equivalent of ROUND UP, ROUND DOWN Excel Function in SAS  
+
+In SAS, the equivalent functions to the MS Excel functions ROUNDUP and ROUNDDOWN are the CEIL and FLOOR functions. We have seen these in the previous examples. Here we are showing how to include the number of digits to which you want to round up or down.  
+
+```sas
+data output_data;
+set mydata;
+new_up = ceil(number); /*round up*/
+new_up1 = ceil(number*10)/10; /*round up to 1 digit*/
+new_down = floor(number); /*round down*/
+new_down1 = floor(number*10)/10; /*round down to 1 digit*/
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f3acc6e9-3aba-45b1-a6c0-5e7111953bad)  
+
+new_up1 = ceil(number*10)/10; creates a new variable new_up1 which rounds the number variable up to one decimal place.  
+
+new_down1 = floor(number*10)/10; creates a new variable new_down1 which rounds the number variable down to one decimal place.  
+
+If you want to round up or down to two decimal places, you can multiply the number by 100 and then divide it by 100.  
+
+## LOG Functions  
+
+In this article we will show how to use log functions in SAS, along with examples.  
+
+### LOG Functions in SAS  
+
+newvar = log(var1);: Calculates the natural logarithm (base e) of the "var1" variable.  
+
+newvar = log10(var1);: Calculates the logarithm base 10 of the "var1" variable.  
+
+newvar = log2(var1);: Calculates the logarithm base 2 of the "var1" variable.  
+
+newvar = log10(var1)/log10(4);: Calculates the logarithm base 4 of the "var1" variable.  
+
+### Sample Dataset  
+
+Let's create a sample SAS dataset for the examples in this article.  
+
+```sas
+data have;
+input salary;
+cards;
+1000
+1230
+2211
+2520
+;
+run;
+```
+
+```sas
+data want;
+set have;
+salary_log = log(salary);
+salary_log10 = log10(salary);
+salary_log2 = log2(salary);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/cfffe7fa-cec9-4ab4-8673-b29936361b86)  
+
+data want;: This line defines a new SAS dataset named "want" that will be created to store the transformed data. set have;: This line instructs SAS to read data from an existing dataset named "have." The "have" dataset is the source dataset from which the "salary" variable will be obtained.  
+
+### How to calculate LOG in any base in SAS  
+
+In the code below, we are calculating the log in base 4. To compute the logarithm in base 4, we have divided the logarithm of the salary in base 10 by the logarithm of 4 in base 10.  
+
+```sas
+data want;
+set have;
+salary_log4 = log10(salary)/log10(4);
+run;
+```
+
+## ABS Function
+
+In SAS, you can use the ABS function to calculate the absolute value of a number.  
+
+### Syntax of ABS Function  
+
+The syntax of ABS function is as follows:  
+
+```sas
+ABS(numeric_variable)
+```
+
+### Sample Dataset  
+
+Let's create a sample SAS dataset for demonstration purpose.  
+
+```sas
+data mydata;
+input change;
+cards;
+2
+3
+-2
+-3
+0
+;
+run;
+```
+
+The following code uses the ABS function to calculate the absolute value of each value in the "change" column.  
+
+```sas
+data example;
+set mydata;
+abs_change = abs(change);
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b21764f9-89c5-4e52-b95e-106b5c11de69)  
+
+-2 has been changed to 2.  
+
+-3 has been changed to 3.  
+
+### How to Use ABS Function in a SAS Macro  
+
+To calculate the absolute value in a SAS Macro, you need to enclose the ABS function within the %SYSFUNC function.  
+
+```sas
+%let myvalue=-3.4;
+%put absolute value is %sysfunc(abs(&myvalue.));
+```
+
+LOG: absolute value is 3.4  
+
+## POWER Functions  
+
+In SAS, we can raise a number to a power using ** operator. Check out the example below showing how to calculate the square, square root, cube, cube root using SAS.  
+
+Square : result = variable**2;  
+Square Root : result = variable**(1/2);  
+Cube : result = variable**3;  
+Cube Root : result = variable**(1/3);  
+
+### Sample SAS Dataset  
+
+Let's create a sample dataset for demonstration purpose.  
+
+```sas
+data mydata;
+input change;
+cards;
+2
+3
+-2
+-3
+0
+;
+run;
+```
+
+### Calculating Square in SAS  
+
+To calculate the square of a number in SAS, use the ** operator with the power of 2.  
+
+```sas
+data example;
+set mydata;
+sq_change = change**2;
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/35eb3634-f6ee-409d-85e6-0a2119eb2631)  
+
+### Calculating Square Root in SAS  
+
+To calculate the square root of a number in SAS, you can use either the sqrt function or ** operator with the power of 0.5.  
+
+```sas
+data example;
+set mydata;
+sqrt_change = change**(1/2);
+sqrt_change2 = sqrt(change);
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/095a8356-3dbc-48c7-95ed-c591d660af7c)  
+
+If you want zero instead of a missing value when calculating the square root of a negative number, you can use the MAX function to compare the number with zero.  
+
+```sas
+data example;
+set mydata;
+sqrt_change = max(0, change)**(1/2);
+run;
+```
+
+### Calculating Cube in SAS   
+
+To calculate the cube of a number in SAS, you can use the ** operator with the power of 3.  
+
+```sas
+data example;
+set mydata;
+cube_change = change**3;
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9d53936e-3014-4e88-8611-e828a198be1b)  
+  
+### Calculating Cube Root in SAS  
+
+To calculate the cube root of a number in SAS, you can use the ** operator with the power of (1/3).  
+
+```sas
+data example;
+set mydata;
+cbrt_change = change**(1/3);
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c1dba991-d7b1-4079-bb98-89923540f26a)  
+
+## COALESCE Function  
+
+This tutorial explains the usage of COALESCE function and how to use it.  
+
+### COALESCE
+
+The COALESCE function is used to select the first non-missing value in a list of variables. In other words, it returns the first non-blank value of each row.  
+
+Let's create a sample dataset in SAS to understand COALESCE function.    
+
+### Sample Data  
+
+```sas
+data temp;
+input ID x1-x4;
+cards;
+1 . 89 85 .
+2 79 . 74 .
+3 80 82 86 85
+;
+run;
+ ```
+
+### COALESCE : First Non-Missing Value  
+
+```sas
+data want;
+set temp;
+first_non_miss = coalesce(of x1-x4);
+run;
+```
+
+If you look at the output shown in the image below, you would find COALESCE returns 89 in first observation which is the first non-missing value among x1= . , x2=89 , x3=85, x4 = .  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7e8c537a-292e-4f40-9d6e-3b0dec39fd52)  
+
+We can also use COALESCE function in PROC SQL.  
+
+```sas
+proc sql;
+select *, coalesce(x1,x2,x3,x4) as first_non_miss
+from temp;
+quit;
+```
+
+### Last Non-Missing Value
+
+Suppose you need to calculate last non-missing value instead of first non-missing value. Unfortunately, there is no such function which returns last non-missing value. To accomplish this task, we can reverse a list of variables and ask SAS to calculate first non-missing value. It would be equivalent to last non-missing value. Indirectly, we are asking SAS to read variables from right to left rather than left to right.  
+
+```sas
+data want;
+set temp;
+last_non_miss = coalesce(of x4-x1);
+run;
+```
+
+Note : coalesce(of x4-x1) is equivalent to coalesce(x4, x3, x2, x1).  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/437f5437-272d-46dc-9827-b72f8cda6baf)  
+
+In this case, COALESCE returns 85 as it is a first non-missing value (read from right to left) among x4= . , x3= 85, x2=89, x1= . .  
+
+
 
 
 
