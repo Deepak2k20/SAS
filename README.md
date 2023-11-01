@@ -10257,7 +10257,7 @@ run;
 
 The position of the first occurrence is stored in the variable "first_name" in the new dataset "newdata.  
 
-Find Case-Insensitive First Occurrence Position  
+### Find Case-Insensitive First Occurrence Position  
 
 To make the search case-insensitive i.e. treating uppercase and lowercase letters as equal, we can use the modifier i in the FIND function.  
 
@@ -10272,7 +10272,7 @@ run;
 
 Look at the last observation - "Name: What's in a name". It has two occurrences of "name". After enabling case-insensitive search, it returns 1 instead of 18.  
 
-Customize Search with Custom Start Position  
+### Customize Search with Custom Start Position  
 
 In the code below, the number 6 represents the position in the text string from where the search should start.  
 
@@ -10287,8 +10287,1690 @@ run;
 
 It returns 0 for second and fourth row as "name" in these two rows are at position 5.  
 
+## COMPRESS Function  
+
+### SAS COMPRESS FUNCTION: LEARN WITH EXAMPLES  
+
+In this tutorial we will cover how to use the COMPRESS function in SAS, along with examples.  
+
+### What does the COMPRESS Function do?  
+
+The COMPRESS function in SAS is used to remove specific characters from a string.
+
+### Syntax of COMPRESS Function  
+
+The syntax of the COMPRESS function is as follows:  
+
+```sas
+COMPRESS(string, characters to be removed, modifier)
+```
+
+string: The string from which you want to remove characters.  
+
+characters to be removed: The characters that you want to remove from the original string.  
+
+modifier It is an optional argument. Specify the keyword for the action you want to perform.  
+
+### List of Modifiers  
+
+Here is a list of modifiers in the COMPRESS function in SAS.  
+
+a – Remove all alphabetical characters from String.
+ak - Keep only alphabets from String.
+kd - Keep only numeric values from String.
+d – Remove numerical values from String.
+i – Remove specified characters (both upper and lower case) from String.
+k – Keep the specified characters in the String instead of removing them.
+l – Remove lowercase characters from String.
+p – Remove punctuation characters from String.
+s – Remove spaces from String. This is the default.
+u – Remove uppercase characters from String.  
+
+### Sample Dataset  
+
+The following code creates a sample SAS Dataset that will be used to demonstrate examples of the COMPRESS function.  
+
+```sas
+data mydata;
+input name $20.;
+cards;
+Sandy David 123.
+Sam Andreas@14
+123Sahil Arora
+#Deeps Bhalla
+;
+run;
+```
+
+### 1. Remove All Spaces from String  
+
+By default, the COMPRESS function removes leading, between and trailing spaces from a string.  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name);
+run;
+ ```
+
+ ![image](https://github.com/Deepak2k20/SAS/assets/65231118/16cba23b-e812-42cf-bc6b-f229c7b6c1c1)  
+
+ The above code takes the existing dataset "mydata" and creates a new dataset "mydata2" with an additional variable "name2", where the values in "name2" have spaces removed using the COMPRESS function.  
+
+ ### 2. Remove Specific Characters from String  
+ 
+Here we are deleting characters - at sign (@) and hash sign (#) from the "name" column.  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, '@#');
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/4013c90e-d4d0-4b2b-b489-91032fd53507)  
+
+### 3. Remove all alphabets from string  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, '', 'a');
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7416d25e-3199-4c18-bfa8-e8c477026a74)  
+
+### 4. Keep only alphabets from string  
+
+Here we are keeping all alphabetical characters from a string and removing everything else.  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, '', 'ak');
+run;
+ ```
+
+ ![image](https://github.com/Deepak2k20/SAS/assets/65231118/69edccae-cfcc-4693-8f86-1de5a5ebf95a)  
+
+ ### 5. Keep only numeric values from string  
+
+ ```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, '', 'kd');
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b399dd90-8791-4594-ab49-a582e4f8034b)  
+
+### 6. Remove numerical values from string  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, '', 'd');
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/de3ba96d-b1a0-410f-bf0a-c69f8505e6bc)  
+
+### 7. Remove specified characters both upper and lower case from string
+
+To remove specified characters from a string while ignoring case sensitivity, you can use the COMPRESS function in SAS with the 'i' modifier.  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, 's', 'i');
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d850d18a-1609-43cd-8cf9-75cc5753912e)  
+
+If you look at the second observation, both the capital and small letter 'S' or 's' were removed from name.  
+
+### 8. Keep the specified characters in the string  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, 's', 'k');
+run;
+```
+
+### 9. Remove lowercase characters from string  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, '', 'l');
+run;
+```
+
+### 10. Remove uppercase characters from string  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, '', 'u');
+run;
+```
+
+### 11. Remove punctuation characters from string  
+
+```sas
+data mydata2;
+  set mydata;
+  name2 = compress(name, '', 'p');
+run;
+```
+
+## COUNTW Function  
+
+### HOW TO USE COUNTW FUNCTION IN SAS (WITH EXAMPLES)  
+
+In this tutorial, we will show how to use the COUNTW Function in SAS, along with examples.  
+
+### What does COUNTW Function do in SAS?  
+
+The COUNTW function is used in SAS to count the number of words in a character string.  
+
+### Syntax of COUNTW Function  
+
+Below is the syntax of COUNTW Function in SAS.  
+
+```sas
+COUNTW(string, [character(s)] , [modifier(s)])
+```
+
+string: The character variable or string.  
+
+character(s) (optional): Delimiters that separate words.  
+
+modifier(s) (optional): Keywords that can change how the COUNTW function works.  
+
+### Sample Dataset  
+
+Let's create a sample dataset for demonstration purpose.  
+
+```sas
+data example;
+input string $60.;
+datalines;
+It's a pleasant day today
+I_am yet to receive payment
+352+20+2=374
+Send to my address xyz_a@gmail
+;
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/82bfae14-a522-4fc2-bdd7-f799859b09d6)  
+
+Here we are using the COUNTW function to count the number of words in the variable "string".  
+
+```sas
+data newdata;
+set example;
+count_words=countw(string);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3ad0c9ba-bec8-4a9c-9cd6-22f69864b054)  
+
+By default SAS consider the followings as default delimiters:  
+
+blank ! $ % & ( ) * + , - . / ; < ^ |  
+
+In the example above it considered blank and + as delimiters to count the number of words.  
+
+### How to define delimiters in the COUNTW Function  
+
+In the COUNTW function, we can specify a delimiter which makes it to count the number of words based on the specified delimiter rather than the default one. In the example below, we are using blank space and underscore (_) sign as separators.  
+
+```sas
+data newdata;
+set example;
+count_words=countw(string, ' ');
+count_words_=countw(string, '_');
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5796e16d-9d7c-4041-836c-137b6e26d1b9)  
+
+### How to use modifiers in the COUNTW Function  
+
+Below is an example where we are using the COUNTW function with the 'd' modifier. The 'd' modifier refers to digits. Here we are counting the number of words separated by digits.  
+
+```sas
+data newdata;
+set example;
+count_words_digits=countw(string, , 'd');
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/80d3bb79-1986-4ffe-93f8-22eab673174c)  
+
+Important Note: You don't need to specify anything in the second argument when using the modifier.  
+
+Here is a list of modifiers that can be used in the COUNTW Function in SAS.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d6991158-b3a7-4555-b8ca-8f99c0909866)  
+
+## STRIP Function  
+
+### STRIP FUNCTION IN SAS : REMOVE SPACES FROM STRING  
+
+In SAS, the STRIP function removes both the leading and trailing spaces from a string or character variable. It is equivalent to MS Excel's TRIM Function.
+
+Please note that the STRIP function does not remove spaces between words. Use COMPRESS function instead if you want to remove spaces between words.
+
+The syntax of STRIP function is as follows:
+
+```sas
+new_variable = strip(variable)
+```
+
+### Sample Dataset  
+
+Let's create a sample SAS dataset for demonstration purpose.  
+
+```sas
+data example;
+input name $char20.;
+cards;
+    David Sandy 
+   Sam Andrews
+;
+run;
+```
+
+The following code creates "result" dataset that stores the same observations as the "example" dataset, but with an additional variable called "name_clean" that stores the cleaned version of the "name" variable, removing any leading or trailing spaces.
+
+```sas
+data result;
+set example;
+name_clean = strip(name);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/0e8a71b3-1ca0-4f47-b0bf-9db3d3c2e77a)  
+
+## TRANWRD and TRANSLATE Functions  
+
+### SAS: TRANWRD AND TRANSLATE FUNCTIONS (WITH EXAMPLES)  
+
+In this tutorial, we will show how to use the TRANWRD and TRANSLATE functions in SAS, along with examples.  
+
+### Difference between TRANWRD and TRANSLATE Functions  
+
+The TRANWRD replaces specific words within a character string with other words, whereas the TRANSLATE function replaces specific characters within a character string with other characters.  
+
+To remember the TRANWRD function, you can focus on the last three characters "WRD" which can stand for "Word Replacement"  
+
+### Syntax of TRANWRD and TRANSLATE Functions  
+
+__TRANWRD__
+
+The syntax of the TRANWRD Function in SAS is as follows:  
+
+```sas
+TRANWRD(string, find_what , replace_with)
+```
+
+__TRANSLATE__
+
+Below is the syntax of TRANSLATE Function in SAS.  
+
+```sas
+TRANSLATE(string, replace_with, find_what)
+```
+
+string: The character variable or string.  
+
+find_what : The character or word to be replaced within the string.  
+
+replace_with : The character or word that will replace the old word within the string.  
+
+### Sample Dataset  
+
+Let's create a sample dataset for demonstration purpose.  
+
+```sas
+data have;
+input phrase $45.;
+cards;
+Hello, How are you doing?
+The brown cat jumps over the hairy dog
+XYYXYYY
+;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3a6a9821-0d84-4bba-87fc-071516fb5ba0)  
+
+Here we are replacing characters XY with AB in the character variable named "phrase".  
+
+```sas
+data want;
+set have;
+phrase_tranwrd = tranwrd(phrase, "XY", "AB");
+phrase_translate = translate(phrase, "AB", "XY");
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/eb0b5dd8-4037-4cbc-baf9-be906f339066)  
+
+"XYYXYYY" becomes "ABYABYY" because TRANWRD replaces the pattern "XY" with "AB" whereas TRANSLATE returns ABBABBB as it replaces each occurrence of "X" with "A" and each occurence of "Y" with "B".  
+
+### How to replace words in SAS?  
+
+In this example, we are going to replace the word Hello with Hey.  
+
+```sas
+data want;
+set have;
+new_phrase = tranwrd(phrase, "Hello", "Hey");
+new_phrase2= translate(phrase, "Hey", "Hello");
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2482df4a-8122-4464-a67c-db0bcb9821f1)  
+
+When we used the TRANSLATE function with the input string "Hello, How are you doing?" and replaced "Hello" with "Hey", the resulting string is "Heyy , H w are y u d ing?".  
+
+Since the TRANSLATE function replaces individual characters, it doesn't recognize the entire "Hello" and "Hey" as a single unit. Instead, it replaces each occurrence of "H" with "H", "e" with "e", and "l" with "y" and "o" with blank.  
+
+## Convert Strings to Lowercase, Uppercase & Proper Case  
+
+### SAS: LOWERCASE, UPPERCASE & PROPER CASE  
+
+This tutorial explains how to convert a string to lowercase, uppercase and proper case in SAS, along with examples.  
+
+The descriptions and syntax of LOWCASE, UPCASE, PROPCASE, ANYLOWER, and ANYUPPER functions are as follows:  
+
+LOWCASE: Converts a string to lowercase.  
+
+Syntax: lowercase_string = lowcase(original_string);  
+
+UPCASE: Converts a string to uppercase.  
+
+Syntax: uppercase_string = upcase(original_string);  
+
+PROPCASE: Converts a string to proper case.  
+
+Syntax: propercase_string = propcase(original_string);  
+
+ANYLOWER: Returns position of first lowercase character.  
+
+Syntax: position = anylower(original_string);  
+
+ANYUPPER: Returns position of first uppercase character.  
+
+Syntax: position = anyupper(original_string);  
+ 
+### Sample Dataset  
+
+Let's create a sample SAS dataset that will be used in the examples of this tutorial.  
+
+```sasdata mydata;
+input company $ 1-20;
+cards;
+google
+gooGle
+Microsoft
+APPLE
+;
+run;
+```
+
+### How to Convert Strings to Uppercase  
+
+The following code uses the upcase() function to convert the values in the "company" variable to uppercase, and the result is stored in the new variable "company_new".  
+
+```sas
+data example;
+set mydata;
+company_new = upcase(company);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/90e7fdbe-d0f1-40ae-866d-b405825bf549)  
+
+### How to Convert Strings to Lowercase  
+
+The following code uses the lowcase() function to convert the values in the "company" variable to lowercase, and the result is stored in the new variable "company_new".  
+
+```sas
+data example;
+set mydata;
+company_new = lowcase(company);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/e9f612e6-5cd2-48c0-87a2-bd2227b1ae26)  
+
+### How to Convert Strings to Proper Case  
+
+The following code uses the propcase() function to convert the values in the "company" variable to proper case, and the result is stored in the new variable "company_new".  
+
+Proper case refers to a style where the first letter of each word is in uppercase, while the remaining letters are in lowercase. For example, consider the sentence: "hello world". In proper case, it would be written as: "Hello World".  
+
+```sas
+data example;
+set mydata;
+company_new = propcase(company);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/183d4740-caf4-4cd3-87c2-ba781cb26140)  
+
+### How to Detect Lowercase and Uppercase Letters  
+
+The following code calculates the positions of the first lowercase and uppercase characters in the "company" variable using the ANYLOWER and ANYUPPER functions. The results are stored in the "lower_position" and "upper_position" variables.  
+
+```sas
+data example;
+set mydata;
+lower_position = ANYLOWER(company);
+upper_position= ANYUPPER(company);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/cd42de1f-f053-4af4-b08d-196a991ad72a)  
+
+## Concatenate Functions - CAT, CATT, CATS, CATX  
+
+### SAS: CONCATENATE STRINGS WITH CAT, CATT, CATS & CATX  
+
+This tutorial explains five different ways to quickly concatenate strings (character values) in SAS.  
+
+### Concatenate Strings using Concatenation Operator (||)  
+
+combined_variable = variable1 || variable2  
+
+### CAT Function: Concatenate Strings  
+
+combined_variable = CAT(variable1, variable2)  
+
+### CATT Function: Concatenate Strings with No Trailing Space  
+
+combined_variable = CATT(variable1, variable2)  
+
+### CATS Function: Concatenate Strings with No Space  
+
+combined_variable = CATS(variable1, variable2)  
+
+### CATX Function: Concatenate Strings with a Delimiter and No Space  
+
+combined_variable = CATX(delimiter, variable1, variable2)   
+
+### Sample Dataset  
+
+Let's create a sample dataset for demonstration purpose. This dataset will be used in the examples below.  
+
+```sas
+data have;
+length first_name $9.;
+input first_name $ last_name $ sales;
+cards;
+Joe Dan 25
+Jason Roy 22
+Deeps Arora 31
+Deepanshu Bhalla 27
+;
+run;
+```
+
+### Method 1: Concatenate Strings using Concatenation Operator (||)  
+
+In SAS, the double vertical bar (||) joins strings. It's the oldest method in SAS to combine strings.  
+
+```sas
+data want;
+set have;
+name = first_name ||  last_name;
+run;
+ ```
+
+The double vertical bar (||) has a limitation of adding unnecessary spaces when concatenating strings. Refer to the image below. The variable first_name has a length of 9 characters so it adds spaces in all the strings where length is less than 9. It doesn't add a space against name 'Deepanshu' because it has a length of 9 characters. Hence this method is not recommended.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8734e775-702b-4f4b-8813-64038a942c0b)  
+
+To fix the unnecessary spaces between the text, we can use the STRIP function to remove leading and trailing spaces before concatenating. Here we are adding one space between the first and last name to create a full name.  
+
+```sas
+data want;
+set have;
+name = strip(first_name) || " " || strip(last_name);
+run;
+
+proc print data=want;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/76f441f9-9ebb-45a2-8d9b-3f11dc08d15c)  
+
+### Method 2: Concatenate Strings using CAT Function  
+
+The CAT function combines strings without removing any spaces at the beginning or end. Please note that if any of the variable is numeric, it will be converted to a character string, and any leading or trailing spaces will be removed.  
+
+```sas
+data want;
+set have;
+name = cat(first_name, last_name);
+run;
+```
+
+The CAT Function also has a limitation of having spaces at the end which makes spacing between two strings inconsistent when concatenating the strings.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/0daeca26-8613-44c9-ad67-cd1d80d99d50)  
+
+### Method 3: Concatenate Strings using CATT Function  
+
+The CATT function combines strings and removes trailing spaces when concatenating. The extra "T" in "CATT" refers to TRIM function in SAS which removes the trailing blanks.  
+
+```sas
+data want;
+set have;
+name = catt(first_name, last_name);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9970f717-7740-49bd-b34a-2784a3ceba73)  
+
+### Method 4: Concatenate Strings using CATS Function  
+
+The CATS function combines strings and removes both leading and trailing spaces when concatenating. The "S" in "CATS" refers to the STRIP function which removes both leading and trailing blanks.  
+
+```sas
+data want;
+set have;
+name = cats(first_name, last_name);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8faadd60-6e22-49fe-95e2-ee26f37bce60)  
+
+### Method 5: Concatenate Strings using CATX Function  
+
+The CATX function combines strings and separates them with a delimiter. The CATX function also removes leading and trailing spaces when concatenating.  
+
+You can specify any delimiter you want in the first argument of CATX function. In the code below, we are showing two different examples wherein we are using one space and "-" as delimiters.  
+
+```sas
+data want;
+set have;
+name  = catx(" ", first_name, last_name);
+name2 = catx("-", first_name, last_name);
+run;
+
+proc print data=want;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/dbd4aecc-ef37-4779-8bb8-8d03c1c962f5)  
+
+### Compare Methods of Concatenation in SAS  
+
+In the table below, we have a comparison of five different methods of concatenation in SAS. It is recommended to use the CATX function.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/e22a62aa-f884-4c4d-8238-ca515d61bbe1)  
+
+## Pattern Matching - PRXMATCH and PRXCHANGE Functions  
+
+### PATTERN MATCHING WITH SAS  
+
+This tutorial explains how to use regular expression language (pattern matching) with SAS.  
+
+### Sample Data  
+
+```sas
+data x;
+infile datalines truncover;
+input name $100.;
+datalines;
+Deepanshu
+How are you, deepanshu
+dipanshu
+deepanshu is a good boy
+My name is deepanshu
+Deepanshu Bhalla
+Deepanshuuu
+DeepanshuBhalla
+Bhalla Deepanshu
+;
+run;
+```
+
+### Important Functions for Pattern Matching  
+
+### 1. PRXMATCH
+
+Searches for a pattern match and returns the position at which the pattern is found.  
+
+```sas
+PRXMATCH (perl-regular-expression, variable_name)  
+```
+
+It returns the position at which the string begins. If there is no match, PRXMATCH returns a zero.  
+
+Example 1 :  
+
+```sas
+data xx;
+set x;
+if prxmatch("/Deepanshu/", name) > 0 then flag = 1;
+if prxmatch("/Deepanshu/i", name) > 0 then flag1 = 1;
+if prxmatch("/^Deepanshu/i", name) > 0 then flag2 = 1;
+if prxmatch("/\bDeepanshu\b/i", name) > 0 then flag3 = 1;
+if prxmatch("/D[ai]panshu/i", name) > 0 then flag4 = 1;
+if prxmatch("/D.panshu/i", name) > 0 then flag5 = 1;
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9810c687-318d-49bf-9af7-4a18a77bf3d3)  
+
+### Important Points
+
+The /i in the regular expression makes search case-insensitive.  
+
+The ^ in the regular expression tells SAS to search for the strings that starts with the search-string.  
+
+The \b in the regular expression tells SAS to match word boundary.  
+
+The \B in the regular expression tells SAS to match non-word boundary.  
+
+The [ai] in the regular expression searches any of the characters within the string.  
+
+The . in the regular expression tells SAS to take any of the characters within the string.  
+
+### Example 2 : Search Multiple Sub Strings  
+
+```sas
+data temp;
+Input company $30.;
+cards;
+Tata
+tata
+Tataz
+TataM Jan
+Tata Motor
+Reliance World
+Reliance Ltd
+Reliance Petro
+Reliance Global
+Vanucoverltd Company
+;
+run;
+```
+
+```sas
+data temp1;
+set temp;
+if prxmatch("/\b(Tata|Reliance)\b/i",company) > 0;run;
+```
+ 
+### Example 3 : Find Pattern  
+
+Suppose you are asked to find strings that contain length of 4 characters. The first character must contain a letter and the remaining characters must contain numeric.  
+
+```sas
+data _null_;
+x =  'A345';
+x2 = 'A55A';
+y =  prxmatch("/^[a-zA-Z][0-9]{3}$/", x);
+y2 = prxmatch("/^[a-zA-Z][0-9]{3}$/", x2);
+put y= y2=;
+run;
+```
+
+### 2. PRXCHANGE Function
+
+It performs a pattern-matching replacement.  
+
+```sas
+PRXCHANGE(regular-expression, -1, variable) 
+```
+
+Suppose you are asked to replace 'Tata' with 'Tata Group'.  
+
+```sas
+data temp2;
+set temp;
+Company0 = PrxChange('s/\b(Tata)\b/Tata Group/i' , -1 , strip(company));
+proc print;
+run;
+```
+
+__Note__ : The 's keyword indicates substitution.  
+
+### Remove a list of keywords such as Jan, Ltd, Company  
+
+Company1 = PrxChange('s/\b(Jan|ltd|Company)\b//i' , -1 , strip(company));  
+
+## Fuzzy Matching - COMPGED Function  
+
+### FUZZY MATCHING WITH SAS  
+
+This tutorial explains how to perform fuzzy matching (string matching) with SAS.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/0bd5aba1-4fb4-4ff4-90df-6cebbcf2d6c8)  
+
+### Sample Datasets  
+
+```sas
+Data temp ;
+Input company $30.;
+cards;
+Vanucover
+Reliance
+Tata
+Tata Motors
+;
+run;
+```
+
+```sas
+data temp2;
+Input company $30.;
+cards;
+Tata
+tata
+Tataz
+TataM Jan2015
+Tata Motor
+Reliance World
+Reliance Ltd
+Reliance #Petro
+Reliance Global
+Vanucoverltd 12 Company
+;
+run;
+```
+
+### Steps
+
+### 1. Remove punctuations, special characters, numeric values, dates.
+
+Company1 = compress(company, '',"ak");
+Company2 = compbl(PrxChange('s/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b//i' , -1 , strip(company1)));  
+
+- COMPRESS with modifier ak removes punctuations, special characters and numeric values.  
+
+- PRXCHANGE performs a pattern-matching replacement. It is an alternative to TRANWRD which can only replace a single keyword at a time. However, PRXCHANGE can replace multiple keywords at one run.
+
+### Detailed Explanation - PRXCHANGE  
+
+The 's tells SAS that we want to substitute or replace some keywords.   
+
+The /\b(?: tells SAS to use these keywords when they are not grouped with other keywords. For example, It differentiate between 'Smith Jan' and 'JanSmith'. It would replace 'Jan' from 'Smith Jan' but not from 'Jan Smith'.  
+
+The //i  tells SAS to substitute keywords with blank. If you want to substitute with a keyword 'blank', change //i  to  /blank/i.    
+
+### 2. Setting Stopwords such as Corporation, Corp,Ltd, Limited, Inc etc,  
+
+Company3 = compbl(PrxChange('s/\b(?:Corporation|Corp|Ltd|Limited|Inc|Incorporated|Company|Co|LTD|LLC|PLLC)\b//i' , -1 ,Strip(Company2)));  
+
+### 3. Apply fuzzy matching using COMPGED function.  
+
+COMPGED(String1, String2, 400, 'LN')  
+
+The COMPGED function returns the generalized edit distance between two strings. In the code, 400 is the cut off. If the actual generalized edit distance is greater than the value of cutoff, the value that is returned is equal to the value of cutoff.  
+
+The 'LN' modifier tells SAS to consider the following points before comparing the values  
+
+remove leading blanks in string-1 and string-2  
+
+remove quotations and ignore case sensitivity.  
+
+### Important Point
+
+The value that is returned by COMPGED(string1, string2) is not always equal to the value that is returned by COMPGED(string2, string1) .  
+
+```sas
+data _null_;
+x = compged('Tata', 'TataM');
+y = compged('TataM', 'Tata');
+put x y;
+run;
+```
+
+### Full SAS Code : Fuzzy Matching  
+
+```sas
+data temp3 (drop = company1 company2);
+set temp2;
+company1 = compress(company, '',"ak"); /** Keeping only characters**/;
+/**Stopwords**/;
+Company2 = compbl(PrxChange('s/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b//i' , -1 , strip(company1)));
+Company3 = compbl(PrxChange('s/\b(?:Corporation|Corp|Ltd|Limited|Inc|Incorporated|Company|Co|LTD|LLC|PLLC)\b//i' , -1 ,Strip(Company2)));
+run;
+```
+
+```sas
+proc sql noprint;
+create table matrix as
+select a.Company , a.company3 as cleaned_text, b.Company as Company2, COMPGED(a.Company3, b.Company, 400, 'LN') as GEDSCORE
+from temp3 a left join temp b
+on compged(a.company3, b.company, 'LN') < 400
+group by a.company
+having GEDSCORE= min(GEDSCORE)
+order by a.company;
+quit;
+```
+
+### Method 2 : Improve Performance of Fuzzy Matching  
+
+Since COMPGED on 2 tables returns cartesian product of the two tables, it is a very memory extensive process. Suppose you have two tables - first table contains 100 cases and other table contains 1 million cases, it would return 100 million cases.  
+
+Tip : Improve Performance of Fuzzy Matching on large table  
+
+The quick tip to improve performance is to select exact matches outside COMPGED function and excludes these exact match cases when you apply COMPGED function.  
+
+```sas
+proc sql noprint;
+**Selecting exact matches;
+create table matrix as
+select a.company, a.company3 as cleaned_text, b.company as company2
+from temp3 a inner join temp b
+on UPCASE(a.company3) = UPCASE(b.company);
+
+**Run compged on non-exact matches;
+create table matrix2 as
+select a.Company , a.company3 as cleaned_text, b.Company as Company2,
+COMPGED(a.Company3, b.Company, 400, 'LN') as GEDSCORE
+from temp3 a left join temp b
+on compged(a.company3, b.company, 'LN') < 400
+where a.company NOT IN (Select company from matrix)
+group by a.company
+having GEDSCORE= min(GEDSCORE)
+order by a.company;
+
+**Joining exact and non-exact matches;
+create table matrix3 (drop = GEDSCORE2) as
+select *,
+case when GEDSCORE2 = . then 0 ELSE GEDSCORE2 END AS GEDSCORE
+from
+(select * from matrix
+union
+select * from matrix2 (rename = (GEDSCORE = GEDSCORE2)));
+quit;
+```
+
+### Fuzzy Matching with Multiple Criteria  
+
+Suppose you have multiple primary keys to match with the other tables. For example, you have Company Name, Address and PIN.  
+
+Sample Datasets  
+
+```sas
+Data xx ;
+Input company $1-12 PIN 13-30;
+cards;
+Vanucover    110051
+Reliance     112345
+Tata         140000
+Tata Motors  125432
+;
+run;
+data xx2;
+Input company $15. PIN 16-30;
+cards;
+Tata           140000
+tata           140000
+Tataz          125433
+TataM Jan2015  125432
+Tata Motor     125432
+Reliance World 112345
+Reliance Ltd   113345
+Reliance #Petro 113007
+Reliance Global 113600
+Vanucoverltd 12 110051
+;
+run;
+```
+
+### SAS Code : Fuzzy Matching with Multiple Criteria  
+
+```sas
+data example2 (drop = company1 company2);
+set xx2;
+company1 = compress(company, '',"ak"); /** Keeping only characters**/;
+/**Stopwords**/;
+Company2 = compbl(PrxChange('s/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b//i' , -1 , strip(company1)));
+Company3 = compbl(PrxChange('s/\b(?:Corporation|Corp|Ltd|Limited|Inc|Incorporated|Company|Co|LTD|LLC|PLLC)\b//i' , -1 ,Strip(Company2)));
+run;
+```
+
+```sas
+proc sql noprint;
+create table matrix2 as
+select a.Company , a.company3 as cleaned_name, b.Company as Company2, a.PIN, b.PIN as PIN2,
+COMPGED(a.Company3, b.Company, 'LN') as GEDSCORE_Co,
+COMPGED(PUT(a.PIN,10.), PUT(b.PIN,10.)) as GEDSCORE_PIN,
+calculated GEDSCORE_Co + calculated GEDSCORE_PIN as GEDSCORE
+from example2 a left join xx b
+on COMPGED(a.Company3, b.Company, 'LN') <= 400 OR COMPGED(PUT(a.PIN,10.), PUT(b.PIN,10.)) <=200
+group by a.company
+having GEDSCORE = MIN(GEDSCORE)
+order by a.company;
+quit;
+```
+
+### Important Tips 
+
+Stopwords for Addresses  
+ 
+Addresses = PrxChange('s/\b(?:(NORTH|SOUTH|EAST|WEST|STREET|ST|AVENUE|AVE|LANE|LN|PARKWAY|PKWY|WAY|ROAD|RD|DRIVE|DR|
+PLACE|PL|CIRCLE|CIR|COURT|CT|PIKE|TERRACE|TER|TRAIL|TRL|TL|BOULEVARD|BLVD)\b//i',-1 ,Strip(_Addresses));  
+
+## SAS: Date Functions   
+
+This tutorial explains the various date functions in SAS. It also includes ways to handle date values with SAS.  
+
+### Syntax of Date Functions in SAS  
+
+date1 = date(): Returns today's date as a SAS date value.  
+
+date1 = today(): Returns today's date as a SAS date value.  
+
+date1 = day(date): Returns the day of month from the variable date.  
+
+date1 = month(date): Extracts the month component from the variable date.  
+
+date1 = year(date): Extracts the year component from the variable date.  
+
+date1 = qtr(date): Extracts the quarter component from the variable date.  
+
+date1 = weekday(date): Returns the day of week from the variable date.  
+
+retirement = intnx('year', date, 60): Calculates the date of retirement by adding 60 years to the date.  
+
+date1 = intck('day', date, date()): Calculates the number of days between date and the current date.  
+
+date1 = datdif(date, date(), 'ACT/ACT'): Calculates the difference between date and the current date using the ACT/ACT method.  
+
+dt = datepart(datetime): Returns the date from a SAS datetime value.  
+
+dt = timepart(datetime): Returns the time from a SAS datetime value.  
+
+### System Dates (Current Date)  
+
+```sas
+data _null_;
+a = date();
+b = today();
+c = "&sysdate"d;
+put 'Without Format: ' a = b = c =;
+run;
+```
+
+See Log  
+
+Without Format: a=20480 b=20480 c=19749  
+
+### Make Date Values Formatted  
+
+```sas
+data _null_;
+a = date();
+b = today();
+c = "&sysdate"d;
+format a b c ddmmyy10.;
+put 'With Format: ' a = b = c = ;
+run;
+```
+
+See Log  
+
+With Format: a=27/01/2016 b=27/01/2016 c=26/01/2014  
+
+### SAS Date Formats  
+
+```sas
+data dates;
+date1 = put(date(),mmddyy8.);
+date2 = put(date(),WORDDATE.);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/aacc2fbb-5e26-405a-99e3-189154c258ad)  
+
+### Date Functions  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2f2c4330-bf1d-4972-9cd7-162addc78549)  
+
+```sas
+data _null_;
+birthdt = '22oct91'd;
+date1 = day(birthdt);
+date2 = month(birthdt);
+date3 = year(birthdt);
+date4 = qtr(birthdt);
+date5 = weekday(birthdt);
+put date1 date2 date3 date4 date5;
+run;
+```
+
+### Date Calculations
+
+Task -Number of intervals (Years /Months / Days) from birth date to today's date  
+
+### Functions - DATDIF and INTCK  
+
+```sas
+data _null_;
+birthdt = '22oct91'd;
+date5 = datdif(birthdt, date(), 'ACT/ACT');
+date55 = intck('day',birthdt, date());
+date6 = intck('year',birthdt, date());
+date7 = intck('qtr',birthdt, date());
+date8 = intck('week',birthdt, date());
+put date5 date55 date6 date7 date8;
+run;
+```
+
+Note : 'ACT' refers to the actual number of days between dates. Each month is considered to have the actual number of calendar days in that month, and each year is considered to have the actual number of calendar days in that year.  
+
+Task -When customer will retire (60 years old)  
+
+The INTNX function advances a date value by a given interval and returns a date value.  
+
+```sas
+data _null_;
+birthdt = '22oct91'd;
+retirement = intnx('year',birthdt, 60);
+put retirement date9.;
+run;
+```
+
+### Additional Parameter in INTNX Option  
+
+```sas
+date10 = intnx('month',date(), 5, 'sameday');
+date11 = intnx('month',date(), 5, 'end');
+```
+
+### Important Points  
+
+1. January 1, 1960 is the zero point for SAS. Any day before 1/1/1960 is a negative number, and any day after that is a positive number.  
+
+Old dates can be subject to producing incorrect dates in SAS. You may not get a missing value, butmake sure that you check your century. The YEARCUTOFF option gives you the capability to define a 100-year range for two-digit year values. The default value for the YEARCUTOFF option is 1920, giving you a range of 1920- 2019.  
+
+```sas
+options yearcutoff = 1890;
+data _null_;
+birthdt = '22oct91'd;
+currdt = '22oct51'd;
+diff = intck('year',birthdt, currdt);
+put diff;
+run;
+```
+
+In the code above, yearcutoff = 1890 takes century from 1890 to 1989.
+
+### 2. Subsetting Date Formatted Data  
+
+```sas
+data temp2;
+set temp;
+where date >= '1jan1991'd;
+run;
+```
+
+### DATEPART and TIMEPART Functions  
+ 
+DATEPART returns the date from a SAS datetime value. Whereas, TIMEPART returns the time from a SAS datetime value.  
+
+```sas
+data _null_;
+x='21oct16:8:45'dt;
+xx=datepart(x);
+xxx=timepart(x);
+put xx worddate.;
+put xxx time.;
+run;
+```
+
+## INTNX Function  
+
+This tutorial explains how SAS INTNX function works. It includes explanation of INTNX function with practical examples which would help you to understand it.  
+  
+### What does the INTNX Function do?  
+
+SAS function INTNX is used to increment SAS date by a specified number of intervals. It helps to answer the following questions.  
+
+### Examples  
+
+Here are some real-world examples of how the INTNX function can be used.  
+
+When is next Monday?  
+
+When was last Friday?  
+
+What would be date after 21 weeks?  
+
+Subtract 2 quarters from the current date  
+
+### Syntax : INTNX Function  
+
+The first three parameters of the INTNX function is mandatory and the fourth one is optional.  
+
+```sas
+INTNX(interval, start-from, increment, [alignment])
+```
+
+Interval is the unit of measurement. The intervals can be days, weeks, months, quarters, years.  
+
+Start-from is a SAS date value which would be incremented.  
+
+Increment is number of intervals by which date is incremented. It can be zero, positive or negative. Negative value refers to previous dates.  
+
+Alignment [Optional Parameter] is where datevalue is aligned within interval prior to being incremented. The values you can specify - 'beginning', 'middle', 'end', 'sameday'. Default value - 'beginning'.  
+
+### INTNX Function: Examples  
+
+Below is a list of some examples in which we have demonstrated the INTNX function in SAS.  
+
+### 1. Add 7 days to a specific date  
+
+In the following code, we are adding seven days to 02 January 2017.  
+
+```sas
+data temp;
+mydate = '02JAN2017'd;
+day=intnx('day', mydate , 7);
+format mydate day date9.;
+run;
+```
+
+Result : day = 09JAN2017  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/bc32d3e5-964f-40ee-ba1e-a309011fe6e3)  
+
+If you are wondering how INTNX is different to 'simply adding 7 to mydate variable' like code below. You would get answer to this question in the next example.
+
+```sas
+day = mydate + 7;
+```
+
+### 2. Find Next Sunday  
+
+In this case, we need to find answer of the question 'when is next sunday?'. The 02January,2017 is Monday.  
+
+```sas
+data temp;
+mydate = '02JAN2017'd;
+nextsunday=intnx('week', mydate , 1);
+format mydate nextsunday date9.;
+run;
+```
+
+Result : nextsunday = 08JAN2017  
+
+It returns 08JAN2017 as it aligns to the 'beginning' period. The 'beginning' alignment is default in INTNX function. In other words, if you change the mydate to '04JAN2017'd, it still returns '08JAN2017' as the next sunday would be same within this week interval. If you want to add exactly 1 week to the date, you can use the 'sameday' in the fourth parameter of this function. See the statement below -
+
+```sas
+nextsunday=intnx('week', mydate , 1, 'sameday'); returns 09JAN2017  
+```
+
+### 3. Get First Date  
+
+Suppose you need to find out the first day of a specific date. For example, today is 09January, 2017 and the first day of this date is 01January,2017.  
+
+```sas
+data temp;
+set sashelp.citiday;
+firstday=intnx('month', date , 0);
+format firstday date9.;
+proc print data = temp;
+var date firstday;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3f0e3749-a65b-4a4a-b03e-e7ea0f51dd3b)  
+
+By specifying 0 in the third parameter of INTNX function, we can calculate the first day of the dates.  
+
+### 4. When was Last Tuesday?  
+
+It is tricky to figure out the date when it was last tuesday. 13January,2017 is Friday. In real world dataset, we don't have the exact days of a list of dates when we need to code to get the last tuesday.  
+
+### Incorrect Method  
+
+```sas
+data temp;
+mydate = '13JAN2017'd;
+lasttuesday = intnx('week.3', mydate , 0);
+format mydate lasttuesday date9.;
+proc print;
+run;
+```
+
+It returns 10JAN2017. In this case, week.3 refers to tuesday within week as a unit of measurement. Similarly, week.2 refers to monday.  
+
+It doesn't work when input date is current tuesday. For example, run the above code with mydate ='10JAN2017'd.10JAN2017 is tuesday. In this case, it returns '10JAN2017' which is not a previous tuesday. It should have returned '03JAN2017'.  
+
+### Correct Method  
+
+```sas
+data temp;
+mydate = '10JAN2017'd;
+lasttuesday = intnx('week.4', mydate , -1, 'end');
+format mydate lasttuesday date9.;
+proc print;
+run;
+```
+
+It returns 03JAN2017 which is previous tuesday. See the changes we have made in this program -
+
+-1 instead of 0 as increment value  
+
+'end' instead of 'beginning' as date alignment  
+
+'week.4' instead of 'week.3' to figure out the last tuesday  
+
+### 5. Adjustment within the Interval  
+
+This program explains how INTNX function adjusts / align dates within the interval specified.  
+
+```sas
+data temp;
+mydate = '31JAN2017'd;
+beginning=intnx('year ', mydate , 1, 'b');
+middle=intnx('year ', mydate , 1, 'm'); 
+end=intnx('year ', mydate , 1, 'e');
+sameday=intnx('year ', mydate , 1, 's');
+format mydate beginning middle end sameday date9.;
+proc print;
+run;
+```
+
+The abbreviation 'b' refers to beginning, 'm' - middle, 'e' - end, 's' - sameday. The default value is 'b' if you don't specify anything in the fourth parameter.  
+
+Result  
+
+beginning = 01JAN2018  
+
+middle = 02JUL2018  
+
+end = 31DEC2018  
+
+sameday = 31JAN2018  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2f0d7bb1-54ee-459e-a64f-48874745cb43)  
+
+### 6. Datetime Formats  
+
+Like date formats, we can use time and datetime formats in INTNX function to increment time (seconds / minutes / hours).  
+
+```sas
+data temp;
+mydt = '29JAN2017:08:34:00'dt;
+seconds=intnx('second', mydt , 1);
+minutes=intnx('minute', mydt , 1);
+hours=intnx('hour', mydt , 1);
+days=intnx('dtDay', mydt , 1);
+weeks=intnx('dtWeek', mydt , 1);
+format mydt seconds minutes hours days weeks datetime20.;
+proc print NOOBS;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d5707e61-c497-4355-b7dd-38b22cd77f7b)  
+
+### Difference between INTNX and INTCK Functions  
+
+The INTCK function calculates the difference between two dates or times, whereas the INTNX function adds days or times to a date.  
+
+To remember the difference between these two functions easily, focus on the first three letters and the last two letters separately.  
+
+INTCK - INT= Interval CK= Check difference  
+
+INTNX - INT= Interval NX= Next days  
+
+## INTCK Function  
+
+The INTCK function is one of the most important date function in SAS that is used to calculate the difference between two dates, two times or two datetime values.  
+
+Here are some real-world examples of how the INTCK function is used in SAS.    
+
+__Calculation of individual's age__ :
+
+The INTCK function is used to calculate the number of years between date of birth and today's date.  
+
+__Tenure of an employee with company__ :
+
+The INTCK function is used to find out the number of months between date of joining and today's date.  
+
+__Customer Retention Duration__ :  
+
+The marketing department wants to know the length of time that customers remain engaged with and continue their relationship with us so that they can provide offers to tenured customers. The INTCK function can be used in calculating the longevity of customer relationships.  
+
+__Number of quarterly payments paid__  
+
+__Number of working days__  
+
+__Number of hours spent on a particular course__  
+
+### INTCK Function - Syntax  
+
+The syntax of INTCK is defined below -  
+
+```sas
+INTCK(date-or-time-interval, start-date-or-time, end-date-or-time, [method])
+```
+
+date-or-time-interval : Date or time period needs to be defined in the first parameter. For eg. MONTH, YEAR, QTR, WEEK, HOUR, MINUTE etc. Specify period in single quotes  
+
+start-date-or-time : Starting date or time to calculate the number of periods.  
+
+end-date-or-time : End date or time to calculate the number of periods.  
+
+method : Optional Parameter. Method to calculate the difference. Methods are 'CONTINUOUS' or 'DISCRETE'. By default, it is DISCRETE.  
+
+### Simple Example of INTCK Function  
+
+Calculate the number of years between two dates. In this case, two dates are 01JAN2015 and 01JAN2017.  
+
+```sas
+data temp;
+date1 = '01JAN2015'd;
+date2 = '01JAN2017'd;
+no_of_years = intck ('YEAR', date1, date2);
+format date1 date2 date9.;
+proc print data = temp;
+run;
+```
+
+The 'YEAR' keyword tells SAS to calculate the number of intervals between dates in terms of year. Since 01JAN2015 is a starting date, it is specified in the INTCK function before 01JAN2017. The FORMAT statement is used to display datevalues in date format when we print our results.  
+
+The output is shown below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d0223626-0b43-430f-956a-97b56d9ecd2e)  
+
+Other alias of year - 'YEARS' and 'YR'-  
+
+no_of_years = intck ('YEARS', date1, date2)  
+
+no_of_years = intck ('YR', date1, date2)  
+
+### SAS INTCK Examples
+
+Like calculation of years, we can use other intervals such as semiyear, quarter, month, week, day. The examples of these intervals are displayed below -  
+
+```sas
+data temp;
+date1 = '01JAN2015'd;
+date2 = '01JAN2017'd;
+no_of_years = intck ('YEAR', date1, date2);
+no_of_semiyears = intck ('SEMIYEAR', date1, date2);
+no_of_quarters = intck ('QUARTER', date1, date2);
+no_of_months = intck ('MONTH', date1, date2);
+no_of_weeks = intck ('WEEK', date1, date2);
+no_of_days = intck ('DAY', date1, date2);
+format date1 date2 date9.;
+proc print data = temp noobs;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/32dced41-51a3-45ec-a03d-9a144fe04ad9)  
+ 
+### Custom Intervals using INTCK Function  
+
+Suppose you are asked to calculate the number of 4 months interval between two dates -  
+
+```sas
+data temp;
+date1 = '01JAN2015'd;
+date2 = '01JAN2017'd;
+no_of_4months = intck ('MONTH4', date1, date2);
+run;
+```
+
+The MONTH4 interval implies interval is of 4 months. It is equal to the number of months divided by 4. Don't confuse it with QUARTERS. QUARTERS is equal to interval of 3 months. Remember 4 Quarters in an year.
+
+Result : no_of_4months = 6  
+Similarly, we can use the custom intervals in YEAR, QUARTER and other periods. For example, 'YEAR2' tells SAS the interval is of 2 years. It would return 1 for the above mentioned dates.  
+
+### Set Starting Point for Calculation  
+
+Let's compare YEAR and YEAR.3 by calculating the number of years between two dates using the INTCK function.  
+
+```sas
+data temp;
+date1 = '31JAN2015'd;
+date2 = '31DEC2016'd;
+diff = intck ('YEAR', date1, date2);
+diff2 = intck ('YEAR.3', date1, date2);
+format date1 date2 date9.;
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2d41b934-378f-4844-a593-c5a03d3e294f)  
+
+How it works :  
+
+intck ('YEAR', date1, date2) - It checks the number of times first of January appears as first of january is set as a starting point by default. The variable diff returns 1 as it includes only 01JAN 2016.  
+
+intck ('YEAR.3', date1, date2) - It checks the number of times first of March appears as YEAR.3 refers to the period starting from 1st of March to end of February next year. The variable diff2 returns 2 as it includes 01 March 2015 and 01March 2016.  
+  
+Is it a month difference?  
+
+INTCK function says there is a month difference between 25OCT2016 and 03NOV2016. But there is no month difference between 01OCT2016 and 31OCT2016. How?  
+
+```sas
+data temp;
+month1= intck('month', '25OCT2016'd, '03NOV2016'd);
+month2= intck('month', '01OCT2016'd, '31OCT2016'd);
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1659af93-3034-4564-b45b-fd4e5f9a0dcf)  
+
+INTCK checks whether the first day of the month lies with in the range. In the first case, 01 November falls between October 25 and November 03 so it returns 1. In the second case, it returns 0 as 01 November does not fall between 01OCT2016 and 31OCT2016.    
+
+How to correct it?  
+
+Add one more parameter at end of INTCK function. In the parameter, specify 'C' which refers to continuous method for calculation.  
+
+```sas
+data temp;
+month1= intck('month', '25OCT2016'd, '03NOV2016'd, 'C');
+proc print;
+run;
+```
+
+The above function returns 0.  
+
+The CONTINUOUS method calculates continuous time from the start-of-period date specified in the second parameter of INTCK function.  
+
+### Calculating Weekdays with INTCK Function  
+
+Suppose you are asked to calculate the number of weekdays -  
+
+```sas
+data eg;
+weekdays = intck('WEEKDAY', '11DEC2016'd ,'18DEC2016'd);
+proc print;
+run;
+```
+
+It returns 5. In this case, saturday and sunday are considered weekends and excluding from the calculation.  
+  
+Define 6 days working  
+
+If you need to calculate number of working days between 2 dates considering 6 weekdays -  
+
+```sas
+data eg;
+weekdays = intck('WEEKDAY1W', '11DEC2016'd ,'18DEC2016'd);
+proc print;
+run;
+```
+
+WEEKDAY1W implies sunday as weekend (1=Sunday, 2= MONDAY... 7=Saturday)  
+
+Set Custom Weekends  
+
+```sas
+data eg;
+weekdays = intck('WEEKDAY24W', '11DEC2016'd ,'16DEC2016'd);
+proc print;
+run;
+```
+
+WEEKDAY24W means MONDAY and WEDNESDAY are weekends. The above function returns 3  
+
+### Calculate between Datetime values  
+
+Suppose you need to calculate hours, minutes and seconds between two datetime values.  
+
+```sas
+data temp2;
+hours=intck('hour','01jan2016:10:50:00'dt,'01jan2016:11:55:00'dt);
+minutes=intck('minute','01jan2016:10:50:00'dt,'01jan2016:11:55:00'dt);
+seconds=intck('second','01jan2016:10:50:00'dt,'01jan2016:11:55:00'dt);
+proc print noobs;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/caa5ae8c-d863-4538-9b77-10c7e197b98a)  
+
+Result - 1 hour, 65 minutes and 3900 seconds  
+
+### Time Difference using INTCK Function  
+
+To calculate the time difference between two times using the INTCK function, you need to specify the time interval you want to measure. Here's the syntax of the INTCK function:  
+
+```sas
+data temp3;
+hours=intck('hour','12:00:00't, '23:05:00't);
+minutes=intck('minute','12:00:00't,'23:05:00't);
+seconds=intck('second','12:00:00't,'23:05:00't);
+proc print noobs;
+run;
+```
+
+Result : 11 hours 665 minutes 39900 seconds  
+
+## Extract Week, Day, Month and Year from Date  
+
+This tutorial explains how to extract the week, day, month and year from a date in SAS, along with examples.  
+
+### Sample SAS Dataset  
+
+Let's create a sample SAS dataset that will be used in the examples of this article.  
+
+```sas
+data mydata;
+    input date_var date9.;
+    format date_var date9.;
+    datalines;
+01JAN2023
+10JAN2023
+15JAN2023
+20JAN2023
+25JAN2023
+01FEB2023
+10FEB2023
+15FEB2023
+20FEB2023
+25AUG2023
+;
+run;
+```
+
+### How to Calculate Week Number of Year  
+
+In SAS, the WEEK function calculates the week number of the year.  
+
+```sas
+data want;
+set mydata;
+weeknumber = week(date_var); 
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/34f8c5fd-d380-4586-9e7a-f5103f7f3dee)  
+
+### How to Calculate Week Number of Month  
+
+The following code uses the intck function to calculate the number of weeks between the beginning of the month and the given date. The intnx function is used to find the first day of the month ('B' option stands for 'beginning'). Adding 1 to the result accounts for the week number starting from 1.  
+
+```sas
+data want;
+set mydata;
+weeknumber = intck('week', intnx('month', date_var, 0, 'B'), date_var) + 1;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d263df1e-4657-48cf-8af9-b233a6b53f02)  
+
+### How to Extract Month from Date  
+
+In SAS, the month function is used to extract month from a date.  
+
+```sas
+data want;
+set mydata;
+monthnumber = month(date_var);
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a4b82564-f574-4f09-b613-6fcd87b863a8)  
+
+### How to Extract Day from Date  
+
+In SAS, the day function is used to extract day from a date.  
+
+```sas
+data want;
+set mydata;
+daynumber = day(date_var);
+run;
+```
+
+### How to Extract Year from Date  
+
+In SAS, the year function is used to extract year from a date.  
+
+```sas
+data want;
+set mydata;
+yearnumber = year(date_var);
+run;
+```
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+ 
 
 
 
