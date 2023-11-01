@@ -7322,6 +7322,1755 @@ Run;
 
 ![image](https://github.com/Deepak2k20/SAS/assets/65231118/9303887f-b75a-4860-83e3-a1dfd1ddbd0d)  
 
+### Cross Tab
+
+In the TABLE statement, row expression is specified first then followed by comma and then column expression.  
+
+```sas
+Proc Tabulate Data = test;
+Class Age;
+Var T1;
+Table Age, T1 * (N COLPCTN);
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/834f5434-c258-4f18-88ad-04dc4d2f1204)  
+
+### Transposed Format
+
+```sas
+Proc Tabulate Data = test;
+Class Age;
+Var T1;
+Table T1, Age * (N ROWPCTN);
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/39c12a51-e2e2-4aff-81e1-5c0356330af7)  
+
+### Label Variables and Statistics
+
+The "=" equal sign is an operator most commonly used for formatting.  
+
+```sas
+Proc Tabulate Data = test;
+Class Age;
+Var T1;
+Table Age, T1 = "Group I" * (N="Count" COLPCTN="%");
+Run;
+```
+
+The above SAS program can be written as follows :  
+
+```sas
+Proc Tabulate Data = test;
+Class Age;
+Var T1;                                                                              
+Keylabel N="Count" COLPCTN="%";
+Table Age, T1 = "Group I" * (N COLPCTN);
+Run;
+```
+
+The Keylabel statement will change the label of keywords. Both the above programs produce same output.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5a4fc36b-ddcf-4786-8be4-3c0b3572a6dd)  
+
+### Shift the row header up
+
+In order to hide variable or labels, you leave the label specification blank (i.e. =‘ ‘ ).  
+
+```sas
+Proc Tabulate Data = test;
+Class Age;
+Var T1;
+Table Age=" ", T1 = "Group I" * (N="Count" COLPCTN="%") / box="Age";
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5ee3c69e-b5fe-4495-a9ec-508dcf4cb737)  
+
+### Adding total rows and columns 
+
+The ALL keyword is used to generate a sum total for rows or columns.  
+
+```sas
+Proc Tabulate Data = test;
+Class Age;
+Var T1;
+Table Age ALL = "Grand Total" , T1 = "Group I" * (N="Count" COLPCTN="%");
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9bc018c3-694d-460a-a135-b6c027a3b4ee)  
+
+### Two level data cuts
+
+```sas
+Proc tabulate data = test;
+Class Age BU;
+Var T1;
+Table T1="Group I",(Age * BU="Business Unit") * (N="Count" ROWPCTN="%");
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/318c8561-ee0b-4d9f-89d2-66964d71f21e)  
+
+In order to hide variable or statistic labels, you leave the label specification blank (i.e. =‘ ‘ ).   
+
+```sas
+Proc tabulate data = test;
+Class Age BU;
+Var T1;
+Table T1="Group I",(Age=" " * BU="Business Unit") * (N="Count" ROWPCTN="%");
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ab88a7c5-120c-419e-a7b8-6d69d77a8a1f)  
+
+### Cell Formats
+
+You can use the asterisk *  to associate the format modifier “F=” to the summary statistic.  
+
+```sas
+Proc tabulate data = test;
+Class Age BU;
+Var T1;
+Keylabel N="Count" ROWPCTN="%";
+Table T1="Group I",(Age * BU="Business Unit") * (N ROWPCTN * F=6.0);
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/47cb732d-b2b4-44ef-8d85-98892f8535a8)  
+
+### Format Statement with Proc Tabulate  
+
+```sas
+Proc format;                                                                                                                          
+value agefmt                                                                                                                          
+1 = 'Under 18'                                                                                                                      
+2 = '18 - 25'                                                                                                                        
+3 = 'Over 25';                                                                                                                      
+Run;                                                                                                                                  
+                                                                                                                                     
+Proc format;                                                                                                                          
+value bufmt                                                                                                                          
+1 = 'Analytics'                                                                                                                      
+2 = 'Technology'                                                                                                                    
+3 = 'Others';                                                                                                                        
+Run;
+                                                                                 
+Proc tabulate data = test;
+Format Age agefmt. BU bufmt.;
+Class Age BU;
+Var T1;                                                                                                                    
+Keylabel N="Count" ROWPCTN="%";
+Table T1="Group I",(Age * BU="Business Unit") * (N ROWPCTN * F=6.0);
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/e4792ca2-6521-41c1-851a-7fce60f73e72)  
+
+### Three Dimensional Table  
+
+```sas
+Data test;
+length BU $18.;
+Input Location$ BU$ Gender$ Income;
+Cards;
+Delhi Analytics Male 5000
+Mumbai Tech Female 45000
+Delhi Analytics Male 37000
+Chennai Tech Male 33000
+Delhi Tech Male 5000
+Chennai Analytics Male 15000
+Mumbai Analytics Female 440000
+Delhi Analytics Female 5000
+Mumbai Tech Male 45000
+Delhi Analytics Female 37000
+Chennai Tech Female 33000
+Delhi Tech Female 5000
+Chennai Analytics Male 15000
+;                                                                                                                                    
+Run;
+```
+
+```sas
+Proc tabulate data = test F=6.0;
+Class Location BU Gender;
+Var Income;
+Table Location=" "*BU=" ", Gender * Income=" "*(N="Count" ROWPCTN="%") / Box="Location BU";
+Run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c84c9ded-1d42-4af0-893b-c3aa0ced9e72)  
+
+### Save output in a dataset  
+
+```sas
+Proc tabulate data = test out=test1;
+Format Age agefmt. BU bufmt.;
+Class Age BU;
+Var T1;
+Keylabel N="Count" ROWPCTN="%";
+Table T1="Group I",(Age * BU="Business Unit") * (N ROWPCTN * F=6.0);
+Run;
+```
+
+## SAS : USE OF MULTIPLE SET STATEMENTS  
+
+In SAS, you can perform one-to-one reading with the help of multiple SET statements. It combines observations from two or more data sets into a single observation in a new data set.  
+
+Suppose you have two very big datasets. You have IDs column in both the datasets. Each ID in the first dataset has a matching ID in the second one and they are in the same order. Your task is to merge these datasets but the usual method of data step merging doesn't work because it uses a lot of memory. Instead you can use the MULTIPLE SET Statements for merging them.  
+
+```sas
+DATA dat1;
+INPUT id v1 v2;
+CARDS;
+1 10 100
+2 15 150
+3 20 200
+;
+
+DATA dat2;
+INPUT id v3 v4;
+CARDS;
+1 1000 10000
+2 1500 15000
+3 2000 20000
+4 800 30000
+;
+RUN;
+```
+
+```sas
+DATA dat3;
+set dat1;
+set dat2;
+RUN;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/60f17acc-b96d-4fc9-a092-174845a82cc9)  
+
+The observations are combined based on their relative position in the data set.  
+
+## SAS MERGING TUTORIAL (WITH EXAMPLES) 
+
+This tutorial explains how to merge datasets in SAS. It explains the different types of joins with MERGE statement. Also it includes some special topics related to merging.  
+
+### Introduction: Data Step Merge  
+
+Data step merge is used to merge two or more datasets based on one or more common variables. It is performed using the MERGE statement within DATA step in SAS. It is similar to SQL joins.  
+
+__Create 2 Sample Datasets__ 
+
+The following SAS code is used to create two sample SAS datasets that will be used to demonstrate merging in SAS.    
+
+```sas
+Data A;
+Input ID Name$ Height;
+cards;
+1 A 1
+3 B 2
+5 C 2
+7 D 2
+9 E 2
+;
+run;
+```
+
+```sas
+Data B;
+Input ID Name$ Weight;
+cards;
+2 A 2
+4 B 3
+5 C 4
+7 D 5
+;
+run;
+```
+
+### Important Steps when using MERGE Statement in SAS  
+
+Step 1 : Both the data sets must be SORTED by the variable you want to use for merging.  
+
+Step 2 : The variable you want to use for merging must have same name in both the datasets.  
+
+__Let's merge dataset A and B__ 
+
+First, Sort both the datasets with PROC SORT. See the code below -  
+
+```sas
+proc sort data = a;
+by id;
+run;
+proc sort data = b;
+by id;
+run;
+```
+
+__Next Step__ : Use MERGE statement to merge the datasets by the variable ID.
+
+```sas
+data dummy;
+merge a (in=x) b(in=y);
+by id;
+a = x;
+b = y;
+run;
+```
+
+__What is IN= option in Data Step Merge?__  
+
+The IN= option tells SAS to create a flag that has either the value 0 or 1. If the observation does not come from the dataset, then the flag returns 0. If the observation comes from the data set, then the flag returns 1.  
+
+Since the IN= option creates temporary variables, we need to create permanent variables so that we can see the flag in the dataset. With this lines of code "a = x; b = y;", we tell SAS to create two variables named a, b and put the same values as stored in variables x and y. You can assign any name you want, not just a.b. See the Output shown in the image below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3192c2a2-10d7-41a2-835b-8fb2d3835691)  
+
+In the above image, the highlighted yellow rows are the rows that are common in both the datasets. Hence, the values are 1 in variables A and B. The value 1 in variable A implies these rows come from dataset A and 0 implies these rows do not come from dataset A. The same logic holds for variable B. When variable B has 1, it means these rows come from dataset B.  
+
+### What Happens If You Don't Include 'BY' Statement in Merging Data?  
+
+The BY Statement tells SAS to match records based on the common variable you specify. Without the 'BY' statement, it does not perform matching of records. What would happen? Observations are combined based on their relative position in each data set. For example, observation one from the first data set combines with observation one of the second data set, the second observation from the first data set combines with the second observation from the second data set, and so on.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/75d53069-a9bd-4b29-9c9c-04bea1c92988)  
+
+If there is a common variable in the two datasets, the value is overwritten by the value in the right dataset. Since ID and Name are the common variables, the values are overwritten by dataset B.  
+
+The number of observations in the combined dataset is equal to the number of observations in the dataset with largest number of observations. For example, dataset A has 5 observations and dataset B has 4 observations so final data would have 5 observations.  
+
+In this section, we cover different types of joins using the MERGE statement in SAS.  
+
+### SAS : INNER JOIN  
+
+Inner Join : It returns rows common to both tables (data sets). In the final merged file, number of columns would be (Common columns in both the data sets + uncommon columns from data set A + uncommon columns from data set B).  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/964da551-e2b5-44a1-afe1-899366327c05)  
+
+```sas
+proc sort data = a;
+by id;
+run;
+
+proc sort data = b;
+by id;
+run;
+
+Data dummy;
+Merge A (IN = X) B (IN=Y);
+by ID;
+If X and Y;
+run;
+```
+
+Note : When using IN= option, SAS considers "If X and Y" equivalent to "If X=1 and Y=1".  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/3e754d50-ae39-48f7-8dd3-ca0a97a07300)  
+
+Explanation  
+
+Since the above case is of INNER JOIN, Data Step Merge returns values 5 and 7 which are common in variable ID of both the datasets.  
+
+### SAS : LEFT JOIN  
+
+Left Join : It returns all rows from the left table and the matched rows from the right table.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d4e8eea4-9927-4db3-8df2-36b37d5f73e5)  
+
+```sas
+proc sort data = a;
+by id;
+run;
+
+proc sort data = b;
+by id;
+run;
+
+Data dummy;
+Merge A (IN = X) B (IN=Y);
+by ID;
+If X ;
+run;
+```
+
+Note : When you use IN= option, SAS considers "If X" equivalent to "If X=1". We can use either of the If statement.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/57ca38a4-a8a3-4522-a7fe-2eb0ebc6a034)  
+
+Explanation  
+
+Since the above case is of LEFT JOIN, Data Step Merge returns all observations from dataset A with matching rows from dataset B.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1d818aca-8c0a-4579-b5e1-a5411ff7da2d)  
+
+```sas
+proc sort data = a;
+by id;
+run;
+
+proc sort data = b;
+by id;
+run;
+
+Data dummy;
+Merge A (IN = X) B (IN=Y);
+by ID;
+If Y ;
+run;
+```
+
+Explanation  
+
+Since the above case is of RIGHT JOIN, Data Step Merge returns all observations from dataset B with matching rows from dataset A.  
+
+### SAS : FULL JOIN   
+
+Full Join: It returns all rows from the left table and from the right table.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/fe28c2fb-a13e-4310-914e-2e587d955bf0)  
+
+```sas
+proc sort data = a;
+by id;
+run;
+
+proc sort data = b;
+by id;
+run;
+
+Data dummy;
+Merge A B;
+by ID;
+run;
+```
+
+Note : Since the FULL JOIN is the default type of JOIN in MERGE Statement, it does not require temporary variables with IN option.  
+
+Explanation  
+
+Since the above case is of FULL JOIN, Data Step Merge returns all observations from dataset A and B.  
+
+### What happens when the BY variable in Data Step Merge has different length?  
+
+When we merge datasets with BY variable having different lengths, the length of the BY variable used during matching is determined by the left-hand side dataset in the merge. If length of dataset A is shorter than B, it may return zero records.  
+
+Solution - Include bigger length of the common variable with LENGTH Statement before MERGE statement.  
+
+```sas
+data dummy;
+length ID 8;
+merge a b;
+by id;
+run;
+```
+
+### Special Cases  
+
+If both the tables (data sets) have similar variable name (other than primary key), Data Step MERGE statement would take values of the common variable exist in the TABLE2 (Right table).  
+
+If primary key in both the tables (data sets) have duplicate values, Data Step MERGE statement would return a maximum number of values in both the tables. For example, Table 1 has 3 1's and Table 2 has 2 1's, Data Step Merge would return 3 1's. It is called 'One-to-Many Merge'.  
+
+### See the special case shown in the image below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9ad63c41-6666-4b55-9031-8487dbdcc6e0)  
+
+In this case, dataset A contains two 5s and dataset B contains three 5s. When we merged these two tables, it returns three 5s which is maximum number of 5s in both the dataset A and B.  
+
+__Important Point__ - Did you notice the variable "name" exists in both the datasets A and B? In this example, the variable "name" is NOT a primary key to merge the tables. It is the variable "id" which is the primary key to merge these tables. When we merged the tables, DATA STEP MERGE takes values of variable "name" from dataset B.  
+
+SAS Code for the above special case  
+
+```sas
+data a;
+input id name$ height;
+cards;
+1 a 1
+3 b 2
+5 a 2
+5 b 3
+7 d 2
+9 e 2
+;
+run;
+data b;
+input id name$ weight;
+cards;
+2 a 2
+4 b 3
+5 d 4
+5 e 5
+5 f 6
+7 f 5
+;
+run;
+```
+
+```sas
+data c;
+merge a (in=x) b(in=y);
+by id;
+if x;
+proc print;
+run;
+```
+
+### Q. Do the "Special Cases" explained above hold true for all types of joins?  
+
+Answer is YES. It holds true for all the types of joins.  
+
+### How to check if merge was done correctly?  
+
+Before merging, ask yourself whether the variable type and length of the BY variable is same.  
+
+First check the number of observations in the input files and estimate the number of observations should come in the final merged data set.  
+
+Check the number of variables in the input files and estimate the number of variables should appear in the final merged data set.  
+
+If there are duplicates in the BY variable of the input files, how data step merge has considered these cases? Whether you are getting the desired output?  
+
+## SAS : MANY TO MANY MERGE  
+
+In SAS, many-to-many merges are handled very differently via Data Step MERGE and PROC SQL JOIN.  
+
+Let's take an example -  
+
+Suppose you have two data sets. You want to merge both the data sets but there are duplicate values in the common variable (ie. primary key) of any or both of the datasets.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/74c4ea16-2157-4696-a602-4cc6b4b07df4)  
+
+### Data Step : Many to Many Merge  
+
+The DATA step Merge does not handle many-to-many matching very well. When we perform many to many merges. the result should be a cartesian (cross) product of matching observations. For example, if there are three records that match from one contributing data set to two records from the other, the resulting data set should have 3 × 2 = 6 records.  
+
+Data Step MERGE does not create a cartesian product in case of a many-to-many relationship. It will return number of records for a duplicate value equal to maximum number of the duplicate value in both the table.  
+
+__SAS Code -__   
+
+```sas
+data dat1;
+input ID Info;
+cards ;
+1 3123
+1 1234
+2 7482
+2 8912
+3 1284
+;
+run;
+
+data dat2;
+input ID Info2;
+cards ;
+1 4444
+1 5555
+1 8989
+2 9099
+2 8888
+3 8989
+;
+run;
+
+data combined;
+merge dat1 dat2 ;
+by ID;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/fb675c5f-68af-4b45-8a10-bbf8a5a93052)  
+
+__Note :__
+
+In this example, we have 2 1s in dat1 and 3 1s in dat2. The maximum number of 1s in both the tables is 3. So it would return 3 1s in the merged dataset.  
+
+### PROC SQL JOIN : Many to Many Merge  
+
+PROC SQL JOIN creates all possible combinations of matching observations in case of a many-to-many relationship. Cartesian product is a collection of all pairs of two given sets. For example, In ID variable, there are 2 1's in dat1 dataset and 3 1's in dat2 dataset, the cartesian product would be (3*2 = 6 Observations) in the final result.  
+
+```sas
+proc sql noprint;
+create table combined2 as
+select * from dat1 a
+join dat2 b
+on a.ID = b.ID;
+quit;
+```
+
+See the output shown in the image below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f6738eae-e252-4f5a-a215-2f8dee7376bb)  
+
+## RETAIN STATEMENT IN SAS (WITH EXAMPLES)  
+  
+This tutorial explains how to use the RETAIN statement in SAS, with examples. In SAS, it's a very easy and useful way to retain values with RETAIN statement.  
+
+### Create Sample Data  
+
+The following program creates sample data for demonstration -  
+
+```sas
+data abcd;
+input x y;
+cards;
+1 25
+1 28
+1 27
+2 23
+2 35
+2 34
+3 25
+3 29
+;
+run;
+```
+
+### Uses of RETAIN Statement  
+
+The RETAIN statement simply copies retaining values by telling the SAS not to reset the variables to missing at the beginning of each iteration of the DATA step. If you would not use retain statement then SAS would return missing at the beginning of each iteration.  
+
+The retain statement keeps the value once assigned.  
+
+### Generate Serial Number  
+
+Suppose you need to generate a serial number (or row index number) with data step.  
+
+```sas
+data aaa;
+set abcd;
+retain z 0;
+z = z + 1;
+run;
+```
+
+__Output Dataset__  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/478b88d8-b3af-462b-93f8-f0943b9f2eef)  
+
+The above SAS code initializes a variable "z" to 0 and increments it by 1 for each observation in the "aaa" data set. The result is a new data set with an additional variable "z" that has row numbers.  
+
+__We can retain implicitly by using the +1 notation.__  
+
+```sas
+data aaa;
+set abcd;
+z + 1;
+run;
+```
+
+z + 1; is a simplified way to increment the variable "z" by 1 for each observation. It returns row numbers starting from 1.  
+
+### Cumulative Score  
+
+Suppose you need to calculate cumulative score. In financial data, we generally need to calculate cumulative score year to date.  
+
+```sas
+data aaa;
+set abcd;
+retain z 0;
+z = z + y;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/20565c47-aac8-4581-8b19-3638394d3c07)  
+
+### Generate Serial Number by Group  
+
+Suppose you have a grouping variable say "region" and you need to generate a row index number by region.  
+
+```sas
+proc sort data = abcd;
+by x;
+run;
+
+data aaa;
+set abcd;
+retain z;
+if first.x then z = 1;
+else z = z + 1;
+by x;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a6f60c8c-d336-42e8-ab0c-d02ba0029d9b)  
+
+### Cumulative Score by Group  
+
+Suppose you need to calculate cumulative sale by product categories.  
+
+```sas
+data aaa1;
+set aaa;
+retain z1;
+if first.x then z1 = y;
+else z1 = z1 + y;
+by x;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c156bfe3-dec4-49ee-914c-a7ea574ab1df)  
+
+The variable "z1" constitutes cumulative values of variable y by grouping variable x.  
+
+### Number of Unique Observations  
+
+The number of unique rows by a group can easily be calculated with PROC FREQ and PROC MEANS. The following program explains how we can calculate number of observations in a categorical variable with Data Step.  
+```sas
+data aaa2;
+set abcd (drop = y);
+retain z;
+if first.x then z = 1;
+else z = z + 1;
+by x;
+if last.x then output;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5ab77f18-5669-4295-8e5b-85ac9f1ebe90)  
+
+__Suppose you have more than 1 grouping variable__
+
+In the dataset below, we have two grouping (categorical) variables : "ID" and "ID1".  
+
+```sas
+data temp;
+input ID ID1 Score;
+cards;
+1 1 25
+1 1 26
+1 2 27
+1 2 29
+2 1 28
+2 1 29
+2 2 31
+;
+run;
+```
+
+When you have more than 1 grouping variable, we can use multiple FIRST. statements with OR operator to generate serial numbers.  
+
+```sas
+data temp2;
+set temp;
+by ID ID1;
+if first.ID or first.ID1 then N = 1;
+else N+1;
+proc print;
+run;
+```
+
+### CALCULATING PERCENTILES WITH SAS  
+
+In SAS, you can calculate percentiles using PROC UNIVARIATE procedure.  
+
+Important options used for calculating percentile in PROC UNIVARIATE  
+
+PCTLPTS : Specifies percentile levels  
+
+PCTLPRE : Specifies one or more prefixes to create the variable names for the variables that contain the PCTLPTS= percentiles.  
+
+PCTLNAME : Specifies one or more suffixes to create the variable names for the variables that contain the PCTLPTS= percentiles.  
+
+Example 1 :   
+ 
+Percentile calculation for a variable  
+
+```sas
+proc univariate data = abcd noprint;
+var a;
+output out=outdata PCTLPTS = 99.5 PCTLPRE = a;
+run;
+```
+
+Example 2 : 
+
+Percentile calculation for multiple variables  
+
+```sas
+proc univariate data = abcd noprint;
+var a b c;
+output out=outdata PCTLPTS = 99 PCTLPRE = a b c PCTLNAME = _P99;
+run;
+```
+
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7b6d40f1-d530-4447-a21f-c6c6436e1dbe)  
+
+2 Important Points : 
+
+If you specify 3 variables in var statement (var a b c) and only 1 prefix in PCTPRE, SAS will create percentile for only 1 variable that is mentioned first in the var statement.  
+
+If the number of PCTLNAME= values is fewer than the number of percentiles or if you omit PCTLNAME=, PROC UNIVARIATE uses the percentile as the suffix to create the name of the variable that contains the percentile.  
+
+Example 3 : 
+
+Series of percentile levels  
+
+```sas
+proc univariate data = abcd noprint;
+var c;
+output out=outdata PCTLPTS = 0 to 5 by 0.5 , 95 to 100 by 0.5 PCTLPRE = P;
+run;
+```
+
+## SAS ARRAYS AND DO LOOP MADE EASY  
+
+### SAS Arrays : Introduction  
+
+SAS arrays provides a simple, efficient way to process a list of variables in a SAS DATA step. In other words, arrays are useful when you need to perform similar operations on multiple variables or when you want to avoid writing similar code for multiple variables.  
+
+### Syntax of SAS Arrays  
+
+The syntax of SAS arrays is as follows:  
+
+Array array-name {number-of-elements} list-of-variables;  
+
+Note: You can use [ ] or { } or ( ) for defining number of elements in the ARRAY statement.  
+
+ARRAY ABC[5] a b c d e;: ABC is an array-name, 5 implies the number of variables in the array, and "a b c d e" are the fields that make up the array.  
+
+ARRAY ABC[*] a b c d e;: In this example, SAS would automatically calculate the number of variables in the array.   
+
+ARRAY ABC[*] X1-X10;: Where the X1 variable contains the X1 value, X2 contains the X2 value, etc.  
+
+ARRAY ABC[*] $ X1-X10;: If the variables are of character type then use $ sign before specifying list of variables.  
+
+### SAS DO Loop : Introduction  
+
+The DO loop allows you to perform iterative processing. You can use the DO loop to repeat a set of statements for a specific number of iterations or for a particular range of values.  
+
+### Syntax of SAS DO Loop  
+
+The syntax of SAS DO Loop is as follows:
+```sas
+DO index-variable = start-value TO end-value;
+  /* Statements to be executed inside the loop */
+END;
+```
+
+index-variable: This is a temporary variable used to keep track of the loop iterations. It is usually a numeric variable.  
+
+start-value: This is the initial value for the index variable.  
+
+end-value: This is the final value for the index variable.  
+
+### Sample Dataset  
+
+Let's create a sample SAS dataset for demonstration purposes.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/297f647e-fa86-424b-8bc1-fb8963a499ee)  
+
+```sas
+data temp;
+input x1 x2 x3 x4$ x5$;
+cards;
+1 2 3 AA BB
+2 3 4 AB CC
+3 4 5 AC DD
+4 5 6 AD EE
+5 6 7 AE FF
+6 7 8 AF GG
+;
+run;
+```
+
+### Example 1 : Replace values greater than 3 in numeric variables with missing data  
+
+The following code reads data from the "temp" dataset and then goes through each observation and checks if the values of the variables "x1," "x2," and "x3" are greater than 3. If any of these values are greater than 3, the value is replaced with a missing value. It stores the updated values in a new dataset "test".  
+
+```sas
+data test;
+set temp;
+array nvars {3} x1-x3;
+do i = 1 to 3;
+if nvars{i} > 3 then nvars{i} =.;
+end;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/8480bdb1-b9ed-4535-9d2b-a7447a5531f3)  
+
+### Why i is 4 in the output data set?  
+
+The first time the loop processes, the value of "i" is 1; the second time, 2; and the third time, 3. At the beginning of the fourth iteration, the value of "i" is 4, which is found to be greater than the stop value of 3 so the loop stops. The value of i is now 4 and not 3, the last value before it would be greater than 3 as the stop value.  
+
+Note : We can drop variable "i" with drop statement or drop data set option.  
+
+### Efficient version of the above code  
+
+```sas
+data test;
+set temp;
+array nvars (*) _numeric_;
+do i = 1 to dim(nvars);
+if nvars{i} > 3 then nvars{i} =.;
+end;
+drop i;
+run;
+```
+  
+__Notes -__ 
+
+The "_numeric_" is used to specify all the numeric variables.  
+
+The DIM function returns the number of elements (variables).  
+
+### Example 2 : Extract first letter of all the character variables  
+
+The following code reads data from the "temp" dataset and then goes through each character variable and keeps only the first letter, discarding the rest. The result is a new dataset "test" with character variables truncated to their first letters.  
+
+```sas
+data test;
+set temp;
+array cvars (*) _character_;
+do i = 1 to dim(cvars);
+cvars{i} = substr(cvars{i},1,1);
+end;
+drop i;
+run;
+```
+ 
+Note - The "_character_" is used to specify all the character variables.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/658bee8c-814b-4c43-8130-fe25ddfa36b7)  
+
+### Example 3 : Extract first letter and assign to new variables  
+
+The following code reads data from the "temp" dataset and then goes through each character variable and extracts the first letter from each variable, and assigns it to the corresponding "X6" or "X7" variable in the "test" dataset. The result is a new dataset "test" with the first letter of each character variable stored in "X6" and "X7" variables.  
+
+```sas
+data test;
+set temp;
+array cvars (*) _character_;
+array dvars (*) $ X6 X7;
+do i = 1 to dim(cvars);
+dvars{i} = substr(cvars{i},1,1) ;
+end;
+drop i;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/857cc690-6184-4ef2-8dea-75f1a11f0821)  
+
+### Example 4 : Assign Initial Values in a SAS Array  
+
+The following code reads data from the "temp" dataset and then goes through each numeric variable in "temp" and multiplies it by a corresponding percentage increase factor from the temporary "pctinc" array. The results are assigned to the "px1", "px2", and "px3" variables in the "abcd" dataset. The temporary array "pctinc" is used for the calculation but is not included in the final dataset.  
+
+```sas
+data abcd;
+set temp;
+array nvars (*) _numeric_;
+array pvars (*) px1 px2 px3;
+array pctinc {3} _temporary_ (1.1 , 1.2 ,1.3); 
+do i = 1 to dim(nvars);
+pvars{i} = nvars{i} * pctinc{i};
+end;
+drop i;
+run;
+```
+
+__Notes -__  
+
+In the above example, we are multiplying values of variables with different numbers.  
+
+When the key word _TEMPORARY_ is used in a ARRAY statement, data elements are created but are not stored in the data file.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/790483a0-40fd-4b32-a1ec-a66d1461fe3b)  
+
+### Example 5 : Calculate Percentage Growth  
+
+The following code reads data from the "temp" dataset and then calculates the difference and percentage difference between consecutive numeric variables in "temp" and stores the results in the temporary "diff" and "percent" arrays. The final "abcd" dataset will not include the temporary "diff" array but will have the percentage differences stored in the "percent" array.  
+
+```sas
+data abcd;
+set temp;
+array nvars(*) _numeric_;
+array diff{2} _temporary_;
+array percent{2};
+do i = 1 to 2;
+diff{i} = nvars{i +1} - nvars{i};
+percent{i} = diff{i} / nvars{i} ;
+end;
+drop i;
+run;
+```
+
+### Using the OF Operator in a SAS Array  
+
+The following two codes are equivalent :  
+
+```sas
+array gnp (*) x y z;
+sumgnp = sum(of gnp(*));
+```
+OR
+
+```sas
+sumgnp = sum(x,y,z);
+```
+
+Calculate the mean : mean_score = mean(of gnp(*));  
+
+Calculate the minimum : min_score = min(of gnp(*));
+
+Suppose you are asked to create a flag in cases wherein sum of variables x1,x2 and x3 is greater than 10.  
+
+```sas
+data test;
+set temp;
+array nvars (*) x1-x3;
+if sum(of nvars(*)) > 10 then flag =1;
+else flag=0;
+run;
+```
+
+### DO OVER LOOP  
+
+The DO OVER loop is one of the most useful DO loops. It can be used with an array when indexing of the array is not needed.  
+
+In the example below, the "do over" statement iterates over each numeric variable in the array "nvars". For each variable, the code checks if its value is greater than 3. If it is, then the value is set to missing (represented by a dot "."). This effectively replaces any numeric value greater than 3 with a missing value.  
+
+```sas
+data test;
+set temp;
+array nvars _numeric_;
+do over nvars;
+if nvars > 3 then nvars = .;
+end;
+run;
+```
+
+## SAS : LENGTH OF NUMERIC VARIABLES  
+
+This tutorial describes how SAS treats length of numeric variables in data sets. It is often asked in interviews if default length of numeric variable is 8, how would you store a numeric variable having value more than 8 digits (for example, 123456789). It seems to be a simple question but confusing. Hence, it is required to pay attention how SAS stores numeric variables.  
+
+### Solution :
+
+In SAS, the default length of a numeric variable is 8 bytes. Pay attention to bytes. The limit is NOT 8 digits but 8 bytes. 8 bytes means we can store up to 16 digits for a numeric variable in SAS. In other words, the default length of numeric variable is 16 digits. It is important to note that the minimum length of a numeric is 3 bytes. It does not mean it cannot store a numeric value lower than 3 digits. It can store values of 1 or 2 digits. See the table below what bytes mean in terms of digits.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/4c53a4e0-1a96-4f0a-a37c-9206200f6afc)  
+
+The length of a numeric variable lies between 3 and 8 bytes. It means SAS can store a numeric value from 1 to 16 digits.   
+
+See the example below -  
+
+Run the following program and see log. It would give you how SAS keeps numeric values.  
+
+```sas
+data temp;
+x = 1234567890;
+x1 = 1234567890123456;
+put x= x1=;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/750c2b0b-4672-4e1e-958f-ff3dbc48c3d5)  
+
+If you look at the image above, SAS stores variables x and x1 without any issue. But the format of the variable x1 is in E notation. See how it works -  
+
+1.23456789E15 is equivalent to 1.23456789 𝗑 10¹⁵  
+
+__Rule -__
+
+If the the value of numeric variable is less than or equal to 12 digits it is displayed normally which means the format of the numeric value does not change to E notation. If it is more than 12 digits, the format changes to E notation. To avoid E notation, we can use best16. format which prevents to change the format of the larger values.  
+
+```sas
+data temp;
+x = 1234567890;
+x1 = 1234567890123456;
+format x1 best16.;
+put x= x1=;
+run;
+```
+
+### SAS: HOW TO CHECK NUMBER OF OBSERVATIONS IN A DATASET  
+
+This post explains how to determine the number of observations in a SAS dataset. Most of the times we need to check whether a SAS dataset is empty or not. In macro, we generally tell SAS to go to the next iteration only when SAS dataset is non-empty. In this post, we will see various methods to count number of rows (records) in SAS table.  
+
+### Method I : Proc SQL Count (Not Efficient)  
+
+In the example below, we will use CARS dataset from SASHELP library. This dataset contains 428 observations and 15 columns.  
+
+The easiest method is to use count(*) in Proc SQL. It returns all rows (missing plus non-missing rows) in a dataset.  
+
+```sas
+proc sql;
+select count(*) as N from sashelp.cars;
+quit;
+```
+
+Result : 428
+ 
+In case you want to store it in a macro variable, you can use INTO : keyword.  
+
+```sas
+proc sql noprint;
+select count(*) into :N from sashelp.cars;
+quit;
+
+%put &N;
+```
+
+This will print the number of records in SAS log. Check log after running the above program.  
+
+### Is it an efficient method?  
+
+No, it is not efficient at all. It does not use metadata information of SAS dataset. Instead it reads through each record (row) of your SAS dataset. It takes a long time to do it in big SAS tables. However, it is a simple and handy trick to calculate the number of rows in a SAS dataset.  
+
+### Method 2 : Descriptor Portion (Efficient)  
+
+Before getting into detail, we need to understand the descriptor portion and how it works -  
+
+__SAS dataset consists of the following two portion -__
+
+__Descriptor portion__. It constitutes information about name of dataset, number of observations and variables, creation date, engine type.  
+
+__Data portion__. It stores values of data.  
+
+This method is one of the most efficient way to count observations in a SAS table as it uses metadata information and does not search in dataset.  
+
+```sas
+data _NULL_;
+if 0 then set sashelp.cars nobs=n;
+put "no. of observations =" n;
+stop;
+run;
+```
+
+__Explanation__  
+
+The 'if 0' statement does not process at execution time because IF statement does not hold TRUE. The whole IF THEN statement is used to pull the header information of the data set and later hand over to the compiler to adjust it to the PDV.  
+
+NOBS is a SAS automatic variable which contains the number of rows in a dataset i.e. SASHELP.CARS dataset.  
+
+NOBS = N puts the returns count of records in the variable n.  
+
+The STOP statement is used to stop an endless loop.  
+
+Like the first method, we can keep it in a macro variable. See the implementation below -  
+
+```sas
+data _NULL_;
+if 0 then set sashelp.cars nobs=n;
+call symputx('totobs',n);
+stop;
+run;
+%put no. of observations = &totobs;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9178216d-28ae-4830-b6d5-76c885f55572)  
+
+CALL SYMPUT is one of the method to create a SAS macro variable in data step. In this case, we have used a newer function i.e. CALL SYMPUTX which left justifies and trims trailing blanks from a numeric value. If you want to stick to the old style CALL SYMPUT, you can write like below -  
+
+```sas
+call symput('totobs',left(n));
+```
+
+### 3. Proc SQL Dictionary Method (Efficient)  
+
+Like second method, we can use metadata information of a dataset with PROC SQL Dictionary.Tables.  
+
+```sas
+proc sql noprint;
+select nobs into :totobs separated by ' ' from dictionary.tables
+where libname='SASHELP' and memname='CARS';
+quit;
+%put total records = &totobs.;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f724c0f3-a41f-414c-88e7-793bf98415d6)  
+
+It is an efficient method as it does not look into each values of a dataset to determine the count. The LIBNAME= refers to the name of the library in which data is stored. The MEMNAME= refers to SAS table (dataset). The separated by ' ' is used in this case to left align the numeric value.  
+
+### 4. Macro Language Method (Efficient)  
+
+This method also uses metadata information but it is via the macro language using DATA step functions. The OPEN function is used to open a data. The ATTRN function returns the value of a numeric attribute for a SAS data set. When it is used with the NOBS argument, it returns the number of observations. Later we are closing the opened dataset using CLOSE function.  
+
+```sas
+%macro totobs(mydata);
+%let mydataID=%sysfunc(OPEN(&mydata.,IN));
+%let NOBS=%sysfunc(ATTRN(&mydataID,NOBS));
+%let RC=%sysfunc(CLOSE(&mydataID));
+&NOBS
+%mend;
+%put %totobs(sashelp.cars);
+```
+
+### SAS : Check if it is empty table
+
+Suppose you only need to check whether a table is empty or not. You can use the same logic as explained above. And if the returned value is 0, write 'Empty Data' in log. Otherwise, count the number of records.  
+```sas
+data _NULL_;
+if 0 then set sashelp.cars nobs=n;
+if n = 0 then put 'empty dataset';
+else put 'Not empty. Total records=' n;
+stop;
+run;
+```
+
+Result : Not Empty. Total records = 428  
+
+Let's create a blank dataset to check the above code. The following program returns empty dataset as 1=2 condition does not meet.  
+
+```sas
+proc sql noprint;
+create table temp as
+select * from sashelp.cars
+where 1 = 2;
+quit;
+```
+
+Try it yourself!  
+
+### Let's wrap the above code in a SAS macro  
+
+```sas
+%macro emptydataset (inputdata=);
+data _NULL_;
+if 0 then set &inputdata. nobs=n;
+call symputx('totobs',n);
+stop;
+run;
+%if &totobs. = 0 %then %put Empty dataset;
+%else %do;
+%put TotalObs=&totobs;
+%end;
+%mend;
+```
+
+%emptydataset(inputdata=sashelp.cars);  
+Result : TotalObs=428  
+
+%emptydataset(inputdata=work.temp);  
+Result : Empty dataset  
+
+If you think it's difficult to memorize sas code of descriptor portion method, you can use the code below.  
+
+```sas
+data _NULL_;
+set sashelp.cars nobs=N;
+if _N_ = 2 then stop;
+put N;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5362fe77-d858-43e2-ad9c-eb01c909948a)  
+
+It reads only first two observations from the dataset. See log above.  
+
+## SEND SAS OUTPUT TO EXCEL  
+
+This tutorial explains how to send SAS results (output) to Excel.
+
+### Example 1 :
+
+Create a new sheet for each unique value in the grouping variable (By Group)  
+
+```sas
+ods tagsets.excelxp file="C:\Users\Deepanshu\test.xls"
+options(embedded_titles="yes"
+autofilter="1-3"
+frozen_headers="3"
+frozen_rowheaders="1"
+absolute_column_width="8.5,11,7,9,8,8"
+autofit_height="yes"
+sheet_interval="bygroup"sheet_label=" "
+suppress_bylines="yes") style=normal;
+
+proc print data=sashelp.shoes noobs;
+title "Detail of Region #byval(region)";
+by region;
+run;
+
+ods tagsets.excelxp close;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/11bc5cff-cd7c-4017-a14a-1c528c122f9a)  
+
+The SHEET_INTERVAL= option is used to define the interval in which to create new worksheets.  
+
+### Example 2 :
+
+Define names of sheets manually   
+
+```sas
+ods tagsets.excelxp file='C:\Users\Deepanshu\Documents\multitable.xls' style=STATISTICAL
+options(sheet_name='Summary' skip_space='1,0,0,0,1' EMBEDDED_TITLES='yes' sheet_interval='none');
+
+Title " First File";
+proc freq data = sashelp.class;
+table sex;
+run;
+
+Title " Second File";
+proc print data = sashelp.cars;
+run;
+
+ods tagsets.excelxp options(sheet_name='FREQ' skip_space='1,0,0,0,1' EMBEDDED_TITLES='yes' sheet_interval='none');
+Title " Third File";
+
+proc freq data = sashelp.cars;
+table make;
+run;
+
+ods tagsets.excelxp close;
+```
+
+### Example 3 :
+
+Apply Custom Format of Excel  
+
+```sas
+data temp;
+pct= 0.75;
+number= -45;
+run;
+
+ods tagsets.excelxp file="C:\Users\Deepanshu\temp.xls";
+
+proc print data=temp noobs;
+var pct;
+var number / style(data)={tagattr="format:$#,##0_);[Red]($#,##0)"};
+format pct percent5.2;
+run;
+
+ods tagsets.excelxp close;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/114ac6d2-0ed6-4b7b-a4c7-f6bfe33005c3)  
+
+### Important Note  
+
+ODS TAGSETS.EXCELXP does not support graphs (charts). From SAS 9.4, SAS added new ODS called ODS EXCEL that supports both graphs and tables.  
+
+### ODS EXCEL  
+
+```sas
+ods excel file="c:\test.xlsx"
+options(start_at="B5“
+tab_color="red"
+absolute_row_height="15"
+embedded_titles="yes");
+
+ods text="Sales report for company X";
+proc print data=sashelp.orsales;
+title "Sample title showing new
+features";
+run;
+
+ods excel close;
+```
+
+### ODS Excel- PROC MSChart  
+
+```sas
+proc sql;
+create table summary as
+select(region), sum(sales) format=dollar14.2 as sales
+from sashelp.shoes
+group by region;
+run;
+quit;
+```
+
+```sas
+ods excel file="c:\temp.xlsx";
+title "Sales by Region";
+proc mschart data=work.summary category=region width=4in position="$D$1";
+where region in("Africa","Asia","Canada","Pacific","United States");
+vcolumn sales;
+run;
+ods excel close;
+```
+
+## SAS : VARIABLE NAME HAVING SPACES OR SPECIAL CHARACTERS  
+
+This article may be an eye-opener for you if you think a variable name cannot contain blanks or special characters except for the underscore in SAS. In this article, we would learn how we can read a variable whose name having spaces or special characters. Also, how to deal a variable name starts with a number. It also covers the same case with a dataset (table).  
+
+### Why do we need to have spaces in a variable name?
+
+If you use teradata or any other database, you would encounter this problem very soon if you have not encountered it yet. Many times, database column contains blanks or special characters. To read them in SAS, we need to know how to read variables having spaces in their names.  
+
+It is also required when we transpose our variables and the variable whose values name the transposed variables in the output data set contains special characters.  
+
+### Let's create a sample data  
+
+```sas
+data temp;
+input var1;
+cards;
+1
+2
+;
+run;
+```
+
+### Rename the variable 'var1'  to 'variable one';  
+
+```sas
+options validvarname=any;
+data temp2;
+set temp;
+rename var1 = 'variable one'n;
+run;
+```
+
+The options validvarname=any; tells SAS to allow you to have variable name begin with or contain spaces, special characters or numbers.  
+
+Additionally, we need to put variable name having spaces in quotes followed by the letter n.  
+
+Q. If i don't use VALIDVARNAME=ANY option and use only 'variable one'n , how SAS would take it?  
+
+Sol : SAS would return an error "variable name is not valid" as SAS by default cannot contain blanks or special characters.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a491c799-54cb-483f-8f19-394615d62051)  
+
+### Can variable name starts with a number?
+  
+Yes, follow the code below -  
+
+```sas
+options validvarname=any;
+data temp2;
+set temp;
+rename var1 = '1variable'n;
+run;
+```
+
+### How about reading a dataset whose name having spaces?  
+
+The option VALIDMEMNAME= EXTEND allows you to read or access dataset (table) whose name having spaces or special characters. In addition, we also need to put name of variable in quotes followed by the lettern. 
+
+```sas
+options VALIDMEMNAME=EXTEND;
+proc print data= 'price data'n;
+run;
+```
+
+### SPEED UP SAS CODE WITH INDEX
+
+This tutorial demonstrates how to speed up SAS code with Indexes.  
+
+### What is Index?  
+
+Indexes are not something technical or related to SAS programming. It is something we use everyday to make our life easy. For example, every employee in an organization has an employee ID which is unique. It's easy for HR /Admin team to find information about a particular employee. First Name or Last Name of employees are not unique so it's better to record information by unique ID. So, employee information is indexed by employee ID. Let's take few more examples - dictionary is alphabetically sorted. So alphabets are index in this case. There can be multiple indexes to find information. For example, books in a library are sorted by topics (Science) and sub-topics (Physics /Chemistry / Bio / Statistics).  
+
+In SAS, Index is used to store observations in an ascending order and later access them quickly from a variable. In simple words, it minimizes some steps of searching a particular value by telling SAS the nearest /exact location of the value you are searching for. Confused? Read the next section.  
+
+### How Index works?  
+
+When Index is used, SAS runs a binary search algorithm on the data set.  
+
+Binary search is a performance improvement algorithm for searching a particular observation from a sorted variable. It works by continuously dividing in half of the total number of observations and search the value in the half of the list, until you got the value that you were looking for.  
+
+__Example__  
+
+Let's assume you have a variable CustomerID :   
+
+15, 20, 3, 16, 9, 17, 13
+
+You are finding the information of customer having CustomerID equals to 17. See the steps below to find the value -  
+
+First, sort the CustomerID variable. We will have these values - {3,9,13,15,16,17,20}  
+
+Calculate the median (middle value) of the list i.e. 15.  
+
+We would check whether search_value = median? Is 17 =15? No. 17 > 15.  
+
+Ignore all the values that are less than or equal to 15 as 17 is a higher number than 15.  
+
+Now, we need to search in the remaining list i.e. 16, 17, 20. The middle value is 17.  
+
+Is 17 = 17? Yes. the value found.  
+
+If you do not create an index SAS would search 17 sequentially in the whole list. The above is a simple example of a few values. If you have millions of observations, it would take a hell lot of time to search a particular value sequentially in the variable.  
+
+### When to Use Index ?
+
+1. Size of Subset Records
+
+You should only use Index if you need to pull a small subset from a large SAS data set. See the definition of 'small' and 'large' in the table below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/19a70d4b-3417-4d73-bafb-a3462230d0b4)  
+
+2. Variable Consideration
+
+It is recommended to index only those variables that have a high number of distinct values. For example, Customer ID as it is unique at customer level so it would have a high number of unique records.  But the variable 'sex' would have only two distinct values so it would not be a good choice to index.  
+
+3. Usage Level
+
+If you use a variable frequently that is indexed, it makes sense as it improves the performance in terms of CPU time. But if you are creating an index for just a single usage, it's not a sensible idea to do it as  it takes resources (CPU time, I/0 etc) to initially create an index. Hence, it's required to anticipate the usage of  dataset with Index before creating it.  
+
+### How to create Index with SAS
+
+In SAS, there are several ways to create an index. It can be implemented with either of the following three options -  
+
+1) PROC DATASETS  
+
+2) INDEX = Data Step Option  
+
+3) PROC SQL
+
+### 1. PROC DATASETS : Index
+
+A simple Index can be created like below -  
+
+```sas
+proc datasets library=work nolist;
+modify mydata;
+index create custid;
+quit;
+```
+
+__Explanation :__  
+
+LIBRARY=WORK refers to the SAS temporary library that contains SAS data set 'mydata'  
+
+NOLIST option hides the printing of the directory of SAS files in the SAS log and output window.  
+
+MODIFY tells SAS we are creating an index in data set 'mydata'  
+
+CUSTID in the 'Index Create' statement is the name of the variable for which we want to create an Index.  
+
+### Index of two or more variables
+
+It's called composite index when we create an index for two or more variables. In composite index, values of multiple variables are concatenated and form a single value which would be used for search specific values. The variables can be character or numeric or mixed (one character and the other one is numeric).  
+
+```sas
+proc datasets library=mylibrary;
+modify customermart;
+index create names = (first last);
+run;
+```
+
+In this case, 'names' is an index-name and it's created for two variables - first and last.  
+
+### Only Unique Values
+
+If you want to set condition that values for a variable must be unique, you can use UNIQUE option. For example, you know the customer ID would always be unique. When you use UNIQUE option, SAS would make sure there would not be any duplicate in simple or composite index. In composite index, it would check the uniqueness in combination of multiple variables. If someone would try to update the file with duplicates, it would throw an error.  
+
+```sas
+proc datasets library=work nolist;
+modify mydata;
+index create custid / unique nomiss;
+quit;
+```
+
+NOMISS Option : It does not mean the missing values cannot be added to the data set. It implies the missing values cannot be added to the index.  
+
+### 2. INDEX = Data Set Option
+
+We can create an index with dataset option. See the code below -  
+
+```sas
+data mydata (index=(custid / unique));
+set mydata;
+run;
+```
+
+An composite index can be created like code below -  
+
+```sas
+data mydata (index=(names=(first last)));
+set mydata;
+run;
+```
+
+### 3. PROC SQL : Index  
+
+The syntax for creating a simple index with PROC SQL is as follows -  
+
+```sas
+proc sql;
+create index custid
+on mydata;
+quit;
+```
+
+### Performance Comparison
+
+In this section of post, we are making comparison of filtering with and without Index to check the performance.  
+
+Let's create a sample for demonstration :  
+
+The following code would create three variables - k, custid, demog. The variable 'k' constitutes values ranging from 1 through 20 millions and the variable 'custid' would  have same values as 'k' (just added 1) and the variable 'demog' is a categorical variable having 4 levels.  
+
+```sas
+data temp;
+length demog $12.;
+do k =1 to 20000000;
+custid = k+1;
+if mod(k,8)=0 then demog ='category i';
+if mod(k,8)=1 then demog ='category ii';
+if mod(k,8)=2 then demog ='category iii';
+output;
+end;
+run;
+```
+
+### Filtering without Index  
+
+We are simply subsetting rows by few values in the variable 'custid'.  
+
+```sas
+data testing;
+set temp;
+where custid in (5467620,225,2671899, 18000000);
+run;
+```
+
+NOTE: The data set WORK.TESTING has 4 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+real time 3.47 seconds
+cpu time 3.43 seconds
+
+### Filtering with Index
+
+First, we are creating index with PROC DATASETS and subsetting data in the second section of the code.  
+
+```sas
+proc datasets library=work;
+modify temp;
+index create custid;
+quit;
+
+data testing2;
+set temp;
+where custid in (5467620,225,2671899, 18000000);
+run;
+```
+
+NOTE: The data set WORK.TESTING2 has 4 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.03 seconds  
+
+__Result :__  
+
+Compare CPU time of both the codes and see Indexing resulted to more than 100 times faster code than without using Index.  
+
+### Does Index always speed up SAS code?  
+
+Answer is NO. It may even slow down the code if we have a variable that has a very few distinct/unique values. For example, there is a variable called 'Age Group' that contains only 5 distinct values ranging from 1 to 5. 1 refers to the smallest age-group (<18 years old) and 5 refers to the highest age-group (>55 years old). Suppose you need to search 2 in the variable 'AgeGroup'. If we perform indexing on the variable, it would run binary search algorithm which would calculate the middle value and compare it with the searching value. It works iteratively (repetitively). It would take more time than that of sequentially searching '2' in the variable. See the live example below -  
+
+Example : We are extracting 'category i' from the variable 'demog'.  
+
+__Without Index__  
+
+```sas
+data testing;
+set temp;
+where lowcase(demog) = 'category i';
+run;
+```
+
+NOTE: The data set WORK.TESTING2 has 2500000 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           13.12 seconds
+      cpu time            13.07 seconds  
+
+__With Index__  
+
+```sas
+proc datasets library=work;
+modify temp;
+index delete custid;
+index create demog;
+quit;
+
+data testing2;
+set temp;
+where lowcase(demog) = 'category i';
+run;
+```
+
+NOTE: The data set WORK.TESTING has 2500000 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           19.99 seconds
+      cpu time            13.71 seconds  
+
+In this case, creating an index on a variable took more time than without having index on the variable.  
+
+__Uses of Indexing__  
+
+1. Filtering rows with WHERE statement results in better performance of SAS Code when index is already created on the variable.  
+
+Important Point : SAS by default checks whether to use an index or not when you use WHERE statement.  
+
+2. Data need not to be prior sorted before running BY processing if index is turned on. For example,  two datasets need to be sorted before using MERGE statement. But if index is already created on the datasets, you need to sort the data sets before MERGING. See the example below -
+
+```sas
+data a_index (index=(id));
+set a;
+run;
+data b_index (index=(id));
+    set b;
+ run;
+```
+
+```sas
+data final;
+merge a_index(in=a) b_index(in=b);
+by id;
+if a=b;
+run;
+```
+
+CAUTION : If you are creating index just for merging, it's not a good idea as Index increase resources which means increasing CPU processing time.  
+
+Important Point : Merging and Indexing  
+
+If you are merging/joining a small table with the large indexed table, the indexing would result a good performance. By 'small' table, it means at most 15% of the large indexed table. If you are merging two large indexed table, it might reduce the performance as it takes resources to create an index.  
+
+3. The KEY= option in the SET statements allows you to perform efficient merging.
+
+### Key Points
+
+1. IF statement does not use an index. Whereas WHERE statement makes use of it.  
+
+2. You can run PROC CONTENTS to see the names of the variables which are used for indexing.  
+
+3.  You can delete indexes by the following ways :
+
+PROC DATASETS : Use command 'index delete index-name;'  
+
+PROC SQL : Use command 'drop index index-name from dataset-name;'  
+
+### Endnotes  
+
+SAS indexing capabilities can increase the performance of your SAS code which leads to a significant time saving. But we also need to consider the points listed above wherein it can reduce the performance or might not improve it. It's important to remember the point that indexing increases in the size of the data and it takes time to create an Index. Hence, we should create an index only if the usage of the key variable on dataset is very high.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
