@@ -9039,9 +9039,584 @@ PROC SQL : Use command 'drop index index-name from dataset-name;'
 
 SAS indexing capabilities can increase the performance of your SAS code which leads to a significant time saving. But we also need to consider the points listed above wherein it can reduce the performance or might not improve it. It's important to remember the point that indexing increases in the size of the data and it takes time to create an Index. Hence, we should create an index only if the usage of the key variable on dataset is very high.  
 
+# SAS Functions  
 
+Here is a valuable collection of comprehensive tutorials on various functions in SAS. These functions make it easier for you to work with data and perform various operations.  
 
+## SAS : CHARACTER FUNCTIONS  
 
+This tutorial covers the most frequently used SAS character functions with examples. Dealing with character strings can be a little tricky compared to numeric values. Therefore, it is necessary to understand the practical usage of character functions.  
+  
+### 1. COMPBL Function  
+
+The COMPBL function compresses multiple blanks to a single blank.  
+
+In the example below, the Name variable contains a record "Sandy   David". It has multiple spaces between the first and last name.  
+
+### Create a dummy data  
+
+```sas
+Data char;
+Input Name $ 1-50 ;
+Cards;
+Sandy    David
+Annie Watson
+Hello ladies and gentlemen
+Hi, I am good
+;
+Run;
+```
+
+### Use COMPBL Function  
+
+```sas
+Data char1;
+Set char;
+char1 = compbl(Name);
+run;
+```
+
+Output  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a12f451a-730e-4319-af33-fd7064de63a2)  
+
+### 2. STRIP Function  
+
+The STRIP function removes leading and trailing spaces.  
+
+```sas
+Data char1;
+Set char;
+char1 = strip(Name);
+run;
+```
+
+### 3. COMPRESS Function  
+
+The COMPRESS function removes leading, between and trailing spaces.  
+
+SYNTAX
+COMPRESS(String, characters to be removed, Modifier)
+
+```sas
+Data char1;
+Set char;
+char1 = compress(Name);
+run;
+```
+
+Output  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/92da731c-3e42-4577-b8fc-338eaa6216ac)  
+
+__Remove specific characters__
+
+```sas
+data _null_;
+x='ABCDEF-!1.234';
+string=compress(x,'!4');
+put string=;
+run;
+```
+
+It returns ABCDEF-1.23.  
+
+In SAS 9.1.3, the additional parameter called MODIFIER was added to the function.  
+
+The following keywords can be used as modifiers-  
+
+a – Remove all upper and lower case characters from String.  
+
+ak - Keep only alphabets from String.  
+
+kd - Keeps only numeric values  
+
+d – Remove numerical values from String.  
+
+i – Remove specified characters both upper and lower case from String.  
+
+k – keeps the specified characters in the string instead of removing them.  
+
+l – Remove lowercase characters from String.  
+
+p – Remove Punctuation characters from String.  
+
+s – Remove spaces from String. This is default.  
+
+u – Remove uppercase characters from String.  
+
+### Example 1 : Keep only alphabets from alphanumeric values  
+
+```sas
+data _null_;
+x='ABCDEF-!1234';
+string=compress(x,'','ak');
+put string=;
+run;
+```
+ 
+It returns ABCDEF  
+
+Example 2 : Keep only numeric from alphanumeric  
+
+```sas
+data _null_;
+x='ABCDEF-!1234';
+string=compress(x,'','kd');
+put string=;
+run;
+```
+
+It returns 1234  
+
+Example 3 : Remove all punctuation from string    
+
+```sas
+data _null_;
+x='ABCDEF-!1234';
+string=compress(x,'','p');
+put string=;
+run;
+```
+
+It returns ABCDEF1234   
+
+Example 4 : Keep Integer Values from String  
+
+```sas
+data _null_;
+x='ABCDEF-!1.234';
+string=compress(x,'0123456789.','k');
+put string=;
+run;
+```
+
+It returns 1.234  
+
+### 4. LEFT Function  
+
+The LEFT function moves leading blanks to the end of the value. The length of the string does not change.  
+
+```sas
+Data char1;
+Set char;
+char1 = left(Name);
+run;
+```
+
+### 5. TRIM Function   
+
+The TRIM function removes trailing spaces.  
+
+```sas
+Data char1;
+Set char;
+char1 = trim(Name);
+run;
+```
+
+### 6. TRIM(LEFT(string))  
+
+It is equivalent to STRIP function. It first removes leading spaces and then trailing spaces.  
+
+### 7. CAT Function  
+
+The CAT function concatenates character strings. It is equivalent to || sign.  
+
+```sas
+data _null_;
+a = 'abc';
+b = 'xyz';
+c= a || b;
+d= cat(a,b);
+put c= d =;
+run;
+```
+
+Both c and d returns "abcxyz".  
+
+Concatenate String and Numeric Value  
+
+```sas
+data _null_;
+x = "Temp";
+y = 22;
+z = x||y;
+z1 = cats(x,y);
+z2 = catx("",x,y);
+put z = z1= z2 =;
+run;
+```
+
+z = Temp   22  
+
+z1=Temp22  
+
+z2=Temp 22  
+
+__Note__ -  
+
+The || keyword inserts multiple spaces when numeric and text values are concatenated.  
+
+CATS strips both leading and trailing blanks, and does not insert separators.  
+
+CATX strips both leading and trailing blanks, and inserts separators. The first argument to CATX specifies the separator.  
+ 
+### 8. SCAN Function  
+
+The SCAN Function extracts words within a value that is marked by delimiters.  
+
+SCAN( text, nth word, <delimiters>)  
+
+For example :  
+
+We wish to extract first word in a sentence 'Hi, How are you doing?'. In this case, delimiter is a blank.  
+
+```sas
+data _null_;
+string='Hi, How are you doing?';
+first_word=scan(string, 1, ' ' );
+put first_word =;
+run;
+```
+
+first_word returns 'Hi,' since it is the first word in the above sentence using blank as a delimiter.
+We wish to extract last word in a sentence 'Hi, How are you doing?'. In this case, delimiter is a blank.  
+
+```sas
+data _null_;
+string='Hi, How are you doing?';
+last_word=scan(string, -1, ' ' );
+put last_word =;
+run;
+```
+
+last_word returns 'doing?' since it is the last word in the above sentence.   
+Let's make it a little complicated.  
+Suppose, delimiter is a character instead of blank or special sign.  
+
+```sas
+string='Hello SAS community people';
+beginning= scan( string, 1, 'S' ); ** returns "Hello ";
+middle = scan( string, 2, 'S' ); ** returns "A";
+end= scan( string, 3, 'S' ); **returns " community people";
+```
+
+### 9. SUBSTR Function  
+
+The SUBSTR function extracts strings based on character position and length. It is equivalent to MS Excel's MID Function.  
+
+= substr(old_var, starting_position, number of characters to keep);  
+
+__Examples__ :  
+
+```sas
+data _null_;
+t="AFHood Analytics Group";
+new_var=substr(t,8,9);
+put new_var =;
+run;
+```
+
+Result: new_var=Analytics  
+
+### 10. SUBSTR(Left of =) Function  
+
+It replaces a portion of string with new string  
+
+```sas
+data _null_;
+string='old_variable';
+substr(string,1,8) = "new_data";
+put string =;
+run;
+```
+
+Result: string=new_dataable
+
+In this case, SUBSTR replaces the first 8 characters of string with the value "new_data". After this line executes, the value of string will be 'new_dataable'  
+
+### 11. LOWCASE, UPCASE and PROPCASE  
+
+LOWCASE converts the character string to lowercase.  
+
+UPCASE converts the character string to uppercase.  
+
+PROPCASE returns the word having uppercase in the first letter and lowercase in the rest of the letter (sentence format).  
+
+```sas
+data _null_;
+  name = 'Hello world';
+  name_upper = upcase(name);
+  name_lower = lowcase(name);
+  name_proper = propcase(name);  
+  put name_upper=;
+  put name_lower=;
+  put name_proper=;  
+run;
+```
+
+__Output:__  
+
+name_upper=HELLO WORLD  
+
+name_lower=hello world  
+
+name_proper=Hello World  
+
+### 12. INDEX Function  
+
+The INDEX function finds characters or words in a character variable  
+
+```sas
+data _null_;
+string='Hi,How are you doing?';
+x = index(string, "How");
+put x=;
+run;
+```
+
+x returns 4 as "How" starts from 4th character.  
+
+To select all the records having 'ian' in their character.  
+
+```sas
+if index(name,'ian') > 0;
+```
+
+To select all the records having first letter 'H'  
+```sas
+if name =: 'H';
+```
+
+### 13. FIND Function  
+
+The FIND function locates a substring within a string  
+
+FIND (character-value, find-string <,'modifiers'> <,start>)  
+
+STRING1 = "Hello hello goodbye"  
+
+Examples :  
+
+1. FIND(STRING1, "hello") returns 7  
+
+2. FIND("abcxyzabc","abc",4) 7
+
+### 14. TRANWRD Function  
+
+The TRANWRD function replaces all occurrences of a word in a character string. It doesn't replace full phrase (entire value content).  
+
+TRANWRD (variable name, find what , replace with)  
+
+Example : name : Mrs. Joan Smith  
+
+name=tranwrd(name, "Mrs.", "Ms.");  
+
+Result : Ms. Joan Smith  
+ 
+### 15. TRANSLATE Function  
+
+The TRANSLATE function replaces specific characters in a character expression  
+
+TRANSLATE(source, replace with, find what)  
+
+Examples:  
+
+x = translate('XYZW','AB','VW');  
+
+Result : "XYZB"  
+
+### Difference between TRANWRD and TRANSLATE Functions  
+
+The TRANSLATE function converts every occurrence of a user-supplied character to another character. TRANSLATE can scan for more than one character in a single call. In doing this, however, TRANSLATE searches for every occurrence of any of the individual characters within a string. That is, if any letter (or character) in the target string is found in the source string, it is replaced with the corresponding letter (or character) in the replacement string.  
+
+The TRANWRD function differs from TRANSLATE in that it scans for words (or patterns of characters) and replaces those words with a second word (or pattern of characters).  
+
+### 16. PRXMATCH  
+
+The PRXMATCH function can be used for the following cases :  
+
+When you want to identify if there is alphanumeric (has any letter from A to Z) in a variable.  
+
+If you need to search a character variable for multiple different substrings.  
+
+PRXMATCH (perl-regular-expression, source);    
+
+Perl Regular Expression  
+
+^ - start with  
+$ - end with  
+\D - any non digits  
+\d - digits  
+? - may or may not have?  
+| - or  
+* - repeating  
+( i:) - turns ON the case insensitive search  
+(-i:) - turn OFF the case insensitive search
+
+### 1. Check alphanumeric value  
+
+```sas
+DATA test;
+INPUT string $ 1-8;
+prxmatch=prxmatch("/[a-zA-Z]/",string);
+CARDS;
+ACBED
+11
+12
+zx
+11 2c
+abc123
+;
+run;
+```
+
+Note : prxmatch("/[a-zA-Z]/",string) checks first character.  
+
+### 2. Replace multiple words with a new word  
+
+if prxmatch('/Luthir|Luthr|Luther/',name) then name='Luthra' ;  
+
+### 17. INPUT and PUT Function  
+
+The INPUT Function is used to convert character variable to numeric.  
+
+new_num=input(character-variable, 4.);  
+
+Example -  
+
+```sas
+data temp;
+x = '12345';
+new_x = input(x,5.);
+run;
+```
+
+In the above example, the variable x is a character variable as it is defined in quotes '12345'. The newly created variable new_x is in numeric format.  
+
+The PUT Function is used to convert numeric variable to character.   
+
+```sas
+new_char=put(numeric,4.0);
+```
+
+```sas
+data temp;
+x = 12345;
+new_x = put(x,5.);
+run;
+```
+
+In this example, the variable x is originally in numeric format and later converted to character in the new variable new_x.  
+
+### 18. LENGTH  
+
+The LENGTH function returns length of a string.  
+
+```sas
+data _null_;
+x='ABCDEF-!1.234';
+n= length(x);
+put n=;
+run;
+```
+
+It returns 13.  
+
+If you need to calculate the number of digits in a numeric variable -  
+
+First, we need to convert our numeric variable to character to count the number of digits as LENGTH function works only for character variable.  
+
+```sas
+data _null_;
+x = 12345;
+cnt = length(strip(put(x,12.)));
+put cnt=;
+run;
+```
+
+In the above nested function, we first converted the variable x to character and then remove spaces by using STRIP function and then count number of digits by using LENGTH() function.  
+
+Another Method -  
+
+```sas
+data _null_;
+x = 12345;
+cnt = int(log10(x)) + 1;
+put cnt=;
+run;
+```
+ 
+We can also use LOG10 function to solve it. LOG10 has a property which says :  
+
+Number of Digits = Integer value of [LOG10(x)] + 1. For example, LOG10(100) = 2 so Number of digits in 100 = 2 +1. See LOG10(1100) = 3.04 => INT(3.04) = 3 => 3+1 = Number of digits in 1100.  
+
+### 19. IF THEN  
+
+IF THEN replaces the entire phrase in a string.  
+
+```sas
+data mydata;
+input names $30.;
+cards;
+Raj Gates
+Allen Lee
+Dave Sandy
+William Gates
+Jon Jedi
+;
+run;
+
+data mydata2;
+set mydata;
+length new_names $30.;
+if find(names, "Raj") then new_names = "Raj Kumar";
+else new_names = names;
+run;
+```
+
+In the above SAS program we are checking if the string "Raj" is found within the variable "names". The FIND function is used to perform this search. If the string "Raj" is found, the if block is executed, and the value "Raj Kumar" is assigned to the "new_names" variable in the mydata2 dataset. If the string "Raj" is not found in the names variable, the else block is executed, and the value of the "names" variable is assigned to the "new_names" variable.  
+
+### 20. COUNT Function  
+
+The COUNT function counts the number of times that a specified substring appears within a character string.  
+
+```sas
+data _null_;
+name = "DeepAnshu Bhalla";
+x = count(name,"a");
+x1 = count(name,"a","i");
+put x= x1=;
+run;
+```
+
+Result : x=2 as there are 2 lower case 'a's in the variable name. x1=3 as there are 3 'a's in the variable name (The 'i' modifier ignores case sensitivity)  
+ 
+### 21. COUNTW Function  
+
+The COUNTW function counts the number of words in a character string.  
+
+```sas
+data readin;
+input name$15.;
+cards;
+Trait Jhonson
+3+3=6
+;
+run;
+
+data out;
+set readin;
+x = countw(name);
+x1 = countw(name,' ');
+proc print;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/e4f8eb52-b0d5-4bab-ac39-7d64607d1749)  
+
+If you don't specify delimiter in the second parameter of COUNTW function, the function will use the default delimiter, which is a blank space.  
 
 
 
