@@ -15093,19 +15093,1570 @@ The RANUNI() function is used to generate random numbers between 0 and 1 without
 In this case, the RANUNI() function makes Y as unique identifier so that we can later count these unique cases.  
 
 
+# Advanced SAS Tutorials : SAS Macros  
 
+SAS Macro is used to automate the repetitive tasks i.e. tasks that you perform very frequently (every day or more than once in a day). It includes useful tips and tricks of SAS Macro programming and outlines real world examples of automation with SAS Macros.  
 
+## SAS Macro Programming  
 
+This tutorial explains SAS macros with practical examples. SAS Macro programming is considered advanced in SAS. Knowing SAS Macros gives you an advantage in the job market over other candidates. Upon completion of this tutorial, you will understand how to create SAS macros and where they can be used.  
 
+It is generally said that smart programming reduces workload and helps you win over your boss.  
+
+### Introduction to SAS Macros  
+
+SAS Macros are used to automate the repetitive task. It can make your work faster by automating the task that requires writing same lines of code every day. It can also be used when you design a complex algorithm and want to make usage of code user friendly so that people who are not comfortable with programming can use your algorithm.  
+
+### Fundamentals of SAS Macros  
+
+The fundamentals of SAS macros involve understanding the basic concepts and components of SAS macro programming. Here are the basics you need to know:  
+
+### Macro Variables  
+
+A macro variable is used to store a value in SAS. The value is always character. The character value can include variable-name, letters, numbers or any text you want substituted in your program.  
+
+Macro Variables are of two types -  
  
+Local - If the macro variable is defined inside a macro code, then scope is local. It would be available for use in that macro only and gets removed when the macro is finished.  
+
+Global - If the macro variable is defined outside a macro code, then scope is global. It can be use any where in the SAS program and gets removed at the end of the session.  
+
+### 5 ways to create SAS macro variables -  
+
+The following is a list of various ways to create a macro variable in SAS, along with examples.  
+
+### 1. %LET  
+
+The %LET can defined inside or outside a macro.  
+
+The syntax of the %LET statement is as follows -    
+
+```sas
+%LET macro-variable-name = value;
+%LET x = 5;
+```
+
+Example - To store system date.  
+
+%let dt = &sysdate;  
+
+How to use Macro Variables
+
+Macro variables are referenced by using ampersand (&) followed by macro variable name.  
+
+& <Macro variable Name>   
+
+To view in log window what macro variable would return, use %PUT statement :  
+
+```sas
+%put &dt.;
+%put NOTE : system data is &dt.;
+```
+
+Result :  NOTE : system data is 23DEC16  
+
+Notice that unlike the PUT statement the text string is not enclosed in quotes. The quotes are not needed because, unlike in the DATA step, the macro facility does not need to distinguish between variable names and text strings.  
+
+### 2. Macro Parameters  
+
+Suppose you are asked to write a macro that returns mean value of a variable. The analysis variable, input and output data sets are dynamic.  
+
+```sas
+%macro test (input =, ivar=, output=);
+proc means data = &input noprint;
+var &ivar;
+output out = &output mean= ;
+run;
+%mend;
+```
+
+In the above code, test is a macro; input, ivar and output are local macro variables.  
+
+How to call a macro -  
+
+```sas
+%test(input=sashelp.heart, ivar= height, output=test);
+```
+
+In this case, we are giving flexibility to users to provide information of input dataset name, the analysis variable and output dataset and the macro returns the mean value of the analysis variable in the output dataset.  
+ 
+### 3. INTO clause in PROC SQL  
+
+Example : Suppose you are asked to calculate average height and store in a macro variable.  
+
+```sas
+proc means data = sashelp.heart noprint;
+var height;
+output out = test mean= avg_height;
+run;
+```
+
+```sas
+proc sql noprint;
+select avg_height into :var1
+from test;
+quit;
+%put &var1;
+```
+
+ Result :  64.81318  
+
+ ### 4. CALL SYMPUT routine  
+
+ The syntax of CALL SYMPUT is as follows:  
+
+ ```sas
+CALL SYMPUT(macro_varname,value);
+```
+
+```sas
+data _null_;
+set test;
+call symput ('var2',avg_height);
+run;
+%put &var2;
+```
+
+### 5. ITERATIVE %DO  
+
+Below is the syntax of iterative %DO -  
+
+```sas
+%DO macro-variable = start %TO stop <%BY increment>;
+. . . text . . .
+%END;
+```
+
+### Example -   
+
+```sas
+%macro calcl(start,stop);
+%do year = &start %to &stop;
+data test;
+set yr&year;
+year = 2000 + &year;
+run;
+%end;
+%mend calcl;
+```
+
+### How to use conditional processing %IF %THEN ?  
+
+In SAS Macros, we can apply conditional statements using %IF %THEN like below -  
+
+```sas
+options mindelimiter=,;
+options minoperator;
+%MACRO test();
+%DO i = 1 %to 9 ;
+%if &i in (1,3,5,7,9) %then %do;%PUT i = &i - odd;
+%END;
+%ELSE %DO;%PUT i = &i - even;
+%end;
+%end;%MEND;
+%test();
+```
+
+If you are confused between IF-THEN and %IF-THEN and don't know when to use, check out the link below -  
+
+### SAS Macro Functions  
+
+There are some SAS macro functions which help you to execute various operations within a macro. Below is a list of SAS Macro Functions.  
+
+#### 1. %EVAL Function  
+
+It is used to perform mathematical and logical operation with macro variables.  
+
+Example -  
+
+```sas
+%let x = 10;
+%let y = 20;
+%let z = &x * &y;
+%put &z;
+```
+
+It returns "10*20".  
+
+```sas
+%let z2 = %eval(&x*&y);
+%put &z2;
+```
+
+It returns 200.  
+
+Note :  
+
+%let last = %eval (4.5+3.2); returns error as it cannot perform arithmetic calculations with operands that have the floating point values. It is when the %SYSEVALF function comes into picture.  
+
+```sas
+%let last2 = %sysevalf(4.5+3.2);
+%put &last2;
+```
+
+It returns 7.7  
+ 
+#### 2. %SYSFUNC Function  
+
+There are several useful Base SAS function that are not directly available in Macro, %Sysfunc enables those function to make them work in a macro.  
+
+```sas
+%let dt3 = %sysfunc(date(),yymmdd10.);
+```
+
+It returns  2016-12-23.  
+
+#### 3. %STR Function  
+
+Usage I : This function removes the normal meaning of following token + – * /, > < = ; “ LT EQ GT LE GE LE NE AND OR NOT blank.  
+
+Suppose we need to store PROC PRINT; RUN; command in a macro variable.  
+
+```sas
+%let exmp0 = proc print; run;;
+%put &exmp0;
+```
+
+Result : proc print  
+
+Since the semicolon following PRINT terminates the %LET statement. It does not consider RUN statement. To workaround this issue, let's use %STR function.  
+
+```sas
+%let exmpl = %str(proc print; run;) ;
+%put &exmpl;
+```
+
+Result : proc print; run;  
+
+Usage II : Precede with % sign when you use single or double quotation in macro  
+
+```sas
+%let var=%str(a%");
+%put &var; 
+```
+
+Result : a"  
+
+If you would not use %STR function in the above example, you would not be able to store quotes in a macro variable.  
+
+Usage III : It also preserves leading and trailing blanks of the string.  
+
+```sas
+%let dt= %str( a );
+%put &dt;
+```
+
+Run the above code and compare it with the code below, you would understand the difference -  
+
+```sas
+%let dt=  a ;
+%put &dt;
+```
+
+#### 4. %NRSTR Function  
+
+%NRSTR works similar to %STR works except it does not resolve the % and & but stop the macro triggers.  
+
+```sas
+%let exmpl = %nrstr(proc print; run;) ;
+%put &exmpl;
+```
+
+Result : proc print; run;  
+
+```sas
+%put "Difference between %NRSTR(&SYSDATE9) and &SYSDATE9";
+```
+
+Result : "Difference between &SYSDATE9 and 23DEC2016"  
+
+In the above case, %NRSTR() stops the &SYSDATE9 macro function.  
+
+#### 5. %SCAN Function  
+
+The %SCAN function returns the nth word in a string.  
+
+```sas
+%let var = var1 var2 var3;
+%let varName =%scan(&var,1,%str( ));
+%put &varName;
+```
+
+Result : var1  
+
+#### Concatenation of Macro Variables
+
+Suppose you have 3 macro variables and the third variable is actually a concatenation of the first 2 variables' value.  
+
+```sas
+%let x = var;
+%let y = 1 ;
+%let var1 = 25;
+%let z = &&&x&y;
+%put &x &y &z;
+```
+   
+Result : var 1 25  
+
+&z returns 25 because first && resolves to &, &x resolves to var, &y. resolves to 1. So var1 returns 25  
+
+### How to store list of values in a macro variable  
+
+Suppose you have a list of names and you want to store them in a macro variable. It can be done by using SEPARATED BY ' ' keyword in PROC SQL.  
+
+```sas
+data temp;
+input name $16.;
+cards;
+Deepanshu Bhalla
+Dave Jhonson
+Ram Prasad
+;
+run;
+```
+
+```sas
+proc sql;
+select name into: myvar separated by ','
+from temp;
+quit;
+```
+
+%put &myvar; returns  Deepanshu Bhalla,Dave Jhonson,Ram Prasad  
+
+In this case, we have used comma(,) as a delimiter. We can use any other delimiter.  
+
+### How to debug SAS Macros  
+
+There are some system options that can be used to debug SAS Macros:  
+
+#### 1. MPRINT  
+
+MPRINT translates the macro language to regular SAS language. It displays all the SAS statements of the resolved macro code.  
+
+```sas
+options mprint;
+%macro test (input =,output=);
+proc means data = &input noprint;
+var height;
+output out = &output mean= ;
+run;
+%mend;
+%test(input=sashelp.heart,output=test);
+```
+
+It returns the following message in LOG window :  
+
+MPRINT(TEST):   proc means data = sashelp.heart noprint;  
+MPRINT(TEST):   var height;  
+MPRINT(TEST):   output out = test mean= ;  
+MPRINT(TEST):   run;  
+ 
+#### 2. MLOGIC  
+
+It is very helpful when we deal with nested macros (Macro inside another macro). Often we use %DO loops and or %IF-%THEN-%ELSE statements inside the macro code and LOGIC option will display how the macro variable resolved each time in the LOG file as TRUE or FALSE.  
+
+```sas
+options mlogic;
+options mindelimiter=,;
+options minoperator;
+%MACRO test();
+%DO i = 1 %to 9 ;
+%if &i in (1,3,5,7,9) %then %do;
+%PUT i = &i - odd;
+%END;
+%ELSE %DO;
+%PUT i = &i - even;
+%end;
+%end;
+%MEND;
+%test();
+```
+
+In the log window, see what MLOGIC option produces -  
+
+MLOGIC(TEST):  %DO loop beginning; index variable I; start value is 1; stop value is 9; by value is 1.  
+MLOGIC(TEST):  %IF condition &i in (1,3,5,7,9) is TRUE  
+MLOGIC(TEST):  %PUT i = &i - odd  
+i = 1 - odd  
+MLOGIC(TEST):  %DO loop index variable I is now 2; loop will iterate again.  
+MLOGIC(TEST):  %IF condition &i in (1,3,5,7,9) is FALSE  
+MLOGIC(TEST):  %PUT i = &i - even  
+i = 2 - even  
+
+#### 3. SYMBOLGEN  
+
+It writes the results of resolving macro variable references to the SAS log for debugging.  
+
+```sas
+options symbolgen;
+%macro test (input =,output=);
+proc means data = &input noprint;
+var height;
+output out = &output mean= ;
+run;
+%mend;
+%test(input=sashelp.heart,output=test);
+```
+
+SYMBOLGEN:  Macro variable INPUT resolves to sashelp.heart  
+SYMBOLGEN:  Macro variable OUTPUT resolves to test  
+
+### Difference between MPRINT and SYMBOLGEN  
+
+See the log generated by these two options. MPRINT option prints all the statements within the macro (not just macro variables). Whereas, SYMBOLGEN option prints only the results of macro variables.  
+
+How to turn off macro debugging options  
+
+```sas
+options nomprint nomlogic nosymbolgen;
+```
+
+All of these options can be turned off together as specified above. Or one of them can be turned off and remaining ones keep turned on.  
+
+### Important Tips: SAS Macros  
+
+Here are some important tips related to SAS Macros :  
+
+1. Use double quotes to reference macro variables.
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/700d5d28-1f45-4442-96bc-01c3932e10d4)  
+
+2. The quotes are not needed in %PUT.
+   
+```sas
+%put NOTE : system data is &dt.;
+```
+
+3. Use Proc PRINTTO for saving log in an external text file.
+
+```sas
+proc printto log="C:\Users\Deepanshu\Downloads\LOG2.txt" new;
+run;
+ ```
+
+4. Clear LOG and OUTPUT Window
+
+```sas
+DM "Log" clear continue;
+DM "Output" clear continue;
+```
+
+### How to call SAS Macro from External Location  
+
+There are two main ways to call a SAS macro from an external location.  
+
+#### 1. % INCLUDE  
+
+```sas
+%include "C:\Users\Deepanshu\Downloads\test.sas";
+%test;
+```
+
+Suppose your macro is stored in a location and you need to call it from the location. You can accomplish this task using %Include.  
+
+#### 2. Autocall Macro Facility and Stored Compiled Macro  
+
+### Practice Question - Try it Yourself  
+
+Calculate distinct number of categories (levels) in variable make in dataset sashelp.cars and store it in a macro variable and later multiply the macro variable by 2.5. Answer it in the comment box below.  
+
+## SAS: CALL SYMPUT and CALL SYMPUTX  
+
+This tutorial explains how to use CALL SYMPUT and CALL SYMPUTX in SAS, along with examples.  
+
+### CALL SYMPUT  
+
+In SAS, the CALL SYMPUT routine is used to create macro variables. It assign a value of the data step to a macro variable.  
+
+Below is the syntax of CALL SYMPUT :  
+
+```sas
+CALL SYMPUT (macro-variable, value);
+```
+
+macro-variable is the name of the macro variable you want to create.  
+value is the value you want to assign to the macro variable.  
+
+### Simple Example: CALL SYMPUT  
+
+In the SAS code below, a data step is used to assign a value of '25' to the macro variable myvalue using the CALL SYMPUT routine.  
+
+```sas
+data _null_;
+call symput('myvalue', '25');
+run;
+%put value = &myvalue.;
+```
+
+Result  
+
+value = 25  
+
+The data _null_; statement initiates a data step that does not create an output dataset.  
+
+The %put statement is used to display the value of the macro variable in the SAS log.  
+
+### Assign Current Date to Macro Variable  
+
+In the code below, we are assigning the current date to the macro variable mydate using the CALL SYMPUT routine.  
+
+```sas
+data _null_;
+call symput('mydate', PUT(TODAY(), DATE11.));
+run;
+%put &mydate.;
+```
+
+Result  
+
+30-JUN-2023  
+
+The CALL SYMPUT assigned the value returned by PUT(TODAY(), DATE11.) to the macro variable mydate. The PUT function is used to convert the current date TODAY() into the DATE11. format, which displays the date as dd-mmm-yyyy (e.g., 30-JUN-2023).  
+
+### CALL SYMPUTX  
+
+The CALL SYMPUTX routine assign a value of the data step to a macro variable and removes both leading and trailing spaces.  
+
+Here is the syntax of CALL SYMPUTX :  
+
+```sas
+CALL SYMPUTX(macro-variable, value, symbol-table);
+```
+
+macro-variable is the name of the macro variable you want to create.  
+value is the value you want to assign to the macro variable.  
+symbol-table Refer the values of symbol-table below.  
+
+G: Macro variable is stored in the global symbol table, regardless of the presence of a local symbol table.  
+L: Macro variable is stored in the most local symbol table available, which may be the global symbol table.  
+F: It tells CALL SYMPUTX to use the version of the macro variable in the most local symbol table where it exists. If the macro variable does not exist, it will be stored in the most local symbol table.  
+
+### Assign Number of Rows to Macro Variable  
+
+Here a data step is used to determine the number of observations in the sashelp.class dataset and assign that value to the macro variable nrows.  
+
+CALL SYMPUTX  
+
+```sas
+data _null_;
+if 0 then set sashelp.class nobs=n;
+call symputx ('nrows',n);
+run;
+%put no. of rows = &nrows.;
+```
+
+LOG  
+
+no. of rows = 19  
+
+CALL SYMPUT
+
+```sas
+data _null_;
+if 0 then set sashelp.class nobs=n;
+call symput ('nrows',n);
+run;
+%put no. of rows = &nrows.;
+```
+
+LOG
+  
+NOTE: Numeric values have been converted to character values    
+no. of rows =           19  
+
+You must have observed above the leading spaces in the macro variable nrows when using CALL SYMPUT. It also returns a note about the conversion of numeric values to character values.  
+
+### Difference between CALL SYMPUT and CALL SYMPUTX  
+
+Below is a list of differences between CALL SYMPUT and CALL SYMPUTX.  
+
+CALL SYMPUTX does not generate a note in the SAS log when the second argument is numeric. Whereas, CALL SYMPUT produces a log note stating the conversion of numeric values to character values.  
+CALL SYMPUTX removes both leading and trailing blanks. Conversely, CALL SYMPUT does not remove leading blanks and only removes trailing blanks.  
+When converting a numeric second argument to a character value, CALL SYMPUTX uses a field width of up to 32 characters, whereas CALL SYMPUT uses a field width of up to 12 characters.  
+CALL SYMPUTX allows you to specify the symbol table in which to store the macro variable, whereas CALL SYMPUT does not.  
+
+Case Study : Suppose you are asked to extract the name and age of the first student from "sashelp.class" dataset and stores them in macro variables.  
+
+```sas
+data _null_;
+set sashelp.class;
+if _N_ = 1 then do;
+call symputx('myname', name);
+call symputx('myage', Age);
+end;
+run;
+
+%put Name = &myname.;
+%put Age = &myage.;
+```
+
+The if _N_ = 1 then do; statement creates a conditional statement that executes the following block of code only for the first observation.  
+call symputx('myname', name); assigns the value of the variable "name" from the current observation to the macro variable "myname"  
+call symputx('myage', Age); assigns the value of the variable "Age" from the current observation to the macro variable "myage"  
+%put Name = &myname.; displays the value stored in the macro variable "&myname." in the SAS log.  
+%put Age = &myage.; displays the value stored in the macro variable "&myage." in the SAS log.  
+
+## Difference between SYMPUT and SYMGET  
+
+This tutorial explains the difference between SYMPUT and SYMGET in SAS.  
+
+SYMPUT : To create macro variables in a data step.  
+SYMGET : To get macro variable value in a data step.  
+
+### Example 1 : Creating a single macro variable  
+
+```sas
+*Creating a macro variable;
+data _null_;
+set sashelp.class;
+if _N_ = 1 then do;
+call symput('nvar', name);
+end;
+run;
+%put &nvar;
+*Get macro variable value in a dataset;
+data want;
+var1=symget('nvar');
+run;
+```
+
+### Example 2 : Creating multiple macro variables  
+
+```sas
+*Creating macro variables;
+data _null_;
+set sashelp.class;
+call symput('nvars' || strip(_n_), name);
+run;
+%put &nvars1 &nvars2 &nvars3;
+* Number of rows;
+data _null_;
+if 0 then set sashelp.class nobs=n;
+call symput ('nrows',n);
+run;
+*Get macro variable value in a dataset;
+data want (drop = i);
+do i=1 to &nrows.;
+var1=symget(cats('nvars',i));
+output;
+end;
+run;
+```
+
+## Multiple Ampersand Macro Variables  
+
+This tutorial explains how single (&), double (&&) and Triple (&&&) ampersand macro variables are resolved in SAS.
+
+Example  
+
+%let x=temp;  
+%let n=3;  
+%let x3=result;  
+%let temp3 = result2;  
+
+Check how multiple ampersand macro variables work -  
+
+%put &x&n;  
+%put &&x&n;  
+%put &&&x&n;  
+
+Rule :  
+
+The scanner reads from left to right.  
+
+&x&n : Macro variable X resolves first to temp and then N resolves to 3. Output : temp3  
+&&x&n : Two ampersands (&&) resolves to one ampersand (&) and scanner continues and then N resolves to 3 and then &x3 resolves to result. Output : result  
+&&&x&n : First two ampersands (&&) resolves to & and then X resolves to temp and then N resolves to 3. In last, &temp3 resolves to result2. Output : result2  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2c746df1-dead-434b-b3a6-7e79102ac254)  
+
+## CALL EXECUTE made easy  
+
+This tutorial explains how to use CALL EXECUTE in SAS and its benefits, along with examples.  
+
+### What is CALL EXECUTE in SAS?  
+
+The purpose of the CALL EXECUTE routine in SAS is to generate and execute SAS code dynamically during the execution of a DATA step. It allows you to create and execute SAS statements or steps based on the values of variables or other dynamic factors.  
+
+The CALL EXECUTE routine is often used in situations where you need to generate SAS code based on some criteria or data conditions that are only known during the runtime of the program. It provides a way to generate and execute SAS code dynamically rather than writing static code.  
+
+### Use cases for CALL EXECUTE  
+
+Creating dynamic macro calls: You can use CALL EXECUTE to generate and execute macro calls with varying arguments or parameters based on the values of variables.  
+Generating conditional data processing steps: You can use CALL EXECUTE to conditionally create and execute DATA steps based on specific data conditions or variable values.  
+Dynamic creation of SAS code: You can use CALL EXECUTE to generate and execute SAS statements or data manipulation operations based on the values of variables or other runtime factors.  
+
+### Example 1  
+
+Suppose you have two data sets named "temp" and "temp2". You are asked to form a group based on the logical conditions given in the other dataset "temp2" and apply the conditions in dataset temp.  
+
+Create sample data sets  
+
+```sas
+Data temp;
+input x;
+cards;
+5
+10
+15
+20
+25
+30
+;
+run;
+```
+
+```sas
+Data temp2;
+input var $ Score rank Section $;
+cards;
+x 30 3 C
+x 20 2 B
+x 10 1 A
+;
+run;
+```
+
+Use columns VAR, SCORE and RANK of dataset TEMP2 to create the following conditions and apply them in dataset TEMP  
+
+If x is less than or equal to 30, then Groups = 3;  
+If x is less than or equal to 20, then Groups = 2;  
+If x is less than or equal to 10, then Groups = 1;  
+
+Solution : CALL EXECUTE  
+
+```sas
+Data _null_;
+set temp2 end=last;
+if _n_=1 then call execute ('Data output; set temp;');
+call execute ("if " ||strip(Var)|| " LE " ||strip(Score) || " then " || "Groups" || "=" ||strip(rank) ||";");
+if last then call execute (' run;');
+run;
+```
+
+Note - All static components should in single or double quotes  and variable components should not be in quotes.  
+See the code processed in the LOG window as shown in the image below.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/fae4433c-e0c8-4866-b4bd-6549d319d548)  
+
+Let's create a new character variable using the following conditions :  
+
+If x is less than or equal to 30, then Class = "C";  
+If x is less than or equal to 20, then Class = "B";  
+If x is less than or equal to 10, then Class = "A";  
+
+Solution : CALL EXECUTE  
+
+```sas
+Data _null_;
+set temp2 end=last;
+if _n_=1 then call execute ('Data output; set temp; length Class $10.;');
+call execute ("if " ||strip(Var)|| " LE " ||strip(Score) || " then " || "Class" ||  "=" || """" || strip(Section) ||""""|| ";");
+if last then call execute (' run;');
+run;
+```
+
+### Example 2 : How to print Multiple Datasets  
+
+```sas
+data _null_ ;
+input mydata $char50. ;
+call execute
+("proc print" || " data = " || strip(mydata) || ";" || "run ;");
+cards;
+temp
+temp2
+output
+run;
+```
+
+The above program prints 3 datasets - temp temp2 output.  
+
+### Example 3 : Call a Macro  
+
+```sas
+%macro mymacro(k);
+data want;
+set temp;
+%do i = 1 %to &k;
+if _N_ = &i then y = %eval(&i.* 10);
+%end;
+run;
+%mend;
+```
+```sas
+data _null_;
+call execute ('%mymacro(6)');run;
+```
+
+### Example 4 : Dynamically Call Macro  
+
+```sas
+%macro mymacro(i,j);
+%put first = &i. second = &j.;
+%mend;
+```
+
+```sas
+DATA example;
+input x y $32. ;
+datalines;
+1 temp
+2 temp2
+;
+run;
+```
+
+```sas
+data _null_;
+set example;
+call execute('%MyMacro('||x||','||y||')');
+run; 
+```
+
+### Stop SAS Macro Processing on Error  
+
+This tutorial explains how to make SAS stop macro execution on error. It is one of the most common task in building a macro. For example, you are building a macro for SAS users who are beginners. You need to make sure error handling in the macro. If user forgets to specify either a dataset name or variable name, macro should not execute further steps and it should abort immediately.  
+
+#### 1. Stop Macro Processing on Error  
+
+In the following program, we are telling SAS to stop sas code if user does not specify parameters and notifying them what they have missed. The %abort cancel; statement tells SAS to abort execution immediately.  
+
+```sas
+%macro explore(inputdata= ,var=);
+options notes;
+%if %length(&inputdata) = 0 %then %do;
+%put ERROR: INPUTDATA= must be specified;
+%put ERROR: The macro ended abnormally.;
+%abort cancel;
+%end;
+
+%if %length(&var) = 0 %then %do;
+%put ERROR: VAR= must be specified;
+%put ERROR: The macro ended abnormally.;
+%abort cancel;
+%end;
+
+proc sort data = &inputdata.;
+by &var.;
+run;
+
+%mend;
+
+%explore(inputdata =  , var = age );
+```
+
+Logic - If the length of string of a macro parameter is 0, it means the macro parameter is blank.  
+
+#### 2. Go to End of Program If Error  
+
+In the following program, we are telling SAS to go to end of the code if error comes, The %goto statement is used to jump to end of the program.  
+
+```sas
+%macro explore(inputdata= ,var=);
+options notes;
+%if %length(&inputdata) = 0 %then %do;
+%put ERROR: INPUTDATA= must be specified;
+%put ERROR: The macro ended abnormally.;
+%goto exit;
+%end;
+
+%if %length(&var) = 0 %then %do;
+%put ERROR: VAR= must be specified;
+%put ERROR: The macro ended abnormally.;
+%goto exit;
+%end;
+
+proc sort data = &inputdata.;
+by &var.;
+run;
+
+%exit:
+%mend;
+
+%explore(inputdata = , var = age );
+```
+
+#### 3. Check for Error after each step of SAS Code  
+
+Sometimes we make typo while entering dataset or variable name. It is important to handle these kinds of errors as well so we need to check for error(s) after each step of SAS Code (Data Step, PROCs).  %if &syserr. ne 0 %then %do; works for it.  
+
+```sas
+%macro explore(inputdata= ,var=);
+options notes;
+%if %length(&inputdata) = 0 %then %do;
+%put ERROR: INPUTDATA= must be specified;
+%put ERROR: The macro ended abnormally.;
+%abort cancel;
+%end;
+%if %length(&var) = 0 %then %do;
+%put ERROR: VAR= must be specified;
+%put ERROR: The macro ended abnormally.;
+%abort cancel;
+%end;
+proc sort data = &inputdata.;
+by &var.;
+run;
+%if &syserr. ne 0 %then %do;
+%abort cancel;
+%end;
+%mend;
+%explore(inputdata = sashelp.clss , var = age );
+```
+
+Tip  
+
+Instead of using %length to calculate the length of macro parameter, we can use COUNTW function. It is very useful to count the number of variables in the macro parameter.  
+
+```sas
+%if %sysfunc(countw(&inputdata., %str( ))) = 0 %then %do;
+%abort cancel;
+%end;
+```
+
+## Count number of variables assigned in a macro variable  
+
+Suppose you need to identify the number of variables user input in a macro variable.
+
+### Option I   
+
+```sas
+%macro nvars (ivars);
+%let n=%sysfunc(countw(&ivars));
+%put &n;
+%mend;
+%nvars (X1 X2 X3 X4);
+```
+
+### Option II   
+
+```sas
+%macro nvars (ivars);
+
+%let n=1;
+%do %until ( %scan(&ivars,&n)= );
+%let n=%EVAL(&n + 1);
+%end;
+
+%let n=%eval(&n-1);
+%put &n;
+%mend;
+
+%nvars ( X1 X2 X3 X4);
+```
+
+## Example of a dynamic %DO Loop  
+
+Suppose you need to pass a variable within a loop based on the input defined in a SAS macro using the %DO statement.  
+
+The following code defines a macro named "report" that calculates summary statistics using the PROC MEANS procedure for each variable specified in the var parameter and groups them by the variable specified in the "class" parameter. It then outputs the statistics to separate datasets. The names of the output datasets are dynamically generated based on the loop index.  
+
+```sas
+%macro report (input=, var = , class=);
+%let n=%sysfunc(countw(&var));
+%do i=1 %to &n;
+%let val = %scan(&var,&i);
+proc means data = &input noprint nway;
+class &class;
+vars &val;
+output out=out&i mean= median= / autoname;
+run;
+%end;
+%mend;
+
+options mprint;
+%report(input= test, var = b c, class=a);
+```
+
+When you execute the above sas program, it generates the following output :  
+
+```sas
+proc means data = &input noprint nway;
+class a;
+vars b;
+output out=out1 mean= median= / autoname;
+run;
+
+proc means data = input noprint nway;
+class a;
+vars c;
+output out=out2 mean= median= / autoname;
+run;
+```
+
+## Get Variable Names from a Dataset  
+
+Suppose you want to create a macro variable that puts all the variable names from a data set.
+
+### 1. Get all the variable names from a data set  
+
+```sas
+*Selecting all the variables;
+proc sql noprint;
+select name into : vars separated by " "
+from dictionary.columns
+where LIBNAME = upcase("work")
+and MEMNAME = upcase("predata");
+quit;
+```
+
+LIBNAME : Library Name  
+MEMNAME : Dataset Name  
+Note : Make sure library and dataset names in CAPS. Or you can use UPCASE function to make it in caps.  
+
+To see the variable names, use the following code :  
+```sas
+%put variables = &vars.;
+```
+
+### 2. Get all the numeric variable names from a data set  
+
+```sas
+*Selecting numeric variables;
+proc sql noprint;
+select name into : numvar separated by " "
+from dictionary.columns
+where LIBNAME = "WORK"
+and MEMNAME = "PREDATA"
+and type = 'num';
+quit;
+```
+
+### 3. Get all the character variable  names from a data set  
+
+```sas
+*Selecting character variables;
+proc sql noprint;
+select name into : charvar separated by " "
+from dictionary.columns
+where LIBNAME = "WORK"
+and MEMNAME = "PREDATA"
+and type = 'char';
+quit;
+```
+
+### 4. Get all the variable names except ID variable  
+
+```sas
+proc sql noprint;
+select name into : vars separated by " "
+from dictionary.columns
+where LIBNAME = upcase("work")
+and MEMNAME = upcase("predata")
+and upcase(name) ne upcase("id");
+quit;
+```
+
+## Run SAS Procedure on Multiple Datasets  
+
+This tutorial explains how to run SAS procedure on multiple datasets.  
+
+Dictionary.Columns vs. Dictionary.Tables  
+
+See the comparison between Dictionary.Columns and Dictionary.Tables in SAS.  
+
+### Dictionary.Columns  
+
+It returns information about the columns in one or more data sets. It is similar to the results of the CONTENTS procedure.  
+
+### Dictionary.Tables  
+
+It returns information about names of SAS files and type, date created and last modified, number of observations, observation length, number of variables etc.  
+
+### Count Number of Datasets in a library  
+
+The following code counts the number of tables in the specified library (sashelp) using the dictionary.tables view and store the count in the macro variable "n". The value of n is then printed to the SAS log using the %put statement.  
+
+```sas
+%let lib = sashelp;
+proc sql noprint;
+select count(*) into :n
+from dictionary.tables
+where libname=%upcase("&lib");
+quit;
+%put &n;
+```
+
+### List name of all datasets in a SAS library  
+
+The following code returns a list of table names from a specified library (sashelp) and then store each table name in separate macro variables using a range of macro variable names. The number of macro variables created would be equal to the number of tables in the library.  
+
+```sas
+proc sql noprint;
+select memname into :data1 - :data%LEFT(&n)
+from dictionary.tables
+where libname=%upcase("&lib");
+quit;
+```
+
+### Export all SAS data sets of a library in CSV format  
+
+The following SAS macro named "temp" exports data from multiple tables in a specified library to CSV files.  
+
+```sas
+%macro temp;
+%do i=1 %to &n.;
+proc export data = &lib..&&data&i
+outfile = "C:\Users\Deepanshu\Documents\KeyBank\&&data&i...csv"
+DBMS = CSV;
+run;
+%end;
+%mend;
+%temp;
+```
+
+## Building SAS Macro Library  
+
+This tutorial explains how to store macros in a location and call them from the location.
+
+### 3 Types of Macro Library  
+
+% Include  
+Autocall Macro Facility  
+Stored Compiled Macro  
+
+#### I. % INCLUDE  
+
+Store macros in a location and call it from the location using %Include.  
+
+```sas
+%include "C:\Users\Deepanshu\Downloads\storemacroval.sas";%storemacroval;
+```
+
+In the program above, the directory contains macro and %storemacroval is a name of macro.  
+
+Disadvantage : You have to mention file name of the macros.  
+
+### II. AUTOCALL Macro Facility  
+
+The name of the file must be the same as the macro name. For eg. The name of the file where in %temp macro placed can only be temp.sas. On the UNIX OS, the name of the file that stores the macro definition must be in all lowercase characters.  
+
+```sas
+options mautolocdisplay mautosource sasautos = ("C:\Users\Deepanshu\Downloads\") ;
+%storemacroval;
+```
+
+In the program above, the directory contains individual files. Each file contains one macro definition.  
+
+### III. Stored Compiled Macro Facility  
+
+Step I : Storing the macro  
+
+In the macro code, add the following lines.  
+
+```sas
+libname loct "C:\Users\Deepanshu\Downloads\";
+options mstored sasmstore = loct;
+%macro storemacroval / store source des="Description of Macro";
+```
+
+Step II : Using Stored Compiled Macros  
+
+```sas
+libname loct "C:\Users\Deepanshu\Downloads\";
+options mstored sasmstore = loct;
+%storemacroval;
+```
+
+### See the list of all the macros stored  
+
+```sas
+libname loct "C:\Users\Deepanshu\Downloads\";
+PROC CATALOG catalog=loct.sasmacr;
+Contents;
+Run;
+```
+
+### ee the list of all the macros compiled  
+
+```sas
+proc sql;
+select * from
+dictionary.catalogs where memname in ('sasmacr');
+quit;
+```
+
+## Dropping Variables Ending with a Specific String  
+
+Suppose you need to drop all the variables ending with a specific string from your dataset. For example. you have a dataset named 'Have' and you want to remove all the variables ending with '_d' or '_D'.  
+
+### Create a data set  
+
+```sas
+data have;
+set sashelp.class;
+r_d = ranuni(9);
+b_d = ranuni(10);
+c_DD = ranuni(11);
+run;
+```
+
+Now we have the following variables in our dataset named "have".  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c1add566-5c6b-4292-9275-a630ef072af1)  
+
+### Solution  
+
+The purpose of the code is to remove variables from the "have" dataset that match the pattern "_D" at the end of their names.  
+
+```sas
+proc contents data=have out=t(keep=name);
+run;
+
+proc sql;
+select distinct name into : n1 separated by ' ' from t
+where upcase(name) like '%_D';
+quit;
+
+%put &n1;
+
+data fnl;
+set have;
+drop &n1;
+run;
+```
+
+The code above performs the following steps:  
+
+Extracts variable names from the "have" dataset and stores them in a temporary dataset "t".  
+Selects distinct variable names that end with "_D" from "t" and stores them in the macro variable "n1".  
+Creates a new dataset "fnl" by copying data from "have" and drops the variables listed in the macro variable "n1" from the new dataset.  
+
+### SAS Macro  
+
+The following SAS Macro automates all the steps performed in previous section. You just need to input your SAS dataset name along with library.
+
+Assign library and dataset name
+
+```sas
+%let libname= work.have;
+```
+
+### SAS Code : Dropping variables ending with '_d' or '_D'  
+
+```sas
+*Extracting library name;
+*Extracting dataset name;
+*Upcase all macro variables to have consistency;
+
+data _null_;
+call symput ("library", put(upcase(substr("&libname",1,index("&libname",'.')-1)), $8.));
+call symput ("datset", put(upcase(substr("&libname",index("&libname",'.')+1,length("&libname"))), $32.));
+%put &library &datset;
+run;
+
+*Get variable list;
+proc sql noprint;
+select name into : var_list separated by " "
+from dictionary.columns
+where LIBNAME = "&library"
+and MEMNAME = "&datset"
+and upcase(substr(name,length(name)-1,2)) = '_D';
+quit;
+
+*Dropping all the variables ending with '_D';
+data &libname.1;
+set &libname. (drop=&var_list);
+run;
+```
+
+## Importing multiple excel files in a single dataset  
+
+Suppose you wish to import multiple Excel workbooks, each with the same variable names, from a folder into a SAS library. Afterward, you want to merge the data from all these datasets into a single SAS dataset (table).  
+
+### SAS Macro  
+
+```sas
+%macro MultImp(dir=,out=);
+
+%let rc=%str(%'dir %")&dir.%str(\%" /A-D/B/ON%');
+filename myfiles pipe %unquote(&rc);
+
+data list;
+length fname $256.;
+infile myfiles truncover;
+input myfiles $100.;
+
+fname=quote(upcase(cats("&dir",'\',myfiles)));
+out="&out";
+drop myfiles;
+call execute('
+  proc import dbms=xlsx out= _test
+            datafile= '||fname||' replace ;
+  run;
+  proc append data=_test base='||out||' force; run;
+  proc delete data=_test; run;
+');
+run;
+filename myfiles clear;
+
+%mend;
+
+%MultImp(dir=C:\Users\Deepanshu Bhalla\Documents\test,out=merged);
+```
+
+### How to use the macro:  
+
+Paste the above program into SAS program editor window.  
+Change the path mentioned in the last line of program (highlighted below). %MultImp(dir=C:\Users\Deepanshu Bhalla\Documents\test,out=merged);  
+Run the program  
+
+## Importing multiple excel sheets in a single dataset  
+
+Suppose you want to import multiple excel sheets with the same variable names into a library and then merge data from all the sheets to a single data set.  
+
+```sas
+libname myxl excel 'C:\Deepanshu\SAS\Excel Sheets.xls' ;
+
+proc sql noprint ;
+select cats( "myxl.'", memname, "'n" ) into : xlfiles separated by ' '
+from dictionary.members
+where libname = 'MYXL'
+order by memname ;
+%put The workbook contains &sqlobs worksheets with data ;
+quit ;
+
+data together ;
+set &xlfiles ;
+run ;
+
+libname myxl clear;
+```
+
+### How to use :  
+
+1. Paste the above program into SAS program editor window  
+2. Change the path mentioned in the first line of program (highlighted below in red)
+
+```sas
+libname myxl excel 'C:\Deepanshu\SAS\Excel Sheets.xls' ;
+```
+
+3. Run the program
+
+## Imputing Missing Data  
+
+When building a predictive model, it is important to impute missing data. There are several ways to treat missing data.  
+
+The following is a list of options to impute missing values :  
+
+Fill missing values with mean value of the continuous variable (for real numeric values) in which NO outlier exists.  
+Fill missing values with median value of the continuous variable (for real numeric values) in which outlier exists.  
+Fill missing values with median value of the ordinal categorical variables   
+Fill missing values with mode value of the nominal categorical variables  
+
+### SAS Macro  
+
+The following code fills in missing data with mean/median/mode for each of the variables assigned in the macro and saves it into a new data set.  
+
+*****************************************************************/;
+************* Imputing Missing Data **************************/;
+*****************************************************************/;  
+
+*Input : Specify your input dataset name (raw data).
+*Stats : Specify mean, median or mode for replacing missing data.
+*Vars : Specify your variables in which missing values exist.
+- Multiple variables should be seperated by a space.
+- The list of variables can be referred as var1-var25.
+- For all numeric variables, use _numeric_ keyword.
+*Output : Specify dataset where you want ouput file to be saved.
+/****************************************************************/;
+
+```sas
+%macro replace (input= prac.file1,stats=median,vars=Q1-Q5,output=replaced);
 
 
+* Generate analysis results ;
+proc univariate data=&input noprint;
+var &vars;
+output out=dummy &stats= &vars;
+run;
 
+* Convert to vertical ;
+proc transpose data=dummy out=dummy;
+run;
 
+* Replace missing with analysis results ;
+data &output;
+set &input;
+array vars &vars ;
+do i =1 to dim(vars);
+set dummy(keep=col1) point= i ;
+vars(i)=coalesce(vars(i),col1);
+drop col1 ;
+end;
+run;
 
+%mend;
 
+Options mprint nosymbolgen;
+%replace (input= readin1,stats= mode,vars= dbp scl,output=replaced);
+```
 
+## Identify and Remove Outliers with SAS  
 
+### Detection of Outliers  
+
+If a value is higher than the 1.5 times of Interquartile Range (IQR) above the upper quartile (Q3), the value will be considered as mild-outlier. Similarly, if a value is lower than the 1.5 times of IQR below the lower quartile (Q1), the value will be considered as mild-outlier.  
+
+If a value is higher than the 3 times of Interquartile Range (IQR) above the upper quartile (Q3), the value will be considered as extreme-outlier. Similarly, if a value is lower than the 3 times of IQR below the lower quartile (Q1), the value will be considered as extreme-outlier.  
+
+```sas
+IQR is interquartile range. It measures dispersion or variation. IQR = Q3 -Q1.
+Lower limit of acceptable range = Q1 - 3* (Q3-Q1)
+Upper limit of acceptable range = Q3 + 3* (Q3-Q1)
+```
+
+### SAS Macro : Detect and Remove Outliers  
+
+The following macro calculates the lower and upper limit values of acceptable range and removes the observations that are outside this range. It works for multiple variables.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/cdc682a9-26ef-4e3f-8ce8-21e4efb12b9c)  
+
+Updated - June17, 2016 - I have modified the code. The code works for removing outliers for multiple variables. For example, there are two continuous variables having extreme values. It will remove observations wherein extreme values exist. It can be same rows for both the variables or difference rows having extreme values for them.  
+
+```sas
+%macro outliers(input=, var=, output= );
+
+%let Q1=;
+%let Q3=;
+%let varL=;
+%let varH=;
+
+%let n=%sysfunc(countw(&var));
+%do i= 1 %to &n;
+%let val = %scan(&var,&i);
+%let Q1 = &Q1 &val._P25;
+%let Q3 = &Q3 &val._P75;
+%let varL = &varL &val.L;
+%let varH = &varH &val.H;
+%end;
+
+/* Calculate the quartiles and inter-quartile range using proc univariate */
+proc means data=&input nway noprint;
+var &var;
+output out=temp P25= P75= / autoname;
+run;
+
+/* Extract the upper and lower limits into macro variables */
+data temp;
+set temp;
+ID = 1;
+array varb(&n) &Q1;
+array varc(&n) &Q3;
+array lower(&n) &varL;
+array upper(&n) &varH;
+do i = 1 to dim(varb);
+lower(i) = varb(i) - 3 * (varc(i) - varb(i));
+upper(i) = varc(i) + 3 * (varc(i) - varb(i));
+end;
+drop i _type_ _freq_;
+run;
+
+data temp1;
+set &input;
+ID = 1;
+run;
+
+data &output;
+merge temp1 temp;
+by ID;
+array var(&n) &var;
+array lower(&n) &varL;
+array upper(&n) &varH;
+do i = 1 to dim(var);
+if not missing(var(i)) then do;
+if var(i) >= lower(i) and var(i) <= upper(i);
+end;
+end;
+drop &Q1 &Q3 &varL &varH ID i;
+run;
+%mend;
+
+%outliers(input=tt, var= age weight height, output= outresult);
+```
+
+## Test for Normal Distribution  
+
+In most of the statistical tests, you need check assumption of normality. There is a test called Shapiro-Wilk W test that can be used to check normal distribution. If the p-value is greater than .05, it means we cannot reject the null hypothesis that a variable is normally distributed.  
+
+### SAS Macro for Normality  
+
+The following SAS macro performs a test for normality on the variables X1 and X2 in the dataset "test". It uses the Shapiro-Wilk test and assigns a "Normal" or "Non-normal" status to each variable based on the p-value of the test.  
+
+```sas
+/*************************************************
+*input = dataset to check;
+*vars = Specify variable(s) for which you want to check normality;
+*output = dataset to output with normality status;
+**************************************************/
+
+%macro normal(input=, vars=, output=);
+
+ods output TestsForNormality = Normal;
+proc univariate data = &input normal;
+var &vars;
+run;
+ods output close;
+
+data &output;
+set Normal ( where = (Test = 'Shapiro-Wilk'));
+if pValue > 0.05 then Status ="Normal";
+else Status = "Non-normal";
+drop TestLab Stat pType pSign;
+run;
+%mend;
+
+%normal(input=test, vars=X1 X2, output=Normality);
+```
+
+## Reordering Variables  
+
+Suppose you have two datasets with same named variables. You want the order of the variables to be same in both the datasets.  
+
+### Let's create two datasets  
+
+```sas
+data abc;
+input a b c;
+cards;
+1 3 4
+2 4 5
+;
+run;
+
+data bac;
+input b a c;
+cards;
+1 3 4
+2 4 5
+;
+run;
+```
+
+### SAS Code : Reordering Variables  
+
+The code below fetches the column names from the table ABC in the WORK library using PROC SQL and store it in the macro variable "reorder". The RETAIN statement ensures that the order of the variables in the table bac to be same as ABC.  
+
+```sas
+proc sql noprint;
+select name
+into :reorder
+separated by ' '
+from dictionary.columns
+where libname="WORK" and
+memname="ABC"
+order by name;
+quit;
+
+data bac;
+retain &reorder.;
+set bac;
+run;
+```
+
+Note : Put library and dataset name in LIBNAME and MEMNAME (in caps) in the above code. RETAIN is used to reorder variables in a SAS dataset.  
 
 
 
