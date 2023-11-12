@@ -12541,6 +12541,2584 @@ Note : coalesce(of x4-x1) is equivalent to coalesce(x4, x3, x2, x1).
 In this case, COALESCE returns 85 as it is a first non-missing value (read from right to left) among x4= . , x3= 85, x2=89, x1= . .  
 
 
+# Advanced SAS Tutorials : Proc SQL
+
+These tutorials are ideal for people who are new to SQL programming. PROC SQL is an advanced SAS procedure for SQL. It allows us to run SQL queries.  
+
+## Proc SQL Tutorial for Beginners (20 Examples)  
+
+This tutorial is designed for beginners who want to get started with PROC SQL. Also, it will attempt to compare the techniques of SAS DATA step and PROC SQL.  
+
+### Syntax of PROC SQL  
+
+The syntax of PROC SQL is as follows:  
+
+```sas
+PROC SQL;
+  SELECT column(s)
+  FROM table(s) | view(s)
+  WHERE expression
+  GROUP BY column(s)
+  HAVING expression
+  ORDER BY column(s);
+QUIT;
+```
+
+The SQL statements must be specified in the following order:  
+
+SELECT: specifies the column(s) (variables) to be selected  
+FROM: specifies the table(s) (data sets) to be queried  
+WHERE: filters the data based on a condition  
+GROUP BY: classifies the data into groups based on the specified column(s)  
+HAVING: filters data with the GROUP BY clause.  
+ORDER BY: sorts the resulting rows (observations) by the specified column(s)  
+
+Note : SELECT FROM clauses are required. All the other clauses are optional.  
+
+PROC SQL statement calls the SQL procedure and QUIT statement ends the procedure.  
+
+To memorize the order of SQL queries, you can use the mnemonic "SFWGHO".  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9449e277-c4f9-4f03-a507-d86d0148acc5)  
+
+## Base SAS vs. PROC SQL  
+
+We are going to look at the difference between Base SAS and PROC SQL.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/952cf03d-67d8-42c7-8f98-5d947500d637)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/dd9c1eb7-ac2b-4733-af8a-8f0468a2adb9)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a4a29b32-bbd8-44dd-b31d-7ebf96528633)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2002f7c3-9b30-498c-b56d-bbddc4ca7666)  
+
+__Important Terminology__  
+
+You would hear the word 'schema' from SQL programmers. It refers to design of database. In other words, it is the framework of database.  
+
+### Sample Data  
+
+In the SAS program below, we are creating sample data for illustration purposes by extracting a few observations from the dataset "BWEIGHT" stored in the SASHELP library. mylib is a name of permanent library which we are creating. Make sure you change the directory location of libname.  
+
+```sas
+libname mylib '/home/deepanshu/';
+data mylib.outdata ;
+ set SASHELP.BWEIGHT (obs=1000);
+run;
+```
+
+### PROC SQL STATEMENTS  
+
+1. How to Select All Variables from Dataset
+
+```sas
+proc sql; 
+ select * 
+ from mylib.outdata;
+Quit; 
+```
+
+Asterisk (*) is used to select all columns (variables) in the order in which they are stored in the table.  
+
+Outdata is the table (data set) from which we need to select the columns (variables). It is stored in MYLIB library.  
+
+To display the list of columns to the SAS log, use FEEDBACK option in the PROC SQL statement.  
+
+```sas
+proc sql feedback; 
+ select * 
+ from mylib.outdata;
+Quit;
+```
+
+The SAS log is shown below:  
+
+ 71         proc sql feedback;
+ 72          select *
+ 73          from mylib.outdata;
+ NOTE: Statement transforms to:
+         select OUTDATA.Weight, OUTDATA.Black, OUTDATA.Married, OUTDATA.Boy, OUTDATA.MomAge, OUTDATA.MomSmoke, OUTDATA.CigsPerDay, 
+ OUTDATA.MomWtGain, OUTDATA.Visit, OUTDATA.MomEdLevel
+           from MYLIB.OUTDATA;
+ 74         Quit;  
+
+ ### 2. How to Select Specific Variables from Dataset  
+ 
+In the SELECT clause, multiple columns are separated by commas.  
+
+```sas
+proc sql; 
+ select weight,married 
+ from mylib.outdata;
+Quit;
+```
+
+In the SELECT clause, Weight and Married columns (variables) are specified so that we can select them from OUTDATA table (data set).  
+
+### 3. How to limit the number of rows  
+
+Suppose you want to limit the number of rows (observations) that PROC SQL displays, use the OUTOBS= option in the PROC SQL statement.  
+
+```sas
+proc sql outobs=50; 
+ select weight,married 
+ from mylib.outdata;
+Quit; 
+```
+
+### 4. How to Rename a Variable  
+
+Suppose you want to rename a variable, use the column alias AS option in the PROC SQL statement.  
+
+```sas
+options nolabel;
+proc sql; 
+ select weight,married as marriage
+ from mylib.outdata;
+Quit; 
+```
+
+The variable name has been renamed from married to marriage. options nolabel tells SAS not to use variable labels in SAS procedures. I used it so that you can see variable name has been changed to marriage.  
+
+### 5. How to Create a New Variable  
+
+Suppose you want to create a new variable that contains calculation.  
+
+```sas
+proc sql; 
+ select weight, (weight*0.5) as newweight
+ from mylib.outdata;
+Quit; 
+```
+
+A new variable has been created and named newweight which is calculated on the basis of the existing variable weight.  
+
+### 6. How to refer to a previously calculated variable  
+
+The keyword CALCULATED is used to refer a previously calculated variable.  
+
+```sas
+proc sql; 
+ select weight, (weight*0.5) as newweight, 
+CALCULATED newweight*0.25 as revweight
+ from mylib.outdata;
+Quit; 
+```
+
+### 7. How to Remove Duplicate Rows  
+
+The keyword DISTINCT is used to eliminate duplicate rows (observations) from your query results.  
+
+In the following program, we are asking SAS to remove all those cases where in duplicates exist on combination of both the variables - weight and married.  
+
+```sas
+proc sql;
+select DISTINCT weight, married
+from mylib.outdata;
+quit;
+```
+
+The DISTINCT * implies cases having same values in all the variables as a whole would be removed.  
+
+```sas
+proc sql;
+select DISTINCT *
+from mylib.outdata;
+quit;
+```
+
+### 8. How to Label and Format Variables  
+
+SAS-defined formats can be used to improve the appearance of the body of a report. You can also label the variables using LABEL keyword.  
+
+```sas
+options label;
+proc sql; 
+ select weight FORMAT= 8.2
+, married Label =" Married People"
+ from mylib.outdata;
+Quit; 
+```
+
+### 9. How to Sort Data  
+
+The ORDER BY clause returns the data in sorted order.  
+
+ASC option is used to sort the data in ascending order. It is the default option.  
+
+DESC option is used to sort the data in descending order.  
+
+```sas
+proc sql; 
+ select MoMAge, eight, married
+ from mylib.outdata
+ORDER BY weight ASC, married DESC;
+Quit;
+```
+
+### 10. How to Filter Data with WHERE clause  
+
+Use the WHERE clause with any valid SAS expression to subset data.  
+
+List of conditional operators :  
+
+#### 1. BETWEEN-AND  
+
+The BETWEEN-AND operator selects within an inclusive range of values.  
+
+Example : where salary between 4500 and 6000;  
+
+#### 2. CONTAINS or ?  
+
+The CONTAINS or ? operator selects observations by searching for a specified set of characters within the values of a character variable  
+
+Example : where firstname contains 'DE';  
+OR
+where firstname ? 'DE';  
+
+#### 3. IN  
+
+The IN operator selects from a list of fixed values.  
+
+Example : where state = 'NC' or state = 'TX';  
+
+The easier way to write the above statement would be to use the IN operator  
+
+where state IN ('NC','TX');  
+
+#### 4. IS MISSING or IS NULL  
+
+The IS MISSING or IS NULL operator selects missing values.  
+
+Example : where dateofbirth is missing  
+
+OR where dateofbirth is null  
+
+#### 5. LIKE  
+
+The LIKE Operator is used to select a pattern.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a4e9dcf3-2017-4d7f-998c-2ee4a0cc673c)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6887ba90-eaca-4ea4-ae5b-0ef4cb665b01)  
+
+__Important Point__ :  
+
+The WHERE clause can reference a previously calculated variable in two ways- 
+
+1. Use CALCULATED keyword.  
+2. Repeat the calculation in the WHERE clause.
+
+#### Method I :  
+
+```sas
+PROC SQL;
+ SELECT momage,
+ (WEIGHT * .01) AS NEWWEIGHT
+ FROM mylib.outdata
+ WHERE CALCULATED NEWWEIGHT > 5;
+QUIT;
+```
+
+#### Method II :  
+
+```sas
+PROC SQL;
+ SELECT momage, (WEIGHT * .01) AS NEWWEIGHT
+ FROM mylib.outdata
+ WHERE (WEIGHT * .01) > 5;
+QUIT;
+```
+
+### 11. How to Write Multiple Conditions/Criteria in PROC SQL  
+
+The CASE WHEN statement is used in SQL to perform conditional logic and return different values based on specified conditions. The END statement is required when using the CASE WHEN statement.  
+
+```sas
+PROC SQL;
+ SELECT WEIGHT,
+ CASE
+ WHEN WEIGHT BETWEEN 0 AND 2000 THEN 'LOW'
+ WHEN WEIGHT BETWEEN 2001 AND 3000 THEN 'MEDIUM'
+ WHEN WEIGHT BETWEEN 3001 AND 4000 THEN 'HIGH'
+ ELSE 'VERY HIGH'
+ END AS NEWWEIGHT
+ FROM mylib.outdata;
+QUIT;
+```
+
+The conditions within the CASE statement are as follows:  
+
+If the weight is between 0 and 2000 (inclusive), it is categorized as 'LOW'.  
+If the weight is between 2001 and 3000 (inclusive), it is categorized as 'MEDIUM'.  
+If the weight is between 3001 and 4000 (inclusive), it is categorized as 'HIGH'.  
+If the weight does not fall into any of the above ranges, it is categorized as 'VERY HIGH'.  
+
+The following operators can be used in CASE expression:  
+
+All operators that IF uses (=, <, >, NOT, NE, AND, OR, IN, etc)  
+BETWEEN AND  
+CONTAINS or '?' (wildcard operator)  
+IS NULL or IS MISSING  
+= *  
+LIKE  
+
+### 12. How to Summarize Data  
+
+Use GROUP BY clause to summarize or aggregate data. Summary functions are used on the SELECT statement to produce summary for each of the analysis variables.  
+
+```sas
+proc sql; 
+ select momage, COUNT(married) AS marriage 
+ from mylib.outdata
+GROUP BY momage;
+Quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/73279961-dc28-42f4-8e64-0c987ca438b8)  
+
+#### The summary functions available are listed below:  
+
+AVG/MEAN  
+COUNT/FREQ/N  
+SUM  
+MAX  
+MIN  
+NMISS  
+STD  
+VAR  
+T (t value)  
+USS (Uncorrelated Sum of Square)  
+CSS (Correlated Sum of Square)  
+RANGE  
+
+### 13. How to Filter Data within Groups  
+
+In order to subset data when grouping is in effect, the HAVING clause must be used.The variable specified in having clause must contain summary statistics.  
+
+```sas
+proc sql; 
+ select momage, weight, COUNT(married) AS marriage 
+ from mylib.outdata
+GROUP BY momage, weight
+HAVING marriage > 2;
+Quit;
+```
+
+__Important Point__ -  
+
+The WHERE clause cannot be used to subset aggregated data. To subset data with the GROUP BY clause you must use HAVING clause.  
+
+### 14. How to Create a New Table  
+
+The CREATE TABLE statement can be used to create a new data set as output instead of a report produced in output window.  
+
+SYNTAX  
+
+```sas
+PROC SQL;
+CREATE TABLE table-name AS
+SELECT column(s)
+FROM table(s) | view(s)
+WHERE expression
+GROUP BY column(s)
+ORDER BY column(s);
+QUIT;
+```
+
+```sas
+proc sql; 
+create table health AS 
+ select weight, married 
+ from mylib.outdata
+ORDER BY weight ASC, married DESC;
+Quit;
+```
+
+### 15. How to limit the number of rows in newly created dataset?  
+
+Suppose you want to limit the number of rows (observations) that PROC SQL produces in the data set, use the INOBS= option in the PROC SQL statement.  
+
+```sas
+proc sql INOBS=50; 
+create table health AS 
+select weight,married 
+ from mylib.outdata;
+Quit; 
+```
+
+#### Difference between INOBS= and OUTOBS=  
+
+INOBS controls how many records are read from the dataset and OUTOBS controls how many records are written. Run the following program and see the difference. Both returns different results.  
+
+```sas
+/* OUTOBS=Example*/
+proc sql outobs=2;
+select age, count(*) as tot
+from sashelp.class
+group by age;
+quit;
+/* INOBS= Example */
+proc sql inobs=4;
+select age, count(*) as tot
+from sashelp.class
+group by age;
+quit;
+```
+
+### 16. How to count unique values by a grouping variable  
+
+Suppose you are asked to calculate the unique number of age values by Sex columns using SASHELP.CLASS dataset.  
+
+You can use PROC SQL with COUNT(DISTINCT variable_name) to determine the number of unique values for a column.  
+
+```sas
+PROC SQL;
+CREATE TABLE TEST1 as
+SELECT Sex,
+Count(distinct Age) AS Unique_count
+FROM sashelp.class
+GROUP BY Sex;
+QUIT;
+```
+
+### 17. How to count the number of missing values  
+
+You can use NMISS() function to compute the number of missing values in a variable. The COUNT() function returns the number of non-missing values in a variable.  
+
+```sas
+data temp;
+input id;
+cards;
+1
+2
+.
+4
+5
+.
+;
+run;
+```
+
+```sas
+proc sql;
+select nmiss(id) as N_missings,
+count(id) as N,
+calculated N_missings + calculated N as total
+from temp;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f0fca357-9be3-4ee4-a56b-a68a64d9bba3)  
+
+How to refer to a calculated variable  
+
+The keyword CALCULATED is used to refer to a newly created variable for further calculation. In this case, we have used CALCULATED to sum 'N_MISSINGS' and 'N' variables.  
+
+### 18. KEEP and DROP some variables  
+
+Suppose you need to keep all the variables from SASHELP.CARS except variables 'MODEL' and 'MAKE'. The DROP= option is used to drop these two variables. Similarly, we can use KEEP= option to keep specific variables. These DROP= and KEEP= Options are not native SQL language. It only works in SAS.  
+
+```sas
+proc sql;
+create table saslearning (drop= make model) as
+select * from sashelp.cars;
+quit;
+```
+
+### 19. How to delete rows from a table  
+
+You can use DELETE FROM statement to remove records (rows) from a dataset.  
+
+```sas
+proc sql;
+delete from mylib.outdata
+where momage > 0;
+quit;
+```
+
+In this case, we are deleting all records having momage greater than 0 from outdata dataset. Log shows '478 rows were deleted from MYLIB.OUTDATA'.  
+
+### 20. How to use sub query in PROC SQL?  
+
+Suppose you need to find out employee IDs having records in the table named 'file1' but not in table 'file2'. In the code below, we are querying multiple tables (datasets).  
+
+```sas
+data file1;
+input ID age;
+cards;
+1 24
+2 34
+3 45
+4 67
+;
+run;
+data file2;
+input ID age;
+cards;
+1 25
+3 46
+4 62
+;
+run;
+Proc SQL;
+Select ID from file1
+Where ID not in (select ID from file2);
+Quit;
+```
+
+### 21. Sub Query - Example II  
+
+Find employee IDs whose age is in the average age +/- 10 years.  
+
+```sas
+Proc SQL;
+Select id from file1
+where age between (select Avg(age) from file1) - 10 and
+(select avg(age) from file1)+10;
+Quit;
+```
+
+### 22. Sub Query - Example III  
+
+In this example, the CASE statement is used to evaluate a condition: whether a student has a score below 70 in any test. To solve this, we have written a subquery that selects "Student_ID" from the "Tests" table where the "Score" is less than 70.  
+
+```sas
+proc sql;
+select Name,Grade,Teacher,
+Case
+When Student_ID in
+(select Student_ID from Tests where Score lt 70) then 'Failed one or more tests'
+else 'Passed all tests'
+end as Test_Results
+from Students;
+quit;
+```
+
+If the condition is true, the new column "Test_Results" is assigned the value 'Failed one or more tests.' If the condition is false, the value 'Passed all tests' is assigned to the "Test_Results" column. The result of the query will return the student's name, grade, teacher, and their test results.  
+
+## CASE WHEN Statement in PROC SQL  
+
+In this tutorial, we will see how to use CASE WHEN statement in SAS using PROC SQL.  
+
+In PROC SQL, you can use the CASE WHEN statement to perform conditional logic and manipulate data based on specified conditions. Let's understand the CASE WHEN statement in PROC SQL with examples.  
+
+In simple words, the CASE WHEN statement in SAS is similar to IF-ELSE statements in terms of conditional logic. Both allow you to perform different actions based on specified conditions.  
+
+### Syntax of CASE WHEN statement  
+
+Below is the syntax of CASE WHEN statement in PROC SQL.  
+
+```sas
+PROC SQL;
+  SELECT column1,
+         CASE
+           WHEN condition1 THEN expression1
+           WHEN condition2 THEN expression2
+           ...
+           ELSE expressionN
+         END AS new_column
+  FROM table;
+QUIT;
+```
+
+Example 1: Categorizing numerical values  
+
+Suppose you have users' data and you want to categorize them into "Minor" or "Adult". A minor is referred to as someone under the age of 18.  
+
+In this example, we used the CASE WHEN statement within the SELECT statement to create a new column called "AgeGroup" based on the specified conditions.  
+
+```sas
+DATA Users;
+  INPUT UserID $ Age;
+  DATALINES;
+AA01 15
+AA02 40
+AA03 17
+AA04 60
+AA05 30
+;
+RUN;
+```
+
+```sas
+PROC SQL;
+  SELECT Age,
+         CASE
+           WHEN Age < 18 THEN 'Minor'
+           WHEN Age >= 18 AND Age < 65 THEN 'Adult'
+           ELSE 'Senior'
+         END AS AgeGroup
+  FROM Users;
+QUIT;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f5e6a9dd-cc4e-40b8-b6fb-9be10345f81f)  
+
+To store the result in a new table, use CREATE TABLE statement. Please refer the code below where we have created a new table (dataset) called Users2.  
+
+```sas
+PROC SQL;
+CREATE TABLE Users2 as
+  SELECT Age,
+         CASE
+           WHEN Age < 18 THEN 'Minor'
+           WHEN Age >= 18 AND Age < 65 THEN 'Adult'
+           ELSE 'Senior'
+         END AS AgeGroup
+  FROM Users;
+QUIT;
+```
+
+### Example 2: Group categorical variables  
+
+Here we are categorizing products based on their category as follows:  
+
+If the category is 'Laptop' or 'TV', the product belongs to the 'Electronics' group.  
+If the category is 'Clothing' or 'Beauty', the product belongs to the 'Fashion' group.  
+Otherwise, the product belongs to the 'Home' group.  
+
+```sas
+/* Create the Products dataset */
+DATA Products;
+  INPUT ProductID $ Category $12.;
+  DATALINES;
+P001 Laptop
+P002 Clothing
+P003 Home
+P004 TV
+P005 Beauty
+;
+RUN;
+```
+
+```sas
+PROC SQL;
+  CREATE TABLE Products_Grouped AS
+  SELECT ProductID,
+         Category,
+         CASE
+           WHEN Category IN ('Laptop', 'TV') THEN 'Electronics'
+           WHEN Category IN ('Clothing', 'Beauty') THEN 'Fashion'
+           ELSE 'Home'
+         END AS ProductGroup
+  FROM Products;
+QUIT;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5250d8a1-bb75-49b6-8ba8-713d0e84f692)  
+
+### Example 3: How to use CALCULATED component in CASE WHEN Statement  
+
+The calculated component in SAS is used within a PROC SQL query to refer to a newly created variable for further calculation.  
+
+Here we are creating a new variable called "ExperienceBand" which categorizes employees based on their experience, indicating whether it is below 5 years, between 5 and 10 years, or 10 years and above.  
+
+```sas
+data Employees;
+input DateofJoining :yymmdd10.;
+format DateofJoining yymmddd10.;
+datalines;
+2019-04-25
+2009-05-26
+2023-03-02
+2017-05-11
+;
+run;
+```
+
+```sas
+PROC SQL;
+  CREATE TABLE Employees2 AS
+  SELECT DateofJoining,
+         intck('year', DateofJoining, today()) AS Experience,
+         CASE
+           WHEN calculated Experience < 5 THEN 'Below 5'
+           WHEN calculated Experience BETWEEN 5 AND 10 THEN '5-10'
+           ELSE '10+'
+         END AS ExperienceBand
+  FROM Employees;
+QUIT;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/45ab6462-3eeb-41e1-aa78-a635e19c94d4)  
+
+1) The expression intck('year', DateofJoining, today()) AS Experience calculates the number of years of experience for each employee by counting the number of years between their date of joining and the current date. The result is stored in a variable called "Experience."  
+
+2) The CASE statement evaluates the value of the "Experience" variable and assigns a corresponding band to the "ExperienceBand" variable. The categories are as follows:
+   
+If the calculated experience is less than 5 years, the "ExperienceBand" is set as 'Below 5'.  
+If the calculated experience is between 5 and 10 years (inclusive), the "ExperienceBand" is set as '5-10'.  
+If the calculated experience is greater than 10 years, the "ExperienceBand" is set as '10+'.  
+
+### Example 4: How to use CASE WHEN with Aggregate Functions  
+
+Below is an example of using CASE WHEN with aggregate functions in PROC SQL.  
+
+We want to calculate the total count of products, the count of expensive products (those with a price greater than 100), and the average price of the expensive products for each category.  
+
+```sas
+data products;
+   length category $20.;
+   input category $ price;
+   datalines;
+Electronics 150
+Electronics 80
+Clothing 120
+Clothing 50
+Electronics 200
+Clothing 90
+;
+run;
+```
+
+```sas
+PROC SQL;
+   SELECT category,
+          COUNT(*) AS total_count,
+          SUM(CASE WHEN price > 100 THEN 1 ELSE 0 END) AS count_expensive,
+          AVG(CASE WHEN price > 100 THEN price END) AS avg_expensive_price
+   FROM products
+   GROUP BY category;
+QUIT;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9f1527ff-afbc-4175-bce4-bd47cb18673b)  
+
+The CASE WHEN statement is used inside the SUM and AVG functions to count and calculate the average of the expensive products. If the price is greater than 100, it returns 1. Otherwise, it returns 0. The purpose of the SUM(CASE WHEN ...) is to count the number of rows that meet a specific condition. In this case, it counts the number of times the price column is greater than 100 by summing the values of 1 generated by the CASE WHEN statement. By grouping the results by category, we get the count of expensive products, and average price of expensive products for each category.  
+
+## Proc SQL Joins (Merging)  
+
+This tutorial is designed for beginners who want to get started with PROC SQL Joins. It explains different types of joins and the equivalent data step merge code for these joins. This tutorial includes several examples to help you practice and become proficient in PROC SQL Joins.  
+
+### Advantages of PROC SQL Joins over Data Step Merging  
+
+PROC SQL joins do not require sorted tables (data sets), while you need to have two data sets sorted when using Merge Statement  
+PROC SQL joins do not require that common variable have the same name in the data sets you are joining, while you need to have common variable name listed in BY option when using MERGE statement.  
+PROC SQL joins can use comparison operators other than the equal sign (=).  
+PROC SQL can handle many to many relationship well whereas Data Step Merge do not.  
+
+### 1. Cross Join / Cartesian product  
+
+The Cartesian product returns a number of rows equal to the product of all rows (observations) in all the tables (data sets) being joined. For example, if the first table has 10 rows and the second table has 10 rows, there will be 100 rows (10 * 10) in the merged table (data set).  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/025df18b-d51d-450b-86b6-b3cf36c4213f)  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/cc5d2aa8-9efe-4393-8bbb-e59e1c72d627)  
+
+### Create Sample Datasets  
+
+Let's create the two sample datasets that will be used in this tutorial to explain how to use JOINS in SAS.  
+
+```sas
+Data A;
+Input ID Name$ Height;
+cards;
+1 A 1
+3 B 2
+5 C 2
+7 D 2
+9 E 2
+;
+run;
+```
+
+```sas
+Data B;
+Input ID Name$ Weight;
+cards;
+2 A 2
+4 B 3
+5 C 4
+7 D 5
+;
+run;
+```
+
+The following code shows how to apply Cartesian Product using PROC SQL in SAS.  
+
+```sas
+PROC SQL;
+Create table dummy as
+Select * from A as x cross join B as y;
+Quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d3292bbc-0714-4b69-a14a-0dcbe56bee45)  
+
+### Key takeaways  
+
+Since the first data set has 5 rows and the second data set has 4 rows, there are 20 rows (5 * 4) in the merged data set.  
+The 'as' keyword (aka alias) is used to assign a table a temporary name.  
+Since the ID values of the first data set is different than the ID values of the second data set, the ID given in the joined data set is misleading.  
+
+### 2. Inner Join  
+
+The INNER JOIN returns rows common to both tables (data sets). If we select * keyword in the query, the final merged file would have number of columns equal to (Common columns in both the data sets + uncommon columns from data set A + uncommon columns from data set B).  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/0e00bcb9-cd07-4ee3-bec3-5e5eb5048e08)  
+
+```sas
+PROC SQL;
+Create table dummy as
+Select * from A as x, B as y
+where x.ID = y.ID;
+Quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5748f243-0727-4386-8d92-b4b7f163b441)  
+
+### Explanation  
+
+Since the above case is of type INNER JOIN, it returns values 5 and 7 from the variable ID in the combined table as these two values are common in both the datasets A and B  
+
+### Another way to write the above code -  
+
+```sas
+PROC SQL;
+Create table dummy as
+Select * from A as x inner join B as y
+On x.ID = y.ID;
+Quit;
+```
+
+Both the codes produce same result.  
+
+### Inner Join : Data Step Code  
+
+```sas
+Data dummy;         
+Merge A (IN = X) B (IN=Y);
+by ID;
+If X and Y;
+run;
+```
+
+### 3. Left Join  
+
+The LEFT JOIN returns all rows from the left table with the matching rows from the right table.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/45ae698b-73a6-43d7-a61c-f74a29fe7f0a)  
+
+```sas
+PROC SQL;
+Create table dummy as
+Select * from A as x left join B as y
+On x.ID = y.ID;
+Quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5b901e4b-d33b-4719-8d2b-17245e7cf16f)  
+
+### Explanation  
+
+Since the above case is of type LEFT JOIN, it returns all rows from the table (dataset) A with the matching rows from the dataset B.  
+
+### Left Join : Data Step Code  
+
+```sas
+Data dummy;         
+Merge A (IN = X) B (IN=Y);
+by ID;
+If X ;
+run;
+```
+
+### 4. Right Join  
+
+The RIGHT JOIN returns all rows from the right table that do not match any row with the left-hand table, and the matched rows from the left-hand table.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/88897faf-b444-4112-b490-586f64a7ca51)  
+
+```sas
+PROC SQL;
+Create table dummy as
+Select * from A as x right join B as y
+On x.ID = y.ID;
+Quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/4f77b7c0-9f4c-4205-aeb1-9606a8fde48b)  
+
+Note : The right-hand table ID values are missing in the merged table. To add the missing right hand table ID values to a right join, you can use the SQL COALESCE function. The COALESCE function returns the first non-missing argument.  
+
+```sas
+proc sql;
+create table dummy as
+select coalesce (x.ID,y.ID) as ID, coalesce (x.name,y.name) as name,height,weight
+from a as x right join b as y
+on x.id = y.id;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/69efc959-980d-44f8-b497-4a6b337b9057)  
+
+### Explanation  
+
+Since the above case is of type RIGHT JOIN, it returns all rows from the table (dataset) B with the matching rows from the dataset A.  
+
+### Right Join : Data Step Code  
+
+```sas
+Data dummy;         
+Merge A (IN = X) B (IN=Y);
+by ID;
+If Y ;
+run;
+```
+
+### 5. Full Join  
+
+The FULL JOIN returns all rows from the left table and from the right table.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/30c64168-d872-41d1-b3fe-1543bc7ef31d)  
+
+Key takeaway : The FULL JOIN suffers the same difficulty as the RIGHT JOIN. Namely, the common variable values are lost from the right-hand data set. The COALESCE function can solve this difficulty.  
+
+```sas
+proc sql;
+create table dummy as
+select coalesce (x.ID,y.ID) as ID, coalesce (x.name,y.name) as name,height,weight
+from a as x full join b as y
+on x.id = y.id;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/ec74d479-ec57-4e79-981f-c6554b99193c)  
+
+### Explanation  
+
+Since the above case is of type FULL JOIN, it returns all rows from the table (dataset) A and B.  
+
+### Full Join : Data Step Code  
+
+```sas
+Data dummy;         
+Merge A B;
+by ID;
+run;
+```
+
+By default, MERGE statement performs full join so IN variables are not required.  
+
+### One to Many Relationship : Duplicate Values in Primary Key  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f8f23f34-33e2-444b-8ed5-2bc4024693f9)  
+
+SQL Join will return Cartesian Product if duplicate values are found in primary key (common column). In this example, it returns cartesian product of missing values in the "ID" column. Since dataset A has 3 missing values and dataset B has 1 missing value, there are 3 (3*1) missing values in the merged dataset.  
+
+Data Step MERGE statement will return the maximum number of missing values in the primary key in both the tables. In this case, it would return 3 missing values i.e. max(3,1).  
+
+### Example 2 : One to Many Relationship  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/42fb672a-c5a3-4edc-adee-039651b53843)  
+
+How about six rows of value 5 in the combined table?  
+
+When duplicates, PROC SQL returns cartesian product i.e. product of both the tables. In dataset A, we have 2 5s and 3 5s in dataset B. So, it returns (2x3 = 6) 5s in the combined table.  
+
+### How to refer to permanent library in PROC SQL Joins  
+
+In PROC SQL, you can refer to permanent libraries when performing joins by specifying the library and table names - library_name.table_name. See the example below.  
+
+```sas
+PROC SQL;
+Create table dummy as
+Select * from readin.A as x left join readin.B as y
+On x.ID = y.ID;
+Quit;
+```
+
+## Combining Tables Vertically with PROC SQL  
+
+This tutorial explains how to combine / append data sets vertically with PROC SQL. Suppose you have two data sets and we need to combine these two datasets vertically. For example, if a dataset A contains 10 records and dataset B contains 10 records. I want combined dataset would contain 20 records.  
+
+### Create data sets in SAS  
+
+```sas
+data dat1;
+input x y;
+cards;
+1 6
+1 6
+1 7
+6 4
+7 6
+8 7
+;
+run;
+data dat2;
+input x z;
+cards;
+1   5
+4   2
+3   4
+6   4
+6   5
+5   8
+;
+run;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/fef63ac7-7a12-4d59-8f64-45ed8a49e282)  
+
+### 1. UNION Operator  
+
+It displays all rows from both the tables and removes duplicate records from the combined dataset. By adding ALL keyword, it allows duplicate rows in the combined dataset.  
+
+__Important Point__ 
+
+UNION is performed by position not by column name. Hence, common columns in each SELECT statement should be in the same order.  If CORR keyword is included, PROC SQL matches the columns by name.  
+
+__ALL Keyword__  
+
+ALL keyword allows duplicates in the concatenated dataset.  
+ 
+__CORR Keyword__  
+
+CORR keyword tells SAS to match the columns in table by name and not by position. Columns that do not match by name are excluded from the result table, except for the OUTER UNION operator  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b1f4fb85-be8b-46d3-9678-4e0087779c1b)  
+
+```sas
+proc sql;
+create table out7 as
+select *
+from dat1
+UNION
+select *
+from dat2;
+quit;
+```
+
+```sas
+proc sql;
+create table out8 as
+select *
+from dat1
+UNION ALL
+select *
+from dat2;
+quit;
+```
+
+```sas
+proc sql;
+create table out9 as
+select *
+from dat1
+UNION CORR
+select *
+from dat2;
+quit;
+```
+ 
+### 2. OUTER UNION CORR  
+
+It appends (concatenates) two tables. It is equivalent to SET statement in Data Step. It allows duplicates in the concatenated table. The ALL keyword is not required with OUTER UNION.  
+
+```sas
+proc sql;
+create table out10 as
+select *
+from dat1
+OUTER UNION CORR
+select *
+from dat2;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6dc82a62-3ead-4225-b63f-e540c0ab7017)  
+
+### 3. Except Operator  
+
+It returns unique rows from the first query that are not found in the second query. (Non matched Rows). It removes duplicate records (where all columns in the results are the same) - row 2nd in table1.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/325fe135-6637-48aa-a419-e307d56f31ef)  
+
+```sas
+proc sql;
+create table out1 as
+select *
+from dat1
+EXCEPT
+select *
+from dat2;
+quit;
+```
+
+### Except ALL  
+
+It allows duplicate records in the combined dataset and does not remove duplicates.  
+
+```sas
+proc sql;
+create table out2 as
+select *
+from dat1
+EXCEPT ALL
+select *
+from dat2;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c6f4e98b-1365-4fbd-a724-c54e16a6a6be)  
+
+### Except CORR  
+
+It displays only columns that have the same name (or common) in both the tables.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/c89aa4a0-b889-4691-88ff-9d2d49c2f558)  
+
+It returns all unique rows in the first table (based on the common column) that do not appear in the second table.  
+
+```sas
+proc sql;
+create table out3 as
+select *
+from dat1
+EXCEPT CORR
+select *
+from dat2;
+quit;
+```
+
+### Except ALL CORR  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/f9a71bd7-b57f-43e4-b55b-9d0d2faec4bc)  
+
+### 4. INTERSECT Operator  
+
+It selects unique rows that are common to both the tables.  
+
+```sas
+proc sql;
+create table out5 as
+select *
+from dat1
+INTERSECT
+select *
+from dat2;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2cbd2bd0-c5bb-4c4c-a235-ca202968c95d)  
+
+## Insert Rows in the Table  
+
+This tutorial explains how to insert or add rows in the same table. It can be easily done with INSERT INTO statement of PROC SQL.  
+
+### Create a dataset  
+
+```sas
+data temp;
+set sashelp.class;
+run;
+```
+
+### 1. Insert Rows based on Column Position  
+
+With the VALUES clause and INSERT statement, we can assign values to columns by their positions. In the example below, "Sam" would be added to the first column, "M" added to the second column, "28" added to the third column and so on. Multiple VALUES clauses implies multiple rows to be added into the table.  
+
+```sas
+PROC SQL;
+INSERT INTO temp
+VALUES ("Sam","M",28,75,100)
+VALUES ("Sam2","M",58,55,70);
+QUIT;
+```
+
+See the log shown in the image below -   
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/9b1ab28a-aec1-4fa3-80b0-ffa1968780b8)  
+
+### 2. Insert Rows based on Column Name  
+
+We can also define columns and values assigned to them only. Values of all the columns that are not defined would be assigned missing.  
+
+```sas
+PROC SQL;
+INSERT INTO temp (name,sex)
+VALUES ("Sam","M");
+QUIT;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/0341aaad-beb7-4245-8efe-c52c05bc3e9c)  
+
+### 3. Insert Rows with a Query  
+
+We can also add rows with a query. In the example below, we are appending rows to the table by extracting data from the other table.  
+
+```sas
+proc sql;
+insert into newclass
+select * from class
+where score > 150;
+quit;
+```
+
+### 4. Create Sample Data with PROC SQL  
+
+The DATALINES statement with an INPUT statement in DATA STEP is used to read data that you enter directly in the program. In PROC SQL, you can do the same with CREATE TABLE and INSERT INTO statement.  
+
+```sas
+proc sql;
+create table list
+(ID num(10), Gender char(1),Salary num,
+DateOfBirth num informat=date7. format=date7.);
+insert into list
+values(12345,'F',42260,'21JAN01'd)
+values(23456,'M',61090,'26JAN54'd);
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6b1b0223-ebf2-4d1b-ab80-6542e2b4bd26)  
+
+### 5. Add Constraints in the Table  
+
+We are adding constraints that values of ID variable should be unique (Primary Key), "area" variable contain only two values - USA and India, samplesize should be greater than 0.  
+
+```sas
+proc sql;
+create table example
+(ID num(15),
+samplesize num,
+area  char(15) NOT NULL,
+constraint prim_key    primary key(ID),
+constraint samplesize  check(samplesize gt 0),
+constraint area   check(area in ('USA', 'India')));
+quit;
+```
+
+Let's insert two rows  
+
+```sas
+proc sql;
+insert into example
+values(12345,42260,'India')
+values(12345,61090,'USA');
+quit;
+```
+
+It returns error due to duplicate values in a variable that have a constraint of primary key.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/34cd8f2d-2198-4e0e-9975-bccc3f910204)  
+
+### 6. Create a blank table  
+
+We can create a blank table by copying the structure of existing table  
+
+```sas
+PROC SQL;
+CREATE TABLE EXAMPLE2 LIKE TEMP;
+QUIT;
+```
+
+### 7. See the structure of table  
+
+The DESCRIBE table is an alternative to PROC CONTENTS. It displays the structure of table - how table was created and format of variables.  
+
+```sas
+PROC SQL;
+DESCRIBE TABLE EXAMPLE2;
+QUIT;
+```
+
+## Alter Table and Update Column  
+ 
+This tutorial explains how to add or delete columns in a table and update column values with PROC SQL.  
+
+The ALTER TABLE statement is used to add new columns, delete existing columns or modifying the format of columns.  
+
+The UPDATE statement is used to modify existing column values in a table.  
+
+__Create a Dataset__  
+
+```sas
+data temp;
+set sashelp.class;
+run;
+```
+
+### ALTER TABLE Syntax  
+
+Below is the syntax of ALTER TABLE in PROC SQL procedure in SAS.  
+
+```sas
+ALTER TABLE table-name
+ADD CONSTRAINT constraint-name constraint-definition
+ADD column-definition
+DROP CONSTRAINT constraint-name
+DROP column(s)
+DROP FOREIGN KEY constraint-name
+DROP PRIMARY KEY
+MODIFY column-definition
+```
+
+### Example 1 : Adding Columns  
+
+In the following program, we are adding 3 columns - Section as character variable, TotalMarks as numeric variable, DateOfBirth as Date format variable. The new columns would be blank.  
+
+```sas
+PROC SQL;
+ALTER TABLE temp ADD Section CHAR (10), TotalMarks NUM (8),
+DateOfBirth num informat=date7. format=date7.;
+QUIT;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7ba0cf6d-9718-45a2-9e67-c0039a2f2f0c)  
+
+### Example 2 : Add Values in New Columns  
+
+The UPDATE statement is used to add or update values in columns. In this case, we are updating rows wherein age is less than 15.  
+
+```sas
+PROC SQL;
+UPDATE temp SET Section='Section A', TotalMarks=100, DateOfBirth='22OCT99'D where age < 15;
+QUIT;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/4ebe48b3-4b81-4217-9a7d-e5a868b55c27)  
+
+### Example 3 : Conditional Update Statement  
+
+We are adding 5 to column Height if age is less than or equal to 15. If age is greater than 15, height should be added by 10. In other words, we are using IF THEN ELSE conditions in UPDATE statement.  
+
+```sas
+PROC SQL;
+UPDATE temp
+SET Height =
+CASE WHEN age <= 15 THEN Height + 5
+WHEN age > 15 THEN Height + 10
+ELSE HEIGHT
+END;
+QUIT;
+```
+
+### Example 4 : Update Multiple Columns  
+
+We can update multiple columns with UPDATE statement like the programs written below -  
+
+```sas
+PROC SQL;
+ALTER TABLE temp ADD min_age num , min_height num;
+UPDATE temp
+SET min_age = (SELECT MIN(age) FROM temp2),
+min_height = (SELECT MIN(height) FROM temp2); 
+QUIT;
+```
+
+```sas
+PROC SQL;
+UPDATE temp SET Section='SectionB', DateOfBirth='22OCT02'D where age<15;
+UPDATE temp SET Section='SectionA', DateOfBirth='22OCT99'D where age>=15;
+QUIT;
+```
+
+### Example 5 : Modify the column attributes  
+
+We can modify the column format with MODIFY statement.  
+
+```sas
+PROC SQL;
+ALTER TABLE temp
+MODIFY totalmarks DECIMAL(8,2) format=8.2;
+quit;
+```
+
+### Example 6 : Delete Columns  
+
+```sas
+PROC SQL;
+ALTER TABLE temp DROP totalmarks, section;
+QUIT;
+```
+
+### Example 7 : Adding NOT NULL Constraint  
+
+We are preventing missing values in a column using NOT NULL Contraint.  
+
+```sas
+PROC SQL;
+ALTER TABLE TEMP
+ADD CONSTRAINT NOT_NULL_WEIGHT NOT NULL(WEIGHT);QUIT;
+```
+
+### Example 8 : Adding CHECK Constraint  
+
+We are validating column values with CHECK constraint.See the example below -  
+
+```sas
+PROC SQL;
+ALTER TABLE PRODUCTS
+ADD CONSTRAINT CHECK_SECTION
+CHECK (SECTION IN ('Section A', 'Section B'));
+QUIT;
+```
+
+### Example 9 : Allowing only UNIQUE values  
+
+We are not allowing duplicate values in a column.  
+
+```sas
+PROC SQL;
+CREATE TABLE TEMP3
+(ID NUM UNIQUE,
+STATE CHAR(20));
+QUIT;
+```
+
+### Example 10 : Creating a Primary Key  
+
+The PRIMARY KEY constraint uniquely identifies each record in a table.  
+
+```sas
+PROC SQL;
+ALTER TABLE TEMP3
+ADD CONSTRAINT PRIM_KEY PRIMARY KEY (ID);
+QUIT;
+```
+
+## Intermediate PROC SQL Tutorial  
+
+This article explains practical applications of SQL queries using PROC SQL along with examples. PROC SQL is a SAS programming procedure that allows users to execute SQL queries within SAS programs. The article showcases how SQL queries can be applied in real-world scenarios using PROC SQL.  
+
+### Example 1 : Count Cases Where Condition is TRUE
+
+The input data is shown below. Suppose you are asked to calculate the number of Ys and Ns of column Z by column X.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2d8e7ee2-1f87-4ca1-bdcc-4a691c584540)  
+
+```sas
+data xyz;
+input x y$ z$;
+cards;
+1 23 Y
+1 24 N
+1 25 Y
+2 21 Y
+2 22 Y
+3 25 N
+3 36 Y
+;
+run;
+```
+
+```sas
+proc sql noprint;
+create table tt as
+select x,
+sum(case when z= "Y" then 1 else 0 end) as z_Y,
+sum(case when z= "N" then 1 else 0 end) as z_N
+from xyz
+group by x;
+quit;
+```
+
+### Example 2 : Creating trend variables  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/48d6b622-b682-4c60-965b-02e10c3ace34)  
+
+```sas
+data example1;
+input ID Months Revenue Balance;
+cards;
+101 1 3 90
+101 2 33 68
+101 3 22 51
+101 4 3 90
+101 5 33 65
+101 6 22 54
+102 1 100 18
+102 2 58 62
+102 3 95 97
+102 4 100 18
+102 5 58 65
+102 6 95 92
+;
+```
+
+Task : Calculate total revenue and total balance accumulated in the first 3 months and how much the data spreads in the first 3 months time period.  
+
+```sas
+proc sql noprint;
+create table output1 as
+select ID,
+sum(case when 1 <= Months <= 3 then Revenue else . end) as Rev_1_3,
+sum(case when 1 <= Months <= 3 then Balance else . end) as Bal_1_3,
+var(case when 1 <= Months <= 3 then Revenue else . end) as Var_Rev_1_3,
+var(case when 1 <= Months <= 3 then Balance else . end) as Var_Bal_1_3
+from example1
+group by ID;
+quit;
+```
+
+Output :  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/50ba30d2-d150-49ce-8cc4-d1939bc3837a)  
+
+### Example 3 : Check the Status Flag between the start date and end date  
+
+```sas
+DATA dates;
+INPUT ID Period : date9. Status $;
+FORMAT Period date9.;
+CARDS;
+1 13may2000 Y
+1 17oct1999 Y
+1 03feb2001 N
+1 28feb2001 N
+2 10nov2000 Y
+2 25apr2001 N
+3 03jun1997 Y
+3 14jan2001 Y
+3 24oct1998 N
+3 27aug2000 N
+;
+RUN;
+```
+
+```sas
+proc sql;
+select a.ID , a.Period as Start_Date, b.Period as End_Date,
+a.Status as Status_Start, b.Status as Status_End
+from dates a left join
+(select * from dates group by ID having Period = max(Period)) b
+on a.ID = b.ID
+group by a.ID
+having a.Period = min(a.Period);
+quit;
+```
+
+### Example 4 : Calculate Percentage Change between the first and last row  
+
+```sas
+data temp;
+input ID time $ x1-x3;
+cards;
+1 Y1 85 85 86
+1 Y2 80 79 70
+1 Y3 78 77 87
+2 Y1 79 79 79
+2 Y2 83 83 85
+;
+run;
+```
+
+```sas
+data temp2;
+set temp;
+retain Serial 0;
+If first.ID then Serial = 1;
+else Serial = Serial + 1;
+by ID;
+run;
+```
+
+```sas
+proc sql noprint;
+create table t2 as
+select a.ID, (a.x1-b.x1)/b.x1 *100 as change
+from temp2 a left join
+(select ID, x1 from temp2
+ group by ID
+ having serial = min(serial)) b
+on a.ID = b.ID
+group by a.ID
+having serial = max(serial);
+quit;
+```
+
+### Example 5 : Extract First and Last Observation within a Group  
+
+PROC SQL : Alternative to First. Statement  
+
+```sas
+proc sql;
+create table output2 (drop=n) as
+select *, monotonic() as n
+from example1
+group by ID
+having min(n) = n;
+quit;
+```
+
+PROC SQL : Alternative to Last. Statement  
+
+```sas
+proc sql;
+create table output2 (drop=n) as
+select *, monotonic() as n
+from example1
+group by ID
+having max(n) = n;
+quit;
+```
+
+### Example 6 : Self Join  
+
+Suppose you have data for employees. It comprises of employees' name, ID and manager ID. You need to find out manager name.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/4347f791-60a7-462c-8731-27c2383ad143)  
+
+```sas
+data example2;
+input Name $ ID ManagerID;
+cards;
+Smith 123 456
+Robert 456  .
+William 222 456
+Daniel 777 222
+Cook 383 222
+;
+run;
+```
+
+### SQL Query : Self Join
+
+```sas
+proc sql;
+create table want as
+select a.*, b.Name as Manager
+from example2 as a left join example2 as b
+on a.managerid = b.id;
+quit;
+```
+
+### Example 7 : Capping Extreme Values  
+
+Suppose you need to cap values of a column.  
+
+```sas
+data have1;
+input x y z;
+cards;
+101  1 10
+102  2 20
+103  3 45
+104  1 23
+105  2 42
+106  3 46
+107  1 61
+109  2 22
+110  3 28
+111  1 30
+112  2 32
+113  3 39
+;
+run;
+proc sql noprint;
+create table output2 (drop=z rename= (z1=z))  as
+select *, case when z >=  40 then 40 else z
+end as z1 from have1;
+quit;
+```
+
+### First cap values of column z and then sum all the z values by column y.  
+
+```sas
+proc sql;
+select sum(z1) as OutCol
+from (select *, case when z >=  40 then 40 else z
+end as z1 from have1)
+group by y;
+quit;
+```
+
+### Example 8 : Select All Excluding 1 Variable  
+
+```sas
+proc sql;
+create table want (drop=x) as
+select a.*,b.*
+from dat1 a, dat2 (rename=(id=x)) b
+where a.id = b.x;
+quit;
+```
+
+### Example 9 : Sub Query - ANY and ALL Operators  
+
+ANY operator: Selects values that pass the comparison test with any of the values returned by the sub-query.  
+
+ALL operator: Selects values that pass the comparison test with all of the values returned by the sub-query.  
+
+```sas
+data jansale;
+input sale id;
+cards;
+100 1
+105 2
+108 3
+110 4
+;
+run;
+data febsale;
+input sale id;
+cards;
+120 1
+105 2
+118 3
+117 4
+;
+run;
+```
+
+```sas
+proc sql;
+select *
+from jansale
+where sale < all (select sale from febsale);
+quit;
+proc sql;
+select *
+from jansale
+where sale < any (select sale from febsale);
+quit;
+```
+
+## Proc SQL Self Joins  
+
+This tutorial explains how to apply self join in SQL query.  
+
+### Example 1 : Find out Manager  
+
+Suppose you have data for employees. It comprises of employees' name, ID and manager ID. You need to find out manager name against each employee ID.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/7441cc7a-0d08-42d7-9326-11067d1ee2f4)  
+
+```sas
+data example2;
+input Name $ ID ManagerID;
+cards;
+Smith 123 456
+Robert 456  .
+William 222 456
+Daniel 777 222
+Cook 383 222
+;
+run;
+```
+
+### SQL Query : Self Join  
+
+```sas
+proc sql;
+create table want as
+select a.*, b.Name as Manager
+from example2 as a left join example2 as b
+on a.managerid = b.id;
+quit;
+```
+
+### Example 2 : Find out Manager of Manager  
+
+Suppose you have data for employees. It comprises of employees' name, ID and manager ID. You need to find out manager of manager's name against each employee ID.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/d14af526-4edb-4383-8e1e-d4248189a457)  
+
+```sas
+data example22;
+input Name $ ID ManagerID;
+cards;
+Smith 123 456
+Robert 456 777
+William 222 123
+Daniel 777 .
+Cook 383 456
+;
+run;
+proc sql;
+create table want as
+select a.Name, a.ID, a.managerid, b.ManagerID as ManagerofManagerID
+from  example22 a left join example22 b
+on a.managerid = b.id;
+quit;
+proc sql;
+create table want2 as
+select a.*, b.Name as ManagerofManagerName
+from want as a left join want as b
+on a.ManagerofManagerID = b.id;
+quit;
+```
+
+### Example 3 : Find out Grand Son  
+
+```sas
+data example22;
+input Parent $ Child $;
+cards;
+A1  B1
+A2  B3
+B1  C1
+C1  D2
+B3  C3
+;
+run;
+proc sql;
+create table want as
+select a.Parent as GrandParent, b.Child as GrandChild
+from  example22 a left join example22 b
+on a.child = b.parent;
+quit;
+```
+
+## Connect to Teradata using SAS  
+
+This tutorial explains how to connect to teradata using SAS. It is an efficient approach to work with teradata tables as we are telling SAS to connect to teradata and run the code in the teradata server directly.  
+
+### Write queries with Teradata SQL syntax  
+
+In simple words, we are creating Teradata SQL statements and then pass them to the Teradata server for execution. Only Teradata SQL functions would work within "connection to teradata" code. For example, INPUT PUT functions would not work. Instead, cast function would be used for changing variable type.  
+
+```sas
+proc sql;
+   connect to teradata (user="youruserid" password="yourpassword" server="servername" mode=teradata);
+   create table temp as
+   select * from connection to teradata (
+      select a.ID
+           , a.Product
+           , b.Income
+      from tdbase.customer a
+      join tdbase.income b
+      on a.ID=b.ID
+      );
+  disconnect from teradata;
+quit;
+```
+
+Note :  
+
+user = provide username of your teradata account.  
+password =  provide password of your teradata account.  
+server = provide server name  
+
+### Creating Teradata Volatile Tables  
+
+The EXECUTE BY teradata method works for creating volatile tables.   
+
+```sas
+proc sql;
+ connect to teradata (user="youruserid" password="yourpassword" mode=teradata  server="servername" connection=global);
+ execute(
+ create volatile table temp as (
+ select id
+ , region
+ , sector
+ , income
+ from ls_policy_inter
+ group by 1,2
+ )
+ with data primary index (id)
+ on commit preserve rows
+ ) by teradata;
+quit;
+```
+
+### Important Teradata Functions inside SAS  
+
+Many teradata statements and functions work only inside EXECUTE BY teradata method. For example, RENAME teradata table does not work without EXECUTE BY.  
+
+The following code would work using with or without EXECUTE BY function.  
+
+qualify rank() over ( partition by region order by income desc ) = 1  
+
+QUALIFY - similar to HAVING clause  
+RANK()- rank values  
+OVER - define the criteria  
+PARTITION - similar to GROUP BY  
+ROW_NUMBER - row number (similar to _N_ in data step)  
+
+### Second Method to Use Teradata Table in SAS  
+
+We can also access to teradata table with LIBNAME statement. In this case, we are not hitting teradata server and sql query would be run on sas environment,  
+
+#### Libname Statement for Teradata  
+
+```sas
+libname foo teradata server="servername" user=”youruserid” password=”yourpassword”;
+```
+
+Note : In the code above, foo is a library name in which teradata table would be stored.  
+ 
+### How to access teradata volatile tables in SAS  
+
+Suppose you are writing a lengthy code in which you need to create a lot of volatile tables and access these tables in the following (subsequent) steps in SAS.  
+
+Step 1 : Prior to creating volatile table, you first have to create a reference of your library with libname statement and including CONNECTION=GLOBAL and DBMSTEMP=YES options.  
+
+Check out the code below :  
+
+```sas
+libname tdref  teradata user="userid" password="password" mode=teradata server="servername"
+connection=global dbmstemp=yes;
+```
+
+Step 2 : Create the volatile table with EXECUTE BY teradata method. See the detailed code specified in the article above.   
+
+Step 3 : Look at the volatile table that you created in TDREF library. You can refer these tables in the later SAS code as TDREF.DATASET-NAME  
+
+### Which method is more efficient?  
+
+The first method "CONNECT TO TERADATA" is more efficient than the second method - LIBNAME statement as the first method hits the tables in teradata server and it would take less execution time. However, the sas functions such as INPUT, PUT, INTCK etc do not work inside the CONNECT TO TERADATA sql query. In the second method : LIBNAME Statement, all the sas functions and data step work.  
+
+## Join on Multiple Columns  
+
+This post explains how to join two data sets (tables) based on multiple variables (columns) in SAS.  
+
+### Creating two data sets (tables)  
+
+Let's create two SAS datasets for demonstration purposes.  
+
+```sas
+data def;
+input a b $ d;
+cards;
+123 X 5
+441 D 2
+;
+run;
+
+data abc;
+input a b $ c;
+cards;
+123 A 5
+123 B 6
+123 X 8
+441 C 2
+441 D 5
+;
+run;
+```
+
+Task : Suppose you need to join these two data sets (tables) based on variables a and b.  
+
+### Method 1 : SQL Joins  
+
+The following PROC SQL code performs a SQL join operation between two tables "def" (aliased as "x") and "abc" (aliased as "y") based on the conditions that the columns "a" and "b" are equal in both tables. It creates a table named "xyz".  
+
+```sas
+proc sql noprint;
+create table xyz as
+select * from
+def x left join abc y
+on x.a = y.a and x.b = y.b;
+quit;
+```
+
+### Method 2 : Data Step Merge Statements  
+
+The following SAS code uses the merge statement to combine data from two input datasets, "def" and "abc", based on the common variables "a" and "b".  
+
+```sas
+data xyz1;
+merge def(in=x) abc(in=Y);
+by a b;
+if x;
+run;
+```
+
+Output  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/b32b8aec-2ae0-4e8e-9fb8-516aa81ce145)  
+
+## Join on Multiple Tables  
+
+Suppose you need to join multiple tables by a primary key using PROC SQL.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/33587a7e-f439-4841-acc8-be36a41bb38d)  
+
+### Create Sample Data  
+
+Sample data for three tables are shown below. The primary key in these tables is the variable "ID". We need to join these tables.  
+
+```sas
+data temp;
+input id x1 x2;
+cards;
+1 25 37
+2 35 47
+3 44 97
+;
+run;
+
+data temp2;
+input id var1 var2;
+cards;
+2 65 37
+3 85 47
+5 34 97
+;
+run;
+
+data temp3;
+input id xx1 xx2;
+cards;
+3 55 37
+5 25 47
+4 64 97
+;
+run;
+```
+
+### SAS : PROC SQL Code to Joins Multiple Tables  
+
+The following code is creating a new table named "test" by joining data from three different tables ("temp", "temp2", and "temp3") based on the common "ID" column. The result will include all columns from the "temp" table and all columns from both "temp2" and "temp3" tables where the "ID" values match.  
+
+```sas
+proc sql noprint;
+create table test as
+select a.ID, b.*, c.* from
+temp a left join temp2 b
+on a.id = b.id
+left join temp3 c
+on a.id = c.id;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/e53ea116-4fb4-4a80-b324-4d4bdd2d1a5b)  
+
+select a.ID, b.*, c.*: This SELECT statement selects columns from three different tables: "temp", "temp2" and "temp3".  
+
+a.ID refers to the "ID" column from the "temp" table.  
+b.* selects all columns from the "temp2" table.  
+c.* selects all columns from the "temp3" table.  
+
+## Comparing two tables  
+
+Suppose you have two data sets (tables), oldfile and newfile. You want to compare these two datasets and want to see the updated rows and common rows in both the tables.  
+
+### I . Creating two data sets (tables) - oldfile and newfile  
+
+```sas
+data oldfile;
+input id First$;
+cards;
+5463 Olsen
+6574 Hogan
+7896 Bridge
+4352 Anson
+5674 Leach
+7902 Wilson
+9786 Fabes
+;
+
+data newfile;
+input id First$;
+cards;
+5463 Olsen
+6574 Hogan
+7896 Bridge
+4352 Anson
+5671 Leach
+7900 Wilson
+9786 Sampo
+2112 Ramav
+;
+```
+
+### II . Comparing two tables - Old File and New File  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/2b134018-c409-4851-b36e-cf6209996131)  
+
+The rows that are highlighted in red are updated rows that do not exist in Old file.  
+
+The EXCEPT operator returns rows from the first query that are not part of the second query. It returns updated rows that are not found in the old file.  
+
+```sas
+/* Comparing two tables - Updated data*/
+proc sql;
+title "Updated Rows";
+select * from newfile
+except
+select * from oldfile;
+quit;
+```
+
+### Common Rows in both the tables   
+
+The INTERSECT operator returns common rows in both the tables.  
+
+```sas
+proc sql;
+title "Common Rows";
+select * from newfile
+intersect
+select * from oldfile;
+quit;
+```
+
+### Data Step Merge : Comparing two datasets  
+
+We can compare two datasets with data step merge statement. First we need to sort both the datasets by all the variables and then merge by _all_.  
+
+```sas
+proc sort data = oldfile;
+by _all_;
+run;
+proc sort data = newfile;
+by _all_;
+run;
+```
+
+### Updated Rows   
+
+```sas
+data merged;
+merge oldfile(in=a) newfile(in=b);
+by _all_;
+if a = 0;
+run;
+```
+
+### Common Rows   
+
+```sas
+data merged;
+merge oldfile(in=a) newfile(in=b);
+by _all_;
+if a and b;
+run;
+```
+
+### Find records only exist in one table  
+
+It is one of the most common data manipulation problem to find records that exist only in table 1 but not in table 2. This post includes 3 methods with PROC SQL and 1 method with data step to solve it. This problem statement is also called 'If a and not b' in SAS. It means pull records that exist only in Table A but not in Table B (Exclude the common records of both the tables). See the Venn Diagram below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/1cec282d-6abd-4d92-a1f3-3c845092fb4f)  
+
+The main thing to focus in Venn Diagram is the intersection area of table A and table B. It is NOT highlighted in red because we don't want the records which are common in both the tables.  
+
+### Let's create a sample data  
+
+If you look at the tables below, we are looking to fetch all the records from table1 except 'Ram' and 'Priya' as these two names are in table2.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/5813bb61-a301-418e-800a-66bd398d0969)  
+
+### Create two datasets in SAS
+
+The following programs create two data sets in SAS which are used to demonstrate methods to solve this problem.  
+
+```sas
+data dataset1;
+input name $;
+cards;
+Dave
+Ram
+Sam
+Matt
+Priya
+;
+run;
+```
+
+```sas
+data dataset2;
+input name$;
+cards;
+Ram
+Priya
+;
+run;
+```
+
+In SQL, there are multiple ways to solve this problem. The methods are listed below -  
+
+### Method I - NOT IN Operator  
+
+The simplest method is to write a subquery and use NOT IN operator, It tells system not to include records from dataset 2.  
+
+```sas
+proc sql;
+select * from dataset1
+where name not in (select name from dataset2);
+quit;
+```
+
+### The output is shown in the image below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/853bdd94-494e-4598-8b81-180624331c6f)  
+
+### Method II - LEFT JOIN with NULL Operator  
+
+In this method, we are performing left join and telling SAS to include only rows from table 1 that do not exist in table 2.  
+
+```sas
+proc sql;
+select a.name from dataset1 a
+left join dataset2 b
+on a.name = b.name
+where b.name is null;
+quit;
+```
+
+### How it works -  
+
+In the first step, it reads common column from the both the tables - a.name and b.name. At the second step, these columns are matched and then the b.name row will be set NULL or MISSING if a name exists in table A but not in table B. At the next step, WHERE statement with 'b,name is null' tells SAS to keep only records from table A.  
+
+### Method III -  Not Exists Correlated SubQuery  
+
+NOT EXISTS subquery writes the observation to the merged dataset only when there is no matching rows of a.name in dataset2. This process is repeated for each rows of variable name.  
+
+```sas
+proc sql;
+select a.name from
+dataset1 a
+where not exists (select name from dataset2 b
+where a.name = b.name);
+quit;
+```
+
+### How it works -  
+
+#### Step 1 - At the background, it performs left join of the tables -  
+
+```sas
+proc sql;
+create table step1 as
+select a.* from dataset1 a
+left join dataset2 b
+on a.name = b.name;
+quit;
+```
+
+#### Step 2 - At the next step, it checks common records by applying INNER JOIN  
+
+```sas
+proc sql;
+create table step2 as
+select a.name from dataset1 a, dataset2 b
+where a.name = b.name;
+quit;
+```
+
+#### Step 3 - At the last step, it excludes common records.  
+
+```sas
+proc sql;
+select * from step1
+where name not in (select distinct name from step2) ;
+quit;
+```
+
+### Method IV : SAS Data Step MERGE Statement  
+
+In SAS Data Step, it is required to sort tables by the common variable before merging them. Sorting can be done with PROC SORT.  
+
+```sas
+proc sort data = dataset1;
+by name;
+run;
+proc sort data = dataset2;
+by name;
+run;
+```
+
+```sas
+Data finaldata;
+merge dataset1 (in=a) dataset2(in=b);
+by name;
+if a and not b;
+run;
+```
+
+The MERGE Statement joins the datasets dataset1 and dataset2 by the variable name.  
+
+### Q. Which is the most efficient method?  
+
+To answer this question, let's create two larger datasets (tables) and compare the 4 methods as explained above.  
+
+Table1 - Dataset Name : Temp, Observations - 1 Million, Number of Variables - 1  
+
+Table2 - Dataset Name : Temp2, Observations - 10K, Number of Variables - 1  
+
+```sas
+data temp;
+length x $15.;
+do i = 1 to 1000000;
+x = "AA"||strip(i);
+output;
+end;
+drop i;
+run;
+```
+
+```sas
+data temp2;
+length x $15.;
+do i = 1 to 10000;
+x = "AA"||strip(i);
+output;
+end;
+drop i;
+run;
+```
+
+### Result  
+
+SAS Dataset MERGE (Including prior sorting) took least time (1.3 seconds) to complete this operation, followed by NOT IN operator in subquery which took 1.4 seconds and then followed by LEFT JOIN with WHERE NULL clause (1.9 seconds). The NOT EXISTS took maximum time.  
+
+Tip - In many popular forums, it is generally advised to use NOT EXISTS rather than NOT IN. This advise is generally taken out of context. Modern softwares use SQL optimizer to process any SQL query. Some softwares may consider both the queries as same in terms of execution so there would not be a noticeable difference in their CPU timings. Some may be in favor of NOT EXISTS. SAS seems to be in favor of NOT IN operator as it does not require tables to be merged.  
+
+## Random Sampling with PROC SQL  
+
+This tutorial explains how to create a random sample with PROC SQL.   
+
+The RANUNI function performs random sampling and OUTOBS restricts number of rows processing.  
+
+```sas
+proc sql outobs = 10;
+create table tt as
+select * from sashelp.class
+order by ranuni(1234);
+quit;
+```
+
+In this case, we are selecting 10 random samples.  
+
+proc sql outobs = 10;: This line is setting an option in the SQL procedure that limits the output to only 10 observations. The outobs option restricts the number of rows that will be written to the output table.  
+
+create table tt as select * from sashelp.class order by ranuni(1234);: This line is creating a new table named tt using the CREATE TABLE statement. The table is being populated with the data from the sashelp.class table, which is a built-in dataset in SAS containing information about students. The order by ranuni(1234) part is sorting the data randomly based on the seed value 1234 provided to the ranuni function. As a result, the rows in the tt table will be randomly ordered.  
+
+quit;: This line is used to exit the SQL procedure and complete the data manipulation.  
+
+## Alternative to _N_ in PROC SQL  
+
+In PROC SQL, we can use MONOTONIC() function to generate row numbers. It is an alternative to _N_ in data step.  
+
+### SAS Code : To select row numbers between 10 and 20  
+
+```sas
+proc sql noprint;
+create table temp as
+select  *
+from sashelp.class
+where monotonic() between 10 and 20;
+quit;
+```
+
+### SAS Code : To generate row numbers  
+
+```sas
+proc sql noprint;
+create table class2 as
+select  monotonic() as Number, *
+from sashelp.class;
+quit;
+ ```
+
+ ## NODUPKEY with PROC SQL  
+
+ This tutorial explains how to remove duplicates by a column but returns all the columns.  
+
+ ```sas
+data readin;
+input ID Name $ Score;
+cards;
+1     David   45
+1     David   74
+2     Sam     45
+2     Ram     54
+3     Bane    87
+3     Mary    92
+3     Bane    87
+4     Dane    23
+5     Jenny   87
+5     Ken     87
+6     Simran  63
+8     Priya   72
+;
+run;
+```
+ 
+### Solution  
+
+Suppose you want to remove duplicates based on name but returns all the variables.  
+
+```sas
+proc sql noprint;
+create table tt (drop = row_num) as
+select *, monotonic() as row_num
+from readin
+group by name
+having row_num = min(row_num)
+order by ID;
+quit;
+```
+
+### Method 2 :  
+
+```sas
+proc sql noprint;
+create table tt as
+select name, max(ID)as ID, max(Score) as Score
+from readin
+group by name;
+quit;
+```
+
+The method 2 might not be the desired output. You can also use MIN instead of MAX.  
+
+## Use DISTINCT in CASE WHEN  
+
+This tutorial explains how to ignore duplicates while specifying conditions / criteria in SQL queries. You must have used DISTINCT keyword to remove duplicates. It is frequently used with COUNT function to calculate number of unique cases.  
+
+### Example 1 :  
+
+Suppose you have three variables, say, 'id', 'x' and 'y'. You need to calculate number of distinct "y" values when x is less than 30. See the snapshot of data below -  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/6611388c-9b84-4fe3-98a0-c70acb7979e8)  
+
+### Let's create dataset in SAS   
+
+```sas
+data temp;
+input id x y ;
+cards;
+1 25 30
+1 28 30
+1 40 25
+2 23 54
+2 34 54
+2 35 56
+;
+run;
+```
+
+### SAS : PROC SQL  
+
+```sas
+proc sql;
+select count(distinct y) as unique_y,
+count(distinct case when x < 30 then y else . end) as unique_criteria
+from temp;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/e9d513bc-4b2b-4ac3-b0ec-c89ec5e8cf56)  
+
+Explanation :  
+
+The above program computes number of distinct values in variable 'y' when values of variable "x" is less than 30.  
+The keyword DISTINCT is used to remove or ignore duplicate records.  
+In the dataset, there are in total 3 cases in variable 'y' when x < 30. Whereas distinct number of cases in variable 'y' is equal to 2.  
+
+### Example 2 :   
+
+Suppose you are asked to group values by ID and then calculate sum of distinct values of y when x < 30. If condition is not met, then sum of all values of y.  
+
+```sas
+proc sql;
+select id, sum(distinct y) as sum_unique,
+coalesce(sum(distinct case when x < 30 then y end),0) +
+coalesce(sum(case when x >= 30 then y end),0) as sum_unique_criteria
+from temp
+group by 1;
+quit;
+```
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/93f7d7bc-c6ca-4cd3-9aea-e7dc500807a1)  
+
+Explanation :  
+
+Since the DISTINCT keyword works on a complete record, we need to write conditions "x <30" and "x>=30" separately in CASE WHEN.  
+The COALESCE function tells SAS to replace missing values with 0 and then sum the returned values of both the conditions. If we don't use COALESCE, it would return missing when any of the two values which we want to add contains missing/null.  
+
+### Example 3 :  
+
+Suppose you are asked to group data by variable 'ID' and then calculate maximum value of variable 'Y' when x is less than 30. Otherwise take all the values. At last, sum the returned values of both the conditions.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/a4bdf6c9-f964-4102-a1d4-8361de331979)  
+
+```sas
+data temp;
+input id x y ;
+cards;
+1 25 30
+1 28 27
+1 40 25
+2 23 54
+2 29 55
+2 34 56
+;
+run;
+```
+
+```sas
+proc sql;
+select id,
+coalesce(max(case when x < 30 then y end),0) +
+coalesce(sum(case when x >= 30 then y end),0) as sum_unique_criteria
+from temp
+group by 1;
+quit;
+```
+
+### Example 4 :  
+
+Suppose you need to pick the maximum value in variable Y when duplicates in variable "X" and then group data by variable "ID" and compute number of cases where Y=1.  
+
+![image](https://github.com/Deepak2k20/SAS/assets/65231118/73fd2832-8e4d-4a08-aee6-4e53026f7e59)  
+
+```sas
+data temp;
+input id x y ;
+cards;
+1 1 1
+1 1 0
+1 2 1
+2 3 0
+2 4 1
+2 4 1
+;
+run;
+```
+
+```sas
+proc sql;
+select a.id,
+count(distinct case when y > 0 then max_y else . end) as count_distinct
+from temp a left join (select x, max(ranuni(123) * y) as max_y from temp group by 1) b
+on a.x = b.x
+group by 1;
+quit;
+```
+
+### How it works :  
+
+When X = 1, it picks the maximum value of variable Y i.e. 1 and sets Y =1. Then it groups data by variable "ID", it checks the number of cases in which Y is equal to one after removing duplicates in X=1 cases. So it returns 2.  
+
+The RANUNI() function is used to generate random numbers between 0 and 1 without replacement.The number 123 that is enclosed in the ranuni function is called seed which produces the same random numbers when it is run next time.  
+
+In this case, the RANUNI() function makes Y as unique identifier so that we can later count these unique cases.  
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
